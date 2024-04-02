@@ -9,7 +9,7 @@ export default class Game {
 
     constructor() {
         this.constants = new Constants();
-        this.app = this.constants.app; 
+        this.app = this.constants.app;
 
         this.app = new PIXI.Application({
             width: this.constants.COLS * this.constants.BLOCK_SIZE,
@@ -25,4 +25,5 @@ export default class Game {
     public getApp(): PIXI.Application {
         return this.app;
     }
+
 }
