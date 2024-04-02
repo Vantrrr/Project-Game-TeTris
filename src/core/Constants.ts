@@ -1,6 +1,6 @@
 import * as PIXI from 'pixi.js';
 
-class Constants {
+export class Constants {
     public app: PIXI.Application;
     public readonly COLS: number = 10;
     public readonly ROWS: number = 20;
