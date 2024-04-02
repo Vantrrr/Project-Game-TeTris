@@ -17,4 +17,5 @@ export class Constants {
     ];
 
     public readonly WHITE_COLOR_ID = this.COLOR_MAPPING[7];
+
 }
