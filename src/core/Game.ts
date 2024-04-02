@@ -19,6 +19,7 @@ export default class Game {
 
         window.document.body.appendChild(this.app.view);
         this.board = new Board(this);
+        this.board.drawBoard();
         this.board.drawCell(1, 1, 1);
     }
 

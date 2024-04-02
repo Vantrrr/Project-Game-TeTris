@@ -40,6 +40,15 @@ export class Board {
 
         this.boardContainer.addChild(cellGraphics);
     }
+    drawBoard() {
+        // this.boardContainer.removeChildren(); // Clear the existing board before redrawing
+
+        for (let row = 0; row < this.grid.length; row++) {
+            for (let col = 0; col < this.grid[0].length; col++) {
+                this.drawCell(col, row, this.grid[row][col]);
+            }
+        }
+    }
 }
 
 
