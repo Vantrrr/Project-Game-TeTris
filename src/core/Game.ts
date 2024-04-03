@@ -1,10 +1,12 @@
 import * as PIXI from 'pixi.js';
 import { Constants } from './Constants';
 import { Board } from './Board';
+import { Brick } from './Bricks';
 
 export default class Game {
     private constants: Constants;
     private board: Board;
+    private brick: Brick;
     private app: PIXI.Application;
 
     constructor() {
@@ -20,7 +22,10 @@ export default class Game {
         window.document.body.appendChild(this.app.view);
         this.board = new Board(this);
         this.board.drawBoard();
-        this.board.drawCell(1, 1, 1);
+        this.brick = new Brick(0, this);
+        this.brick.draw()
+        // this.board.drawCell(1, 1, 1);
+        
     }
 
     public getApp(): PIXI.Application {
