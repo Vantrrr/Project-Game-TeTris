@@ -18,4 +18,170 @@ export class Constants {
 
     public readonly WHITE_COLOR_ID = this.COLOR_MAPPING[7];
 
+    public readonly BRICK_LAYOUT = [
+        [
+            [
+                [1, this.COLOR_MAPPING[7], this.COLOR_MAPPING[7]],
+                [1, 1, 1],
+                [this.COLOR_MAPPING[7], this.COLOR_MAPPING[7], this.COLOR_MAPPING[7]],
+            ],
+            [
+                [this.COLOR_MAPPING[7], 1, 1],
+                [this.COLOR_MAPPING[7], 1, this.COLOR_MAPPING[7]],
+                [this.COLOR_MAPPING[7], 1, this.COLOR_MAPPING[7]],
+            ],
+            [
+                [this.COLOR_MAPPING[7], this.COLOR_MAPPING[7], this.COLOR_MAPPING[7]],
+                [1, 1, 1],
+                [this.COLOR_MAPPING[7], this.COLOR_MAPPING[7], 1],
+            ],
+            [
+                [this.COLOR_MAPPING[7], 1, this.COLOR_MAPPING[7]],
+                [this.COLOR_MAPPING[7], 1, this.COLOR_MAPPING[7]],
+                [1, 1, this.COLOR_MAPPING[7]],
+            ],
+        ],
+        [
+            [
+                [this.COLOR_MAPPING[7], 1, this.COLOR_MAPPING[7]],
+                [this.COLOR_MAPPING[7], 1, this.COLOR_MAPPING[7]],
+                [this.COLOR_MAPPING[7], 1, 1],
+            ],
+            [
+                [this.COLOR_MAPPING[7], this.COLOR_MAPPING[7], this.COLOR_MAPPING[7]],
+                [1, 1, 1],
+                [1, this.COLOR_MAPPING[7], this.COLOR_MAPPING[7]],
+            ],
+            [
+                [1, 1, this.COLOR_MAPPING[7]],
+                [this.COLOR_MAPPING[7], 1, this.COLOR_MAPPING[7]],
+                [this.COLOR_MAPPING[7], 1, this.COLOR_MAPPING[7]],
+            ],
+            [
+                [this.COLOR_MAPPING[7], this.COLOR_MAPPING[7], 1],
+                [1, 1, 1],
+                [this.COLOR_MAPPING[7], this.COLOR_MAPPING[7], this.COLOR_MAPPING[7]],
+            ],
+        ],
+        [
+            [
+                [1, this.COLOR_MAPPING[7], this.COLOR_MAPPING[7]],
+                [1, 1, this.COLOR_MAPPING[7]],
+                [this.COLOR_MAPPING[7], 1, this.COLOR_MAPPING[7]],
+            ],
+            [
+                [this.COLOR_MAPPING[7], 1, 1],
+                [1, 1, this.COLOR_MAPPING[7]],
+                [this.COLOR_MAPPING[7], this.COLOR_MAPPING[7], this.COLOR_MAPPING[7]],
+            ],
+            [
+                [this.COLOR_MAPPING[7], 1, this.COLOR_MAPPING[7]],
+                [this.COLOR_MAPPING[7], 1, 1],
+                [this.COLOR_MAPPING[7], this.COLOR_MAPPING[7], 1],
+            ],
+            [
+                [this.COLOR_MAPPING[7], this.COLOR_MAPPING[7], this.COLOR_MAPPING[7]],
+                [this.COLOR_MAPPING[7], 1, 1],
+                [1, 1, this.COLOR_MAPPING[7]],
+            ],
+        ],
+        [
+            [
+                [this.COLOR_MAPPING[7], 1, this.COLOR_MAPPING[7]],
+                [1, 1, this.COLOR_MAPPING[7]],
+                [1, this.COLOR_MAPPING[7], this.COLOR_MAPPING[7]],
+            ],
+            [
+                [1, 1, this.COLOR_MAPPING[7]],
+                [this.COLOR_MAPPING[7], 1, 1],
+                [this.COLOR_MAPPING[7], this.COLOR_MAPPING[7], this.COLOR_MAPPING[7]],
+            ],
+            [
+                [this.COLOR_MAPPING[7], this.COLOR_MAPPING[7], 1],
+                [this.COLOR_MAPPING[7], 1, 1],
+                [this.COLOR_MAPPING[7], 1, this.COLOR_MAPPING[7]],
+            ],
+            [
+                [this.COLOR_MAPPING[7], this.COLOR_MAPPING[7], this.COLOR_MAPPING[7]],
+                [1, 1, this.COLOR_MAPPING[7]],
+                [this.COLOR_MAPPING[7], 1, 1],
+            ],
+        ],
+        [
+            [
+                [this.COLOR_MAPPING[7], this.COLOR_MAPPING[7], this.COLOR_MAPPING[7], this.COLOR_MAPPING[7]],
+                [1, 1, 1, 1],
+                [this.COLOR_MAPPING[7], this.COLOR_MAPPING[7], this.COLOR_MAPPING[7], this.COLOR_MAPPING[7]],
+                [this.COLOR_MAPPING[7], this.COLOR_MAPPING[7], this.COLOR_MAPPING[7], this.COLOR_MAPPING[7]],
+            ],
+            [
+                [this.COLOR_MAPPING[7], this.COLOR_MAPPING[7], 1, this.COLOR_MAPPING[7]],
+                [this.COLOR_MAPPING[7], this.COLOR_MAPPING[7], 1, this.COLOR_MAPPING[7]],
+                [this.COLOR_MAPPING[7], this.COLOR_MAPPING[7], 1, this.COLOR_MAPPING[7]],
+                [this.COLOR_MAPPING[7], this.COLOR_MAPPING[7], 1, this.COLOR_MAPPING[7]],
+            ],
+            [
+                [this.COLOR_MAPPING[7], this.COLOR_MAPPING[7], this.COLOR_MAPPING[7], this.COLOR_MAPPING[7]],
+                [this.COLOR_MAPPING[7], this.COLOR_MAPPING[7], this.COLOR_MAPPING[7], this.COLOR_MAPPING[7]],
+                [1, 1, 1, 1],
+                [this.COLOR_MAPPING[7], this.COLOR_MAPPING[7], this.COLOR_MAPPING[7], this.COLOR_MAPPING[7]],
+            ],
+            [
+                [this.COLOR_MAPPING[7], 1, this.COLOR_MAPPING[7], this.COLOR_MAPPING[7]],
+                [this.COLOR_MAPPING[7], 1, this.COLOR_MAPPING[7], this.COLOR_MAPPING[7]],
+                [this.COLOR_MAPPING[7], 1, this.COLOR_MAPPING[7], this.COLOR_MAPPING[7]],
+                [this.COLOR_MAPPING[7], 1, this.COLOR_MAPPING[7], this.COLOR_MAPPING[7]],
+            ],
+        ],
+        [
+            [
+                [this.COLOR_MAPPING[7], this.COLOR_MAPPING[7], this.COLOR_MAPPING[7], this.COLOR_MAPPING[7]],
+                [this.COLOR_MAPPING[7], 1, 1, this.COLOR_MAPPING[7]],
+                [this.COLOR_MAPPING[7], 1, 1, this.COLOR_MAPPING[7]],
+                [this.COLOR_MAPPING[7], this.COLOR_MAPPING[7], this.COLOR_MAPPING[7], this.COLOR_MAPPING[7]],
+            ],
+            [
+                [this.COLOR_MAPPING[7], this.COLOR_MAPPING[7], this.COLOR_MAPPING[7], this.COLOR_MAPPING[7]],
+                [this.COLOR_MAPPING[7], 1, 1, this.COLOR_MAPPING[7]],
+                [this.COLOR_MAPPING[7], 1, 1, this.COLOR_MAPPING[7]],
+                [this.COLOR_MAPPING[7], this.COLOR_MAPPING[7], this.COLOR_MAPPING[7], this.COLOR_MAPPING[7]],
+            ],
+            [
+                [this.COLOR_MAPPING[7], this.COLOR_MAPPING[7], this.COLOR_MAPPING[7], this.COLOR_MAPPING[7]],
+                [this.COLOR_MAPPING[7], 1, 1, this.COLOR_MAPPING[7]],
+                [this.COLOR_MAPPING[7], 1, 1, this.COLOR_MAPPING[7]],
+                [this.COLOR_MAPPING[7], this.COLOR_MAPPING[7], this.COLOR_MAPPING[7], this.COLOR_MAPPING[7]],
+            ],
+            [
+                [this.COLOR_MAPPING[7], this.COLOR_MAPPING[7], this.COLOR_MAPPING[7], this.COLOR_MAPPING[7]],
+                [this.COLOR_MAPPING[7], 1, 1, this.COLOR_MAPPING[7]],
+                [this.COLOR_MAPPING[7], 1, 1, this.COLOR_MAPPING[7]],
+                [this.COLOR_MAPPING[7], this.COLOR_MAPPING[7], this.COLOR_MAPPING[7], this.COLOR_MAPPING[7]],
+            ],
+        ],
+        [
+            [
+                [this.COLOR_MAPPING[7], 1, this.COLOR_MAPPING[7]],
+                [1, 1, 1],
+                [this.COLOR_MAPPING[7], this.COLOR_MAPPING[7], this.COLOR_MAPPING[7]],
+            ],
+            [
+                [this.COLOR_MAPPING[7], 1, this.COLOR_MAPPING[7]],
+                [this.COLOR_MAPPING[7], 1, 1],
+                [this.COLOR_MAPPING[7], 1, this.COLOR_MAPPING[7]],
+            ],
+            [
+                [this.COLOR_MAPPING[7], this.COLOR_MAPPING[7], this.COLOR_MAPPING[7]],
+                [1, 1, 1],
+                [this.COLOR_MAPPING[7], 1, this.COLOR_MAPPING[7]],
+            ],
+            [
+                [this.COLOR_MAPPING[7], 1, this.COLOR_MAPPING[7]],
+                [1, 1, this.COLOR_MAPPING[7]],
+                [this.COLOR_MAPPING[7], 1, this.COLOR_MAPPING[7]],
+            ],
+        ],
+    ];
+
+
 }
