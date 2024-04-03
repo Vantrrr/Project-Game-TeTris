@@ -23,8 +23,9 @@ export default class Game {
         this.board = new Board(this);
         this.brick = new Brick(0, this);
         this.board.drawBoard();
-        this.brick.draw()
-        
+        this.brick.draw();
+        this.brick.moveLeft();
+
     }
 
     public getApp(): PIXI.Application {
