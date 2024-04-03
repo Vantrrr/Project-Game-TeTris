@@ -183,5 +183,9 @@ export class Constants {
         ],
     ];
 
+    public getBrickLayout() {
+        return this.BRICK_LAYOUT;
+    }
+
 
 }
