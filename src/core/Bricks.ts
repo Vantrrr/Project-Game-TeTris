@@ -17,7 +17,6 @@ export class Brick{
             this.game = game;
             this.constants = new Constants();
             this.board = new Board(this.game)
-            this.board = this.board.getBoard();
             this.layout = this.constants.getBrickLayout()[id];
             this.activeIndex = 0;
             this.colPos = 3;

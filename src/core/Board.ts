@@ -8,7 +8,6 @@ export class Board {
     private constants: Constants;
     private game: Game;
     grid: any;
-    board: any;
 
     constructor(game: Game) {
         this.game = game;
@@ -49,9 +48,6 @@ export class Board {
                 this.drawCell(col, row, this.grid[row][col]);
             }
         }
-    }
-    public getBoard() {
-        return this.board;
     }
 }
 
