@@ -24,13 +24,30 @@ export default class Game {
         this.brick = new Brick(0, this);
         this.board.drawBoard();
         this.brick.draw();
-        this.brick.moveLeft();
-        this.brick.moveRight();
-        this.brick.moveDown();
-        this.brick.rotate();
+        // this.brick.moveLeft();
+        // this.brick.moveRight();
+        // this.brick.moveDown();
+        // this.brick.rotate();
+       document.addEventListener('keydown', (e: KeyboardEvent) => {
+        console.log({e});
+                switch (e.code) {
+                    case this.constants.KEY_CODES.LEFT:
+                        this.brick.moveLeft();
+                        break;
+                    case this.constants.KEY_CODES.RIGHT:
+                        this.brick.moveRight();
+                        break;
+                    case this.constants.KEY_CODES.UP:
+                        this.brick.rotate();
+                        break;
+                    case this.constants.KEY_CODES.DOWN:
+                        this.brick.moveDown();
+                        break;
 
+                }
+        });
     }
-
+    
     public getApp(): PIXI.Application {
         return this.app;
     }

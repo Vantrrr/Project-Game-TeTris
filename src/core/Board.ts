@@ -8,6 +8,8 @@ export class Board {
     private constants: Constants;
     private game: Game;
     grid: any;
+    gameOver: any;
+    isPlaying: boolean;
 
     constructor(game: Game) {
         this.game = game;

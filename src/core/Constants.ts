@@ -183,6 +183,15 @@ export class Constants {
         ],
     ];
 
+    public readonly KEY_CODES = {
+        'LEFT': 'ArrowLeft',
+        'UP': 'ArrowUp',
+        'RIGHT': 'ArrowRight',
+        'DOWN': 'ArrowDown',
+        'SPACE': 'Space',
+        'ENTER': 'Enter',
+    }
+
     public getBrickLayout() {
         return this.BRICK_LAYOUT;
     }
