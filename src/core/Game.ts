@@ -25,6 +25,9 @@ export default class Game {
         this.board.drawBoard();
         this.brick.draw();
         this.brick.moveLeft();
+        this.brick.moveRight();
+        this.brick.moveDown();
+        this.brick.rotate();
 
     }
 
