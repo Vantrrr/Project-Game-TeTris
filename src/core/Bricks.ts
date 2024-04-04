@@ -48,4 +48,24 @@ export class Brick {
         this.colPos--;
         this.draw();
     }
+
+    moveRight() {
+        this.clearIndexFirst();
+        this.colPos++;
+        this.draw();
+    }
+
+    moveDown() {
+        this.clearIndexFirst();
+        this.rowPos++;
+        this.draw();
+    }
+
+    rotate() {
+        this.clearIndexFirst();
+        this.activeIndex = (this.activeIndex + 1) % 4;
+        this.draw();
+    }
+
+
 }
