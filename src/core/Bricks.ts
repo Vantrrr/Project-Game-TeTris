@@ -44,27 +44,47 @@ export class Brick {
     }
 
     moveLeft() {
-        this.clearIndexFirst();
-        this.colPos--;
-        this.draw();
+        if (!this.checkCollision(this.rowPos, this.colPos - 1, this.layout[this.activeIndex])) {
+            this.clearIndexFirst();
+            this.colPos--;
+            this.draw();
+        }
     }
 
     moveRight() {
-        this.clearIndexFirst();
-        this.colPos++;
-        this.draw();
+        if (!this.checkCollision(this.rowPos, this.colPos + 1, this.layout[this.activeIndex])) {
+            this.clearIndexFirst();
+            this.colPos++;
+            this.draw();
+        }
     }
 
     moveDown() {
-        this.clearIndexFirst();
-        this.rowPos++;
-        this.draw();
+        if (!this.checkCollision(this.rowPos + 1, this.colPos, this.layout[this.activeIndex])) {
+            this.clearIndexFirst();
+            this.rowPos++;
+            this.draw();
+        }
     }
 
     rotate() {
-        this.clearIndexFirst();
-        this.activeIndex = (this.activeIndex + 1) % 4;
-        this.draw();
+        if (!this.checkCollision(this.rowPos, this.colPos, this.layout[(this.activeIndex + 1) % 4])){
+            this.clearIndexFirst();
+            this.activeIndex = (this.activeIndex + 1) % 4;
+            this.draw();
+        }
+    }
+
+    checkCollision(nextRow: number, nextCol: number, nextLayout: any) {
+          for (let row = 0; row < nextLayout.length; row++) {
+            for (let col = 0; col < nextLayout[row].length; col++) {
+                if (nextLayout[row][col] !== this.constants.WHITE_COLOR_ID) {
+                    if ((col + nextCol < 0) || (col + nextCol >= this.constants.COLS) || (row + nextRow >= this.constants.ROWS))
+                        return true;
+                }
+            }
+        }
+        return false;
     }
 
 
