@@ -68,7 +68,7 @@ export class Brick {
     }
 
     rotate() {
-        if (!this.checkCollision(this.rowPos, this.colPos, this.layout[(this.activeIndex + 1) % 4])){
+        if (!this.checkCollision(this.rowPos, this.colPos, this.layout[(this.activeIndex + 1) % 4])) {
             this.clearIndexFirst();
             this.activeIndex = (this.activeIndex + 1) % 4;
             this.draw();
@@ -76,7 +76,7 @@ export class Brick {
     }
 
     checkCollision(nextRow: number, nextCol: number, nextLayout: any) {
-          for (let row = 0; row < nextLayout.length; row++) {
+        for (let row = 0; row < nextLayout.length; row++) {
             for (let col = 0; col < nextLayout[row].length; col++) {
                 if (nextLayout[row][col] !== this.constants.WHITE_COLOR_ID) {
                     if ((col + nextCol < 0) || (col + nextCol >= this.constants.COLS) || (row + nextRow >= this.constants.ROWS))
@@ -86,6 +86,7 @@ export class Brick {
         }
         return false;
     }
+
 
 
 }
