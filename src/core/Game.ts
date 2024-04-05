@@ -29,6 +29,10 @@ export default class Game {
         // this.brick.moveRight();
         // this.brick.moveDown();
         // this.brick.rotate();
+
+        setInterval(() => {
+            this.brick.moveDown();
+        }, 1000);
         document.addEventListener('keydown', (e: KeyboardEvent) => {
             console.log({ e });
             switch (e.code) {
@@ -56,5 +60,6 @@ export default class Game {
     generateNewBrick() {
         this.brick = new Brick(Math.floor(Math.random() * 10) % this.constants.BRICK_LAYOUT.length, this);
     }
+
 
 }
