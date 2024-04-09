@@ -125,7 +125,7 @@ export default class Game {
         this.board = new Board(this);
         this.brick = new Brick(0, this);
         this.board.drawBoard();
-        this.generateNewBrick();
+        // this.generateNewBrick();
         this.brick.draw();
 
         setInterval(() => {

@@ -13,6 +13,7 @@ export class Brick {
     activeIndex: number;
     colPos: number;
     rowPos: number;
+    isLanded: boolean;
 
     constructor(id: number, game: Game) {
         this.id = id;
@@ -70,7 +71,12 @@ export class Brick {
             this.clearIndexFirst();
             this.rowPos++;
             this.draw();
+
+            return;
         }
+
+        this.handleLanded();
+        this.game.generateNewBrick();   
     }
 
     rotate() {
@@ -100,13 +106,12 @@ export class Brick {
                 if (this.layout[this.activeIndex][row][col] !== this.constants.WHITE_COLOR_ID) {
                     this.board.grid[row + this.rowPos][col + this.colPos] = this.constants.COLOR_MAPPING[this.id];
                 }
-            }
+            }   
         }
 
-        this.board.drawBoard();
+        // this.board.drawBoard();
     }
 
-    generateNewBrick() {
-        // Tạo một viên gạch mới ở đây
-    }
+   
+
 }
