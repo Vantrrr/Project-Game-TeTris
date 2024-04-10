@@ -1,5 +1,5 @@
 import { Constants } from './Constants';
-import Game from "./Game";
+import Game from "./GameControler";
 import { Board } from './Board';
 
 export class Brick {

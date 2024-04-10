@@ -1,3 +1,3 @@
-import Game from './core/Game';
+import Game from './core/GameControler';
 new Game();
 
