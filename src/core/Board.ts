@@ -1,5 +1,5 @@
 import * as PIXI from 'pixi.js';
-import Game from './Game';
+import Game from './GameControler';
 import { Constants } from './Constants';
 
 export class Board {

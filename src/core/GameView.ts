@@ -1,25 +1,24 @@
 import * as PIXI from 'pixi.js';
 import { Constants } from './Constants';
-import { Board } from './Board';
-import { Brick } from './Bricks';
 
-export default class Game {
-    private constants: Constants;
-    private board: Board;
-    private brick: Brick;
+export class GameView {
     private app: PIXI.Application;
-    private app1: PIXI.Application;
+    private constants: Constants;
+
     constructor() {
         this.constants = new Constants();
-        this.app = this.constants.app;
         this.app = new PIXI.Application({
             width: this.constants.COLS * this.constants.BLOCK_SIZE,
             height: this.constants.ROWS * this.constants.BLOCK_SIZE,
             backgroundColor: 0xffffff
         });
-        // vẽ logo game
-        this.app = new PIXI.Application({ width: 560, height: 700, backgroundColor: 0xFFFFFF });
-        document.body.appendChild(this.app.view);
+        this.setupUI();
+
+        window.document.body.appendChild(this.app.view);
+    }
+
+    private setupUI() {
+        this.app.renderer.resize(560, 700);
         const gameTitle = PIXI.Sprite.from('../assets/logo_tetris.png');
         gameTitle.position.set(325, 10);
         gameTitle.width = 200;
@@ -120,44 +119,9 @@ export default class Game {
         //  arow.on('click', () => {
         //      location.reload();
         //  });
-
-        window.document.body.appendChild(this.app.view);
-        this.board = new Board(this);
-        this.brick = new Brick(0, this);
-        this.board.drawBoard();
-        // this.generateNewBrick();
-        this.brick.draw();
-
-        setInterval(() => {
-            this.brick.moveDown();
-        }, 1000);
-        document.addEventListener('keydown', (e: KeyboardEvent) => {
-            console.log({ e });
-            switch (e.code) {
-                case this.constants.KEY_CODES.LEFT:
-                    this.brick.moveLeft();
-                    break;
-                case this.constants.KEY_CODES.RIGHT:
-                    this.brick.moveRight();
-                    break;
-                case this.constants.KEY_CODES.UP:
-                    this.brick.rotate();
-                    break;
-                case this.constants.KEY_CODES.DOWN:
-                    this.brick.moveDown();
-                    break;
-
-            }
-        });
     }
 
     public getApp(): PIXI.Application {
         return this.app;
     }
-
-    generateNewBrick() {
-        this.brick = new Brick(Math.floor(Math.random() * 10) % this.constants.BRICK_LAYOUT.length, this);
-    }
-
-
 }
