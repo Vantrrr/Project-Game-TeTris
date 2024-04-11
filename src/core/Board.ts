@@ -48,6 +48,17 @@ export class Board {
             }
         }
     }
+
+    handleCompletRows() {
+        const latestGrid = this.grid.filter((row: any[]) => {
+            return row.some(col => col === this.game.WHITE_COLOR_ID);
+        });
+
+        const newScore = this.game.ROWS - latestGrid.length; // Total completed rows
+        const newRows = Array.from({ length: newScore }, () => Array(this.game.COLS).fill(this.game.WHITE_COLOR_ID));
+
+        this.grid = [...newRows, ...latestGrid];
+    }
 }
 
 
