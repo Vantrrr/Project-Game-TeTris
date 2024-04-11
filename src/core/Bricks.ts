@@ -162,6 +162,7 @@ export class Brick {
                 }
             }
 
+            this.board.handleCompletRows();
             this.board.drawBoard();
         }
     }

@@ -7,7 +7,6 @@ export default class GameView {
         this.app = new PIXI.Application({ width: 560, height: 700, backgroundColor: 0xffffff });
         window.document.body.appendChild(this.app.view);
 
-        this.createUI();
     }
 
     private createUI() {
