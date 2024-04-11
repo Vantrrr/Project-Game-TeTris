@@ -1,7 +1,9 @@
 * {
     font-family: 'Press Start 2P', cursive;
 }
-html, body {
+
+html,
+body {
     margin: 0;
     padding: 0;
     width: 100vw;
@@ -10,11 +12,11 @@ html, body {
     justify-content: center;
     align-items: center;
     background-image: url('../assets/backg.png');
-    background-size: cover; 
-    background-position: center; 
-    background-repeat: no-repeat; 
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
 }
+
 canvas {
     border: 2px solid black;
 }
-

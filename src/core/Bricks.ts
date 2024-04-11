@@ -1,12 +1,9 @@
-import { Constants } from './Constants';
-import Game from "./GameControler";
 import { Board } from './Board';
-
+import Game from './GameControler';
 export class Brick {
     private game: Game;
     private board: Board;
-    private constants: Constants;
-    private landed: boolean;
+    private isCurrentBrickLanded: boolean;
 
     id: number;
     layout: any;
@@ -15,83 +12,138 @@ export class Brick {
     rowPos: number;
     isLanded: boolean;
 
+
     constructor(id: number, game: Game) {
         this.id = id;
         this.game = game;
-        this.constants = new Constants();
-        this.board = new Board(this.game);
-        this.layout = this.constants.getBrickLayout()[id];
+        this.layout = this.game.getBrickLayout()[id];
         this.activeIndex = 0;
         this.colPos = 3;
-        this.rowPos = 3;
-        this.landed = false;
+        this.rowPos = -1;
+        this.board = this.game.getBoard();
+        this.isLanded = false;
+        this.isCurrentBrickLanded = false;
+
+        document.addEventListener('keydown', (e: KeyboardEvent) => {
+            switch (e.code) {
+                case this.game.KEY_CODES.LEFT:
+                    this.moveLeft();
+                    break;
+                case this.game.KEY_CODES.RIGHT:
+                    this.moveRight();
+                    break;
+                case this.game.KEY_CODES.UP:
+                    this.rotate();
+                    break;
+                case this.game.KEY_CODES.DOWN:
+                    this.moveDown();
+                    break;
+            }
+        });
     }
 
     draw() {
         for (let row = 0; row < this.layout[this.activeIndex].length; row++) {
             for (let col = 0; col < this.layout[this.activeIndex][row].length; col++) {
-                if (this.layout[this.activeIndex][row][col] !== this.constants.WHITE_COLOR_ID) {
-                    this.board.drawCell(col + this.colPos, row + this.rowPos, this.constants.COLOR_MAPPING[this.id]);
+                if (this.layout[this.activeIndex][row][col] !== this.game.WHITE_COLOR_ID) {
+                    this.board.drawCell(col + this.colPos, row + this.rowPos, this.game.COLOR_MAPPING[this.id]);
                 }
             }
         }
     }
 
-    clearIndexFirst() {
+    clear() {
         for (let row = 0; row < this.layout[this.activeIndex].length; row++) {
             for (let col = 0; col < this.layout[this.activeIndex][row].length; col++) {
-                if (this.layout[this.activeIndex][row][col] !== this.constants.WHITE_COLOR_ID) {
-                    this.board.drawCell(col + this.colPos, row + this.rowPos, this.constants.WHITE_COLOR_ID);
+                if (this.layout[this.activeIndex][row][col] !== this.game.WHITE_COLOR_ID) {
+                    this.board.drawCell(col + this.colPos, row + this.rowPos, this.game.WHITE_COLOR_ID);
                 }
             }
         }
     }
 
     moveLeft() {
-        if (!this.landed && !this.checkCollision(this.rowPos, this.colPos - 1, this.layout[this.activeIndex])) {
-            this.clearIndexFirst();
+        if (this.isLanded) {
+            return;
+        }
+
+        if (
+            !this.checkCollision(
+                this.rowPos,
+                this.colPos - 1,
+                this.layout[this.activeIndex]
+            )
+        ) {
+            this.clear();
             this.colPos--;
             this.draw();
         }
     }
 
     moveRight() {
-        if (!this.landed && !this.checkCollision(this.rowPos, this.colPos + 1, this.layout[this.activeIndex])) {
-            this.clearIndexFirst();
+        if (this.isLanded) {
+            return;
+        }
+
+        if (
+            !this.checkCollision(
+                this.rowPos,
+                this.colPos + 1,
+                this.layout[this.activeIndex]
+            )
+        ) {
+            this.clear();
             this.colPos++;
             this.draw();
         }
     }
 
     moveDown() {
-        if (!this.landed && this.checkCollision(this.rowPos + 1, this.colPos, this.layout[this.activeIndex])) {
-            this.handleLanded();
-            this.landed = true;
-        } else if (!this.landed) {
-            this.clearIndexFirst();
-            this.rowPos++;
-            this.draw();
-
+        if (this.isLanded) {
             return;
         }
 
-        this.handleLanded();
-        this.game.generateNewBrick();   
+        if (!this.checkCollision(this.rowPos + 1, this.colPos, this.layout[this.activeIndex])) {
+            this.clear();
+            this.rowPos++;
+            this.draw();
+        } else {
+            this.handleLanded();
+            this.isCurrentBrickLanded = true;
+            this.game.generateNewBrick();
+        }
+
+
     }
 
     rotate() {
-        if (!this.landed && !this.checkCollision(this.rowPos, this.colPos, this.layout[(this.activeIndex + 1) % 4])) {
-            this.clearIndexFirst();
+        if (this.isLanded) {
+            return;
+        }
+        if (!this.checkCollision(this.rowPos, this.colPos, this.layout[(this.activeIndex + 1) % 4])) {
+            this.clear();
             this.activeIndex = (this.activeIndex + 1) % 4;
             this.draw();
         }
     }
 
+    // Collision handling
     checkCollision(nextRow: number, nextCol: number, nextLayout: any) {
         for (let row = 0; row < nextLayout.length; row++) {
             for (let col = 0; col < nextLayout[row].length; col++) {
-                if (nextLayout[row][col] !== this.constants.WHITE_COLOR_ID) {
-                    if ((col + nextCol < 0) || (col + nextCol >= this.constants.COLS) || (row + nextRow >= this.constants.ROWS)) {
+                if (nextLayout[row][col] !== this.game.WHITE_COLOR_ID && nextRow >= 0) {
+                    const boardRow = row + nextRow;
+                    const boardCol = col + nextCol;
+
+                    if (
+                        boardCol < 0 ||
+                        boardCol >= this.game.COLS ||
+                        boardRow >= this.game.ROWS ||
+                        this.board.grid[boardRow][boardCol] !== this.game.WHITE_COLOR_ID
+                    ) {
+                        if (nextRow > this.rowPos) {
+                            this.isLanded = true;
+                        }
                         return true;
                     }
                 }
@@ -101,17 +153,20 @@ export class Brick {
     }
 
     handleLanded() {
-        for (let row = 0; row < this.layout[this.activeIndex].length; row++) {
-            for (let col = 0; col < this.layout[this.activeIndex][row].length; col++) {
-                if (this.layout[this.activeIndex][row][col] !== this.constants.WHITE_COLOR_ID) {
-                    this.board.grid[row + this.rowPos][col + this.colPos] = this.constants.COLOR_MAPPING[this.id];
+        if (!this.isCurrentBrickLanded) {
+            for (let row = 0; row < this.layout[this.activeIndex].length; row++) {
+                for (let col = 0; col < this.layout[this.activeIndex][row].length; col++) {
+                    if (this.layout[this.activeIndex][row][col] !== this.game.WHITE_COLOR_ID) {
+                        this.board.grid[row + this.rowPos][col + this.colPos] = this.game.COLOR_MAPPING[this.id];
+                    }
                 }
-            }   
-        }
+            }
 
-        // this.board.drawBoard();
+            this.board.drawBoard();
+        }
     }
 
-   
 
-}
+
+
+} 
