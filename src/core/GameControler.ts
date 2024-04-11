@@ -2,37 +2,26 @@ import * as PIXI from 'pixi.js';
 import { Constants } from './Constants';
 import { Board } from './Board';
 import { Brick } from './Bricks';
+import { GameView } from './GameView';
 
 export default class Game {
     private constants: Constants;
     private board: Board;
     private brick: Brick;
-    private app: PIXI.Application;
+    private gameView: GameView;
 
     constructor() {
         this.constants = new Constants();
-        this.app = this.constants.app;
-
-        this.app = new PIXI.Application({
-            width: this.constants.COLS * this.constants.BLOCK_SIZE,
-            height: this.constants.ROWS * this.constants.BLOCK_SIZE,
-            backgroundColor: 0xffffff
-        });
-
-        window.document.body.appendChild(this.app.view);
+        this.gameView = new GameView();
         this.board = new Board(this);
         this.brick = new Brick(0, this);
         this.board.drawBoard();
-        this.generateNewBrick();
         this.brick.draw();
-        // this.brick.moveLeft();
-        // this.brick.moveRight();
-        // this.brick.moveDown();
-        // this.brick.rotate();
 
         setInterval(() => {
             this.brick.moveDown();
         }, 1000);
+
         document.addEventListener('keydown', (e: KeyboardEvent) => {
             console.log({ e });
             switch (e.code) {
@@ -48,18 +37,14 @@ export default class Game {
                 case this.constants.KEY_CODES.DOWN:
                     this.brick.moveDown();
                     break;
-
             }
         });
     }
 
     public getApp(): PIXI.Application {
-        return this.app;
+        return this.gameView.getApp();
     }
-
     generateNewBrick() {
         this.brick = new Brick(Math.floor(Math.random() * 10) % this.constants.BRICK_LAYOUT.length, this);
     }
-
-
 }
