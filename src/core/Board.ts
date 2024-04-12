@@ -5,13 +5,15 @@ export class Board {
     private boardContainer: PIXI.Container;
     private game: Game;
     public grid: any;
-
+    private score: number;
+    private scoreUpdateCallback: () => void;
     constructor(game: Game) {
         this.game = game;
         this.app = this.game.getApp();
         this.boardContainer = new PIXI.Container();
         this.app.stage.addChild(this.boardContainer);
         this.grid = this.generateWhiteBoard();
+        this.score = 0;
     }
 
     generateWhiteBoard() {
@@ -24,7 +26,7 @@ export class Board {
         const y = yAxis * this.game.BLOCK_SIZE;
         const size = this.game.BLOCK_SIZE;
         const borderSize = 0.5;
-        // const color = this.game.COLOR_MAPPING[colorID];
+        const color = this.game.COLOR_MAPPING[colorID];
 
         // Vẽ viền
         cellGraphics.lineStyle(borderSize, 0x000000, 1);
@@ -53,11 +55,25 @@ export class Board {
         const latestGrid = this.grid.filter((row: any[]) => {
             return row.some(col => col === this.game.WHITE_COLOR_ID);
         });
+        const completedRows = this.game.ROWS - latestGrid.length; 
+        const newRows = Array.from({ length: completedRows }, () => Array(this.game.COLS).fill(this.game.WHITE_COLOR_ID));
 
-        const newScore = this.game.ROWS - latestGrid.length; // Total completed rows
-        const newRows = Array.from({ length: newScore }, () => Array(this.game.COLS).fill(this.game.WHITE_COLOR_ID));
-
+        this.score += this.calculateScore(completedRows);
         this.grid = [...newRows, ...latestGrid];
+       
+        this.scoreUpdateCallback();
+        
+      console.log("Current Score:", this.getScore());
+    }
+    calculateScore(rowsCount: number): number {
+        return (rowsCount * (rowsCount + 1)) / 2*100;
+    }
+    
+    getScore(): number {
+        return this.score;
+    }
+    setScoreUpdateCallback(callback: () => void) {
+        this.scoreUpdateCallback = callback;
     }
 }
 

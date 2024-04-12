@@ -2,7 +2,6 @@ import * as PIXI from 'pixi.js';
 import { Board } from './Board';
 import { Brick } from './Bricks';
 import GameView from './GameView';
-
 export default class Game {
     private gameView: GameView;
     private board: Board;
@@ -22,7 +21,6 @@ export default class Game {
         0xFFFFFF, // white
     ];
     public readonly WHITE_COLOR_ID = this.COLOR_MAPPING[7];
-
     public readonly BRICK_LAYOUT = [
         [
             [
@@ -187,7 +185,6 @@ export default class Game {
             ],
         ],
     ];
-
     public readonly KEY_CODES = {
         'LEFT': 'ArrowLeft',
         'UP': 'ArrowUp',
@@ -196,22 +193,34 @@ export default class Game {
         'SPACE': 'Space',
         'ENTER': 'Enter',
     }
-
-
-
     constructor() {
         this.gameView = new GameView(this.COLS, this.ROWS, this.BLOCK_SIZE);
-        this.app = this.gameView.getApp(); 
+        this.app = this.gameView.getApp();
         this.board = new Board(this);
         this.brick = new Brick(0, this);
         this.board.drawBoard();
         this.brick.draw();
+        // Text Score
+        const scoreTextStyle = new PIXI.TextStyle({
+            fontFamily: 'Press Start 2P',
+            fontSize: 18,
+            fill: '##000000',
+            fontWeight: 'bold',
+        });
+       
+        const scoreText = new PIXI.Text('Scores:' + this.board.getScore(), scoreTextStyle);
+        scoreText.name = "scoreText";
+        scoreText.position.set(310, 360);
+        this.app.stage.addChild(scoreText);
+        const updateScoreText = () => {
+            scoreText.text = 'Scores: ' + this.board.getScore();
+        };
 
         setInterval(() => {
             this.brick.moveDown();
-        }, 1000);
+        }, 700);
+        this.board.setScoreUpdateCallback(updateScoreText);
     }
-
 
     public getApp(): PIXI.Application {
         return this.app;
@@ -221,7 +230,6 @@ export default class Game {
         return this.board;
     }
 
-
     public getBrickLayout() {
         return this.BRICK_LAYOUT;
     }
@@ -229,6 +237,4 @@ export default class Game {
     public generateNewBrick() {
         this.brick = new Brick(Math.floor(Math.random() * 10) % this.BRICK_LAYOUT.length, this);
     }
-
-
 } 
