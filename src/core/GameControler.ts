@@ -201,10 +201,28 @@ export default class Game {
         this.board.drawBoard();
         this.brick.draw();
         this.score_Update();
-
+        this.keyboard();
         setInterval(() => {
             this.brick.moveDown();
         }, 700);
+    }
+    keyboard(){
+        document.addEventListener('keydown', (e: KeyboardEvent) => {
+            switch (e.code) {
+                case this.KEY_CODES.LEFT:
+                    this.brick.moveLeft();
+                    break;
+                case this.KEY_CODES.RIGHT:
+                    this.brick.moveRight();
+                    break;
+                case this.KEY_CODES.UP:
+                    this.brick.rotate();
+                    break;
+                case this.KEY_CODES.DOWN:
+                    this.brick.moveDown();
+                    break;
+            }
+        });
     }
     score_Update() {
         const scoreTextStyle = new PIXI.TextStyle({

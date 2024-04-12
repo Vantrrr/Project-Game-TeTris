@@ -18,28 +18,11 @@ export class Brick {
         this.game = game;
         this.layout = this.game.getBrickLayout()[id];
         this.activeIndex = 0;
-        this.colPos = 3;
-        this.rowPos = -1;
+        this.colPos = 4;
+        this.rowPos = -2;
         this.board = this.game.getBoard();
         this.isLanded = false;
         this.isCurrentBrickLanded = false;
-
-        document.addEventListener('keydown', (e: KeyboardEvent) => {
-            switch (e.code) {
-                case this.game.KEY_CODES.LEFT:
-                    this.moveLeft();
-                    break;
-                case this.game.KEY_CODES.RIGHT:
-                    this.moveRight();
-                    break;
-                case this.game.KEY_CODES.UP:
-                    this.rotate();
-                    break;
-                case this.game.KEY_CODES.DOWN:
-                    this.moveDown();
-                    break;
-            }
-        });
     }
 
     draw() {
@@ -106,16 +89,21 @@ export class Brick {
         if (!this.checkCollision(this.rowPos + 1, this.colPos, this.layout[this.activeIndex])) {
             this.clear();
             this.rowPos++;
+          //  this.fallBlockSound();
             this.draw();
         } else {
             this.handleLanded();
+            
             this.isCurrentBrickLanded = true;
             this.game.generateNewBrick();
         }
 
 
     }
-
+    fallBlockSound() {//âm thanh khối gạch rơi xuống
+        const audio = new Audio('../assets/audio/263006__dermotte__giant-step-1.mp3');
+        audio.play();
+    }
     rotate() {
         if (this.isLanded) {
             return;
@@ -163,11 +151,9 @@ export class Brick {
             }
 
             this.board.handleCompletRows();
+            
             this.board.drawBoard();
         }
     }
-
-
-
 
 } 
