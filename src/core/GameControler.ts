@@ -200,28 +200,28 @@ export default class Game {
         this.brick = new Brick(0, this);
         this.board.drawBoard();
         this.brick.draw();
-        // Text Score
+        this.score_Update();
+
+        setInterval(() => {
+            this.brick.moveDown();
+        }, 700);
+    }
+    score_Update() {
         const scoreTextStyle = new PIXI.TextStyle({
             fontFamily: 'Press Start 2P',
             fontSize: 18,
             fill: '##000000',
             fontWeight: 'bold',
         });
-       
         const scoreText = new PIXI.Text('Scores:' + this.board.getScore(), scoreTextStyle);
         scoreText.name = "scoreText";
         scoreText.position.set(310, 360);
         this.app.stage.addChild(scoreText);
         const updateScoreText = () => {
-            scoreText.text = 'Scores: ' + this.board.getScore();
+            scoreText.text = 'Scores:' + this.board.getScore();
         };
-
-        setInterval(() => {
-            this.brick.moveDown();
-        }, 700);
         this.board.setScoreUpdateCallback(updateScoreText);
     }
-
     public getApp(): PIXI.Application {
         return this.app;
     }
