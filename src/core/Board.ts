@@ -1,33 +1,32 @@
 import * as PIXI from 'pixi.js';
 import Game from './GameControler';
-import { Constants } from './Constants';
-
 export class Board {
     private app: PIXI.Application;
     private boardContainer: PIXI.Container;
-    private constants: Constants;
     private game: Game;
-    grid: any;
-
+    public grid: any;
+    private score: number;
+    private scoreUpdateCallback: () => void;
     constructor(game: Game) {
         this.game = game;
-        this.constants = new Constants();
         this.app = this.game.getApp();
         this.boardContainer = new PIXI.Container();
         this.app.stage.addChild(this.boardContainer);
         this.grid = this.generateWhiteBoard();
+        this.score = 0;
     }
 
     generateWhiteBoard() {
-        return Array.from({ length: this.constants.ROWS }, () => Array(this.constants.COLS).fill(this.constants.WHITE_COLOR_ID));
+        return Array.from({ length: this.game.ROWS }, () => Array(this.game.COLS).fill(this.game.WHITE_COLOR_ID));
     }
 
     drawCell(xAxis: number, yAxis: number, colorID: number) {
         const cellGraphics = new PIXI.Graphics();
-        const x = xAxis * this.constants.BLOCK_SIZE;
-        const y = yAxis * this.constants.BLOCK_SIZE;
-        const size = this.constants.BLOCK_SIZE;
+        const x = xAxis * this.game.BLOCK_SIZE;
+        const y = yAxis * this.game.BLOCK_SIZE;
+        const size = this.game.BLOCK_SIZE;
         const borderSize = 0.5;
+        const color = this.game.COLOR_MAPPING[colorID];
 
         // Vẽ viền
         cellGraphics.lineStyle(borderSize, 0x000000, 1);
@@ -40,13 +39,41 @@ export class Board {
 
         this.boardContainer.addChild(cellGraphics);
     }
-    
+
+
     drawBoard() {
+        // this.boardContainer.removeChildren(); // Clear the existing board before redrawing
+
         for (let row = 0; row < this.grid.length; row++) {
             for (let col = 0; col < this.grid[0].length; col++) {
                 this.drawCell(col, row, this.grid[row][col]);
             }
         }
+    }
+
+    handleCompletRows() {
+        const latestGrid = this.grid.filter((row: any[]) => {
+            return row.some(col => col === this.game.WHITE_COLOR_ID);
+        });
+        const completedRows = this.game.ROWS - latestGrid.length; 
+        const newRows = Array.from({ length: completedRows }, () => Array(this.game.COLS).fill(this.game.WHITE_COLOR_ID));
+
+        this.score += this.calculateScore(completedRows);
+        this.grid = [...newRows, ...latestGrid];
+       
+        this.scoreUpdateCallback();
+        
+      console.log("Current Score:", this.getScore());
+    }
+    calculateScore(rowsCount: number): number {
+        return (rowsCount * (rowsCount + 1)) / 2*100;
+    }
+    
+    getScore(): number {
+        return this.score;
+    }
+    setScoreUpdateCallback(callback: () => void) {
+        this.scoreUpdateCallback = callback;
     }
 }
 

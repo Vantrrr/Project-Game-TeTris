@@ -1,24 +1,16 @@
 import * as PIXI from 'pixi.js';
-import { Constants } from './Constants';
-
-export class GameView {
+import { Board } from './Board';
+export default class GameView {
     private app: PIXI.Application;
-    private constants: Constants;
-
-    constructor() {
-        this.constants = new Constants();
-        this.app = new PIXI.Application({
-            width: this.constants.COLS * this.constants.BLOCK_SIZE,
-            height: this.constants.ROWS * this.constants.BLOCK_SIZE,
-            backgroundColor: 0xffffff
-        });
-        this.setupUI();
-
+    private board: any;
+    constructor(cols: number, rows: number, blockSize: number) {
+        this.app = new PIXI.Application({ width: cols * blockSize, height: rows * blockSize, backgroundColor: 0xFFFFFF });
         window.document.body.appendChild(this.app.view);
+        this.app.renderer.resize(560, 700);
+        this.setupUI();
     }
 
     private setupUI() {
-        this.app.renderer.resize(560, 700);
         const gameTitle = PIXI.Sprite.from('../assets/logo_tetris.png');
         gameTitle.position.set(325, 10);
         gameTitle.width = 200;
@@ -48,19 +40,6 @@ export class GameView {
         const levelText = new PIXI.Text('Level:', levelTextStyle);
         levelText.position.set(310, 390);
         this.app.stage.addChild(levelText);
-
-        // Text Score
-        const scoreTextStyle = new PIXI.TextStyle({
-            fontFamily: 'Press Start 2P',
-            fontSize: 18,
-            fill: '##000000',
-            fontWeight: 'bold',
-        });
-
-        const scoreText = new PIXI.Text('Scores: ', scoreTextStyle);
-        scoreText.name = "scoreText";
-        scoreText.position.set(310, 360);
-        this.app.stage.addChild(scoreText);
 
         // button play game
         const stage = PIXI.Sprite.from('../assets/R.png');
@@ -108,18 +87,16 @@ export class GameView {
             location.reload();
         });
 
-         //  button exit game
-         const arow = PIXI.Sprite.from('../assets/arow2.png');
-         arow.position.set(20, 610);
-         arow.width = 220;
-         arow.height = 90;
-         this.app.stage.addChild(arow);
-         arow.interactive = true;
-         arow.buttonMode = true;
-        //  arow.on('click', () => {
-        //      location.reload();
-        //  });
+        //  button exit game
+        const arow = PIXI.Sprite.from('../assets/arow2.png');
+        arow.position.set(20, 610);
+        arow.width = 220;
+        arow.height = 90;
+        this.app.stage.addChild(arow);
+        arow.interactive = true;
+        arow.buttonMode = true;
     }
+    
 
     public getApp(): PIXI.Application {
         return this.app;
