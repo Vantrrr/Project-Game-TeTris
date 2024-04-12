@@ -1,9 +1,8 @@
-// GameView.ts
 import * as PIXI from 'pixi.js';
-
+import { Board } from './Board';
 export default class GameView {
     private app: PIXI.Application;
-
+    private board: any;
     constructor(cols: number, rows: number, blockSize: number) {
         this.app = new PIXI.Application({ width: cols * blockSize, height: rows * blockSize, backgroundColor: 0xFFFFFF });
         window.document.body.appendChild(this.app.view);
@@ -41,19 +40,6 @@ export default class GameView {
         const levelText = new PIXI.Text('Level:', levelTextStyle);
         levelText.position.set(310, 390);
         this.app.stage.addChild(levelText);
-
-        // Text Score
-        const scoreTextStyle = new PIXI.TextStyle({
-            fontFamily: 'Press Start 2P',
-            fontSize: 18,
-            fill: '##000000',
-            fontWeight: 'bold',
-        });
-
-        const scoreText = new PIXI.Text('Scores: ', scoreTextStyle);
-        scoreText.name = "scoreText";
-        scoreText.position.set(310, 360);
-        this.app.stage.addChild(scoreText);
 
         // button play game
         const stage = PIXI.Sprite.from('../assets/R.png');
@@ -110,6 +96,7 @@ export default class GameView {
         arow.interactive = true;
         arow.buttonMode = true;
     }
+    
 
     public getApp(): PIXI.Application {
         return this.app;
