@@ -59,10 +59,13 @@ export class Board {
         const newRows = Array.from({ length: completedRows }, () => Array(this.game.COLS).fill(this.game.WHITE_COLOR_ID));
 
         this.score += this.calculateScore(completedRows);
-       // this.playEatSound();
         this.grid = [...newRows, ...latestGrid];
         this.scoreUpdateCallback();
-     // console.log("Current Score:", this.getScore());
+        console.log("Current Score:", this.getScore());
+        
+        if (completedRows > 0) {
+            this.playEatSound();
+        }
     }
 
     calculateScore(rowsCount: number): number {

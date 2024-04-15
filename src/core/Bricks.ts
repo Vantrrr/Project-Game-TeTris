@@ -89,11 +89,10 @@ export class Brick {
         if (!this.checkCollision(this.rowPos + 1, this.colPos, this.layout[this.activeIndex])) {
             this.clear();
             this.rowPos++;
-          //  this.fallBlockSound();
+            this.fallBlockSound();
             this.draw();
         } else {
             this.handleLanded();
-            
             this.isCurrentBrickLanded = true;
             this.game.generateNewBrick();
         }
@@ -151,9 +150,7 @@ export class Brick {
             }
 
             this.board.handleCompletRows();
-            
             this.board.drawBoard();
         }
     }
-
 } 
