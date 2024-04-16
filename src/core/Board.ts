@@ -1,5 +1,6 @@
 import * as PIXI from 'pixi.js';
 import Game from './GameControler';
+
 export class Board {
     private app: PIXI.Application;
     private boardContainer: PIXI.Container;
@@ -7,7 +8,9 @@ export class Board {
     public grid: any;
     private score: number;
     private scoreUpdateCallback: () => void;
+    private playerName: string | null;
     gameOver: any;
+
     constructor(game: Game) {
         this.game = game;
         this.app = this.game.getApp();
@@ -15,8 +18,35 @@ export class Board {
         this.app.stage.addChild(this.boardContainer);
         this.grid = this.generateWhiteBoard();
         this.score = 0;
+        this.playerName = null;
+
+        // Kiểm tra và lấy thông tin người chơi từ localStorage
+        this.retrievePlayerInfoFromLocalStorage();
     }
 
+    // Các phương thức khác của class Board
+
+    savePlayerInfo(name: string, score: number) {
+        // Lưu thông tin người chơi vào localStorage
+        const playerInfo = JSON.stringify({ name, score });
+        localStorage.setItem('playerInfo', playerInfo);
+
+        // Cập nhật thông tin người chơi hiện tại
+        this.playerName = name;
+    }
+
+    retrievePlayerInfoFromLocalStorage() {
+        const playerInfoString = localStorage.getItem('playerInfo');
+        if (playerInfoString) {
+            const playerInfo = JSON.parse(playerInfoString);
+            this.playerName = playerInfo.name;
+        }
+    }
+
+    getPlayerName(): string | null {
+        return this.playerName;
+    }
+    
     generateWhiteBoard() {
         return Array.from({ length: this.game.ROWS }, () => Array(this.game.COLS).fill(this.game.WHITE_COLOR_ID));
     }
@@ -67,7 +97,7 @@ export class Board {
       console.log("Current Score:", this.getScore());
     }
     calculateScore(rowsCount: number): number {
-        return (rowsCount * (rowsCount + 1)) / 2*10;
+        return (rowsCount * (rowsCount + 1)) / (2*10); // Sửa lỗi ở đây
     }
     
     getScore(): number {
@@ -77,11 +107,9 @@ export class Board {
         this.scoreUpdateCallback = callback;
     }
     handleGameover(){
-    this.gameOver = true;
+        this.gameOver = true;
+        this.savePlayerInfo(this.playerName || "Unknown", this.score)
     alert('GAME OVER!!!')
 }
 
 }
-
-
-
