@@ -10,6 +10,11 @@ export default class Game {
     public readonly COLS: number = 10;
     public readonly ROWS: number = 20;
     public readonly BLOCK_SIZE: number = 30;
+
+    // NextBrick
+    public readonly nextCOLS: number = 6;
+    public readonly nextROWS: number = 5;
+    public readonly nextBLOCK_SIZE: number = 10;
     public readonly COLOR_MAPPING = [
         0xFF0000, // red
         0xFFA500, // orange
@@ -193,6 +198,11 @@ export default class Game {
         'SPACE': 'Space',
         'ENTER': 'Enter',
     }
+
+    public level: number = 0;
+    public levelThreshold: number = 500;
+    public baseDropInterval: number = 800;
+    private brickDropInterval: NodeJS.Timeout | null = null;
     constructor() {
         this.gameView = new GameView(this.COLS, this.ROWS, this.BLOCK_SIZE);
         this.app = this.gameView.getApp();
@@ -201,11 +211,40 @@ export default class Game {
         this.board.drawBoard();
         this.brick.draw();
         this.score_Update();
-
-        setInterval(() => {
-            this.brick.moveDown();
-        }, 700);
+        this.level_Update();
+        this.startGame();
     }
+
+    startGame() {
+        this.brickDropInterval = setInterval(() => {
+            this.brick.moveDown();
+            this.updateLevelAndSpeed();
+        }, this.baseDropInterval);
+    }
+
+    updateLevelAndSpeed() {
+        if (this.board.score >= this.level * this.levelThreshold) {
+            this.level++;
+            this.adjustDropSpeed();
+            console.log('Level:', this.level);
+            console.log('score:', this.board.score);
+
+            this.updateLevelDisplay();
+            if (this.brickDropInterval) {
+                clearInterval(this.brickDropInterval);
+            }
+            this.brickDropInterval = setInterval(() => {
+                this.brick.moveDown();
+                this.updateLevelAndSpeed();
+            }, this.baseDropInterval);
+        }
+    }
+
+    adjustDropSpeed() {
+        this.baseDropInterval -= 100;
+        console.log('Drop Speed:', this.baseDropInterval);
+    }
+
     score_Update() {
         const scoreTextStyle = new PIXI.TextStyle({
             fontFamily: 'Press Start 2P',
@@ -221,6 +260,25 @@ export default class Game {
             scoreText.text = 'Scores:' + this.board.getScore();
         };
         this.board.setScoreUpdateCallback(updateScoreText);
+    }
+
+    level_Update() {
+        const LevelTextStyle = new PIXI.TextStyle({
+            fontFamily: 'Press Start 2P',
+            fontSize: 18,
+            fill: '##000000',
+            fontWeight: 'bold',
+        });
+        const LevelText = new PIXI.Text('Level:' + this.level, LevelTextStyle);
+        LevelText.name = "LEVEL";
+        LevelText.position.set(310, 400);
+        this.app.stage.addChild(LevelText);
+    }
+    updateLevelDisplay() {
+        const levelText = this.app.stage.getChildByName("LEVEL") as PIXI.Text;
+        if (levelText) {
+            levelText.text = 'Level: ' + this.level;
+        }
     }
     public getApp(): PIXI.Application {
         return this.app;
