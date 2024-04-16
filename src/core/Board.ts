@@ -7,6 +7,7 @@ export class Board {
     public grid: any;
     private score: number;
     private scoreUpdateCallback: () => void;
+    gameOver: any;
     constructor(game: Game) {
         this.game = game;
         this.app = this.game.getApp();
@@ -66,7 +67,7 @@ export class Board {
       console.log("Current Score:", this.getScore());
     }
     calculateScore(rowsCount: number): number {
-        return (rowsCount * (rowsCount + 1)) / 2*100;
+        return (rowsCount * (rowsCount + 1)) / 2*10;
     }
     
     getScore(): number {
@@ -75,6 +76,11 @@ export class Board {
     setScoreUpdateCallback(callback: () => void) {
         this.scoreUpdateCallback = callback;
     }
+    handleGameover(){
+    this.gameOver = true;
+    alert('GAME OVER!!!')
+}
+
 }
 
 

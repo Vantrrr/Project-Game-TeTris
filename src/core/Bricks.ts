@@ -11,6 +11,7 @@ export class Brick {
     colPos: number;
     rowPos: number;
     isLanded: boolean;
+    gameOver: boolean;
 
 
     constructor(id: number, game: Game) {
@@ -23,21 +24,24 @@ export class Brick {
         this.board = this.game.getBoard();
         this.isLanded = false;
         this.isCurrentBrickLanded = false;
+        this.gameOver = false;
 
         document.addEventListener('keydown', (e: KeyboardEvent) => {
-            switch (e.code) {
-                case this.game.KEY_CODES.LEFT:
-                    this.moveLeft();
-                    break;
-                case this.game.KEY_CODES.RIGHT:
-                    this.moveRight();
-                    break;
-                case this.game.KEY_CODES.UP:
-                    this.rotate();
-                    break;
-                case this.game.KEY_CODES.DOWN:
-                    this.moveDown();
-                    break;
+           
+                switch (e.code) {
+                    case this.game.KEY_CODES.LEFT:
+                        this.moveLeft();
+                        break;
+                    case this.game.KEY_CODES.RIGHT:
+                        this.moveRight();
+                        break;
+                    case this.game.KEY_CODES.UP:
+                        this.rotate();
+                        break;
+                    case this.game.KEY_CODES.DOWN:
+                        this.moveDown();
+                        break;
+                
             }
         });
     }
@@ -110,7 +114,11 @@ export class Brick {
         } else {
             this.handleLanded();
             this.isCurrentBrickLanded = true;
-            this.game.generateNewBrick();
+
+            if (!this.board.gameOver) {
+                this.game.generateNewBrick();
+            }
+
         }
 
 
@@ -153,6 +161,10 @@ export class Brick {
     }
 
     handleLanded() {
+        if (this.rowPos <= 0) {
+            this.board.handleGameover();
+            return;
+        }
         if (!this.isCurrentBrickLanded) {
             for (let row = 0; row < this.layout[this.activeIndex].length; row++) {
                 for (let col = 0; col < this.layout[this.activeIndex][row].length; col++) {
@@ -166,8 +178,6 @@ export class Brick {
             this.board.drawBoard();
         }
     }
-
-
 
 
 } 

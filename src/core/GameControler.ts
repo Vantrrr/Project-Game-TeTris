@@ -202,9 +202,13 @@ export default class Game {
         this.brick.draw();
         this.score_Update();
 
-        setInterval(() => {
-            this.brick.moveDown();
-        }, 700);
+        const refresh = setInterval(() => {
+            if (!this.board.gameOver) {
+                this.brick.moveDown();
+            } else {
+                clearInterval(refresh);
+            }
+        }, 1000);
     }
     score_Update() {
         const scoreTextStyle = new PIXI.TextStyle({
@@ -237,4 +241,9 @@ export default class Game {
     public generateNewBrick() {
         this.brick = new Brick(Math.floor(Math.random() * 10) % this.BRICK_LAYOUT.length, this);
     }
+    handleGameover(){
+    this.board.gameOver = true;
+    alert('GAME OVER!!!')
+}
+
 } 
