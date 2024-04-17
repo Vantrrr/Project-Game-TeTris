@@ -1,8 +1,8 @@
 import * as PIXI from 'pixi.js';
-import { Board } from './Board';
+import GameControler from './GameControler';
 export default class GameView {
     private app: PIXI.Application;
-    private board: any;
+    private app1: PIXI.Application;
     constructor(cols: number, rows: number, blockSize: number) {
         this.app = new PIXI.Application({ width: cols * blockSize, height: rows * blockSize, backgroundColor: 0xFFFFFF });
         window.document.body.appendChild(this.app.view);
@@ -37,9 +37,9 @@ export default class GameView {
             fontWeight: 'bold',
         });
 
-        const levelText = new PIXI.Text('Level:', levelTextStyle);
-        levelText.position.set(310, 390);
-        this.app.stage.addChild(levelText);
+        // const levelText = new PIXI.Text('Level:', levelTextStyle);
+        // levelText.position.set(310, 390);
+        // this.app.stage.addChild(levelText);
 
         // button play game
         const stage = PIXI.Sprite.from('../assets/R.png');
@@ -96,7 +96,7 @@ export default class GameView {
         arow.interactive = true;
         arow.buttonMode = true;
     }
-    
+
 
     public getApp(): PIXI.Application {
         return this.app;
