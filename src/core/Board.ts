@@ -59,7 +59,7 @@ export class Board {
         this.score += this.calculateScore(completedRows);
         this.grid = [...newRows, ...latestGrid];
         this.scoreUpdateCallback();
-        console.log("Current Score:", this.getScore());
+        //console.log("Current Score:", this.getScore());
         
         if (completedRows > 0) {
             this.playEatSound();
@@ -78,19 +78,10 @@ export class Board {
     setScoreUpdateCallback(callback: () => void) {
         this.scoreUpdateCallback = callback;
     }
-        // âm thanh của game
         playEatSound() {//âm thanh ăn điểm
             const audio = new Audio('../assets/audio/258020__kodack__arcade-bleep-sound.mp3');
             audio.play();
         }
-        // playGameOverSound() {// âm thanh nhạc game over
-        //     const audio = new Audio('../assets/audio/251461__joshuaempyre__arcade-music-loop.mp3');
-        //     audio.play();
-        // }
-        // fallBlockSound() {//âm thanh khối gạch rơi xuống
-        //     const audio = new Audio('../assets/audio/263006__dermotte__giant-step-1.mp3');
-        //     audio.play();
-        // }
 }
 
 

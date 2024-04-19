@@ -2,7 +2,7 @@ import * as PIXI from 'pixi.js';
 import { Board } from './Board';
 import { Brick } from './Bricks';
 import GameView from './GameView';
-export default class Game {
+export default class GameController {
     private gameView: GameView;
     private board: Board;
     private brick: Brick;
@@ -204,8 +204,10 @@ export default class Game {
     public baseDropInterval: number = 800;
     private brickDropInterval: NodeJS.Timeout | null = null;
     constructor() {
-        this.gameView = new GameView(this.COLS, this.ROWS, this.BLOCK_SIZE);
-        this.app = this.gameView.getApp();
+
+        this.app = new PIXI.Application({ width: this.COLS * this.BLOCK_SIZE, height: this.ROWS * this.BLOCK_SIZE, backgroundColor: 0xffffff });
+        window.document.body.appendChild(this.app.view);
+        this.app.renderer.resize(560, 700);
         this.board = new Board(this);
         this.brick = new Brick(0, this);
         this.board.drawBoard();
@@ -213,21 +215,130 @@ export default class Game {
         this.score_Update();
         this.level_Update();
         this.startGame();
+        this.keyboard();
+        this.setupUI();
+        
+    }
+    private setupUI() {
+        const gameTitle = PIXI.Sprite.from('../assets/logo_tetris.png');
+        gameTitle.position.set(325, 10);
+        gameTitle.width = 200;
+        gameTitle.height = 50;
+        this.app.stage.addChild(gameTitle);
+
+        // Text NEXT
+        const nextTextStyle = new PIXI.TextStyle({
+            fontFamily: 'Press Start 2P',
+            fontSize: 18,
+            fill: '##000000',
+            fontWeight: 'bold',
+        });
+
+        const nextText = new PIXI.Text('Next:', nextTextStyle);
+        nextText.position.set(310, 100);
+        this.app.stage.addChild(nextText);
+
+        // Text Level
+        // const levelTextStyle = new PIXI.TextStyle({
+        //     fontFamily: 'Press Start 2P',
+        //     fontSize: 18,
+        //     fill: '##000000',
+        //     fontWeight: 'bold',
+        // });
+
+        // const levelText = new PIXI.Text('Level:', levelTextStyle);
+        // levelText.position.set(310, 390);
+        // this.app.stage.addChild(levelText);
+
+        // button play game
+        const stage = PIXI.Sprite.from('../assets/R.png');
+        stage.position.set(340, 425);
+        stage.width = 175;
+        stage.height = 55;
+        this.app.stage.addChild(stage);
+        stage.interactive = true;
+        stage.buttonMode = true;
+        stage.on('click', () => {
+            this.handlePlayButtonClick();
+            console.log("fixx ")
+        });
+
+        // button pause game
+        const replay = PIXI.Sprite.from('../assets/replay.png');
+        replay.position.set(340, 560);
+        replay.width = 173
+        replay.height = 60;
+        this.app.stage.addChild(replay);
+        replay.interactive = true;
+        replay.buttonMode = true;
+        replay.on('click', () => {
+            location.reload();
+        });
+        // button pause game
+        const pause = PIXI.Sprite.from('../assets/pause.png');
+        pause.position.set(333, 490);
+        pause.width = 190;
+        pause.height = 70;
+        this.app.stage.addChild(pause);
+        pause.interactive = true;
+        pause.buttonMode = true;
+        pause.on('click', () => {
+            this.handlePauseButtonClick();
+        });
+        //  button exit game
+        const exit = PIXI.Sprite.from('../assets/exit.png');
+        exit.position.set(320, 628);
+        exit.width = 220;
+        exit.height = 80;
+        this.app.stage.addChild(exit);
+        exit.interactive = true;
+        exit.buttonMode = true;
+        exit.on('click', () => {
+            location.reload();
+        });
+
+        const arow = PIXI.Sprite.from('../assets/arowpress.png');
+        arow.position.set(50, 600);
+        arow.width = 220;
+        arow.height = 100;
+        this.app.stage.addChild(arow);
+        arow.interactive = true;
+        arow.buttonMode = true;
+    }
+    private handlePlayButtonClick() {
+        this.startGame();
     }
 
+    private handlePauseButtonClick() {
+        this.pauseGame();
+    }
+
+    private handleExitButtonClick() {
+        this.exitGame();
+    }
     startGame() {
         this.brickDropInterval = setInterval(() => {
-            this.brick.moveDown();
+            this.brick.moveDown();  
             this.updateLevelAndSpeed();
         }, this.baseDropInterval);
+    }
+    public pauseGame() {
+        if (this.brickDropInterval) {
+            clearInterval(this.brickDropInterval);
+            this.brickDropInterval = null;
+        }
+    }
+
+    public exitGame() {
+        // Code xử lý kết thúc trò chơi
     }
 
     updateLevelAndSpeed() {
         if (this.board.score >= this.level * this.levelThreshold) {
             this.level++;
             this.adjustDropSpeed();
-            console.log('Level:', this.level);
-            console.log('score:', this.board.score);
+            // console.log('Level:', this.level);
+            // console.log('score:', this.board.score);
 
             this.updateLevelDisplay();
             if (this.brickDropInterval) {
@@ -241,9 +352,42 @@ export default class Game {
     }
 
     adjustDropSpeed() {
-        this.baseDropInterval -= 100;
-        console.log('Drop Speed:', this.baseDropInterval);
+        this.baseDropInterval -= 50;
+        // console.log('Drop Speed:', this.baseDropInterval);
     }
+    keyboard() {
+        document.addEventListener('keydown', (e: KeyboardEvent) => {
+            switch (e.code) {
+                case this.KEY_CODES.LEFT:
+                    this.brick.moveLeft();
+                    break;
+                case this.KEY_CODES.RIGHT:
+                    this.brick.moveRight();
+                    break;
+                case this.KEY_CODES.UP:
+                    this.brick.rotate();
+                    break;
+                case this.KEY_CODES.DOWN:
+                    this.brick.moveDown();
+                    break;
+                    case this.KEY_CODES.SPACE:
+                    this.brickDropInstantly();
+                    break;
+                    
+            }
+        });
+    }
+    brickDropInstantly() {
+        // Move the brick down instantly
+        while (!this.brick.checkCollision(this.brick.rowPos + 1, this.brick.colPos, this.brick.layout[this.brick.activeIndex])) {
+            this.brick.moveDown();
+        }
+        const nextRow = this.brick.rowPos + 1;
+        const nextCol = this.brick.colPos;
+        const nextLayout = this.brick.layout[this.brick.activeIndex];
+        this.brick.fixPosition(nextRow, nextCol, nextLayout);
+    }
+    
     score_Update() {
         const scoreTextStyle = new PIXI.TextStyle({
             fontFamily: 'Press Start 2P',

@@ -99,6 +99,26 @@ export class Brick {
 
 
     }
+    
+    fixPosition(nextRow: number, nextCol: number, nextLayout: any) {
+        this.rowPos = nextRow - 1; // Move the brick to the next position
+        this.draw(); 
+        
+        if (!this.checkCollision(this.rowPos + 1, this.colPos, this.layout[this.activeIndex])) {
+            this.clear();
+            this.rowPos++;
+            this.draw();
+        } else {
+            this.handleLanded();
+            this.isCurrentBrickLanded = true;
+            this.game.generateNewBrick();
+        }
+
+    }
+    fallFastSound() {//âm thanh khối gạch rơi xuống
+        const audio = new Audio('../assets/audio/263006__dermotte__giant-step-1.mp3');
+        audio.play();
+    }
     fallBlockSound() {//âm thanh khối gạch rơi xuống
         const audio = new Audio('../assets/audio/263006__dermotte__giant-step-1.mp3');
         audio.play();
