@@ -18,8 +18,8 @@ export class Brick {
         this.game = game;
         this.layout = this.game.getBrickLayout()[id];
         this.activeIndex = 0;
-        this.colPos = 4;
-        this.rowPos = -2;
+        this.colPos = 3;
+        this.rowPos = 4;
         this.board = this.game.getBoard();
         this.isLanded = false;
         this.isCurrentBrickLanded = false;
@@ -34,6 +34,20 @@ export class Brick {
             }
         }
     }
+
+    drawBrickNext() {
+        const nextBrickLayout = this.layout;
+        const startX = this.game.nextCOLS + 1; // Đặt vị trí bắt đầu vẽ cho viên gạch tiếp theo
+        const startY = 0; // Cố định vị trí bắt đầu theo y
+        for (let row = 0; row < nextBrickLayout.length; row++) {
+            for (let col = 0; col < nextBrickLayout[row].length; col++) {
+                if (nextBrickLayout[row][col] !== this.game.WHITE_COLOR_ID) {
+                    this.board.drawCellNextApp1(col + startX, row + startY, nextBrickLayout[row][col]);
+                }
+            }
+        }
+    }
+
 
     clear() {
         for (let row = 0; row < this.layout[this.activeIndex].length; row++) {
@@ -99,11 +113,11 @@ export class Brick {
 
 
     }
-    
+
     fixPosition(nextRow: number, nextCol: number, nextLayout: any) {
         this.rowPos = nextRow - 1; // Move the brick to the next position
-        this.draw(); 
-        
+        this.draw();
+
         if (!this.checkCollision(this.rowPos + 1, this.colPos, this.layout[this.activeIndex])) {
             this.clear();
             this.rowPos++;

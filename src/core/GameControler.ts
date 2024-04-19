@@ -7,6 +7,7 @@ export default class GameController {
     private board: Board;
     private brick: Brick;
     public app: PIXI.Application;
+    public app1: PIXI.Application;
     public readonly COLS: number = 10;
     public readonly ROWS: number = 20;
     public readonly BLOCK_SIZE: number = 30;
@@ -14,7 +15,7 @@ export default class GameController {
     // NextBrick
     public readonly nextCOLS: number = 6;
     public readonly nextROWS: number = 5;
-    public readonly nextBLOCK_SIZE: number = 10;
+    public readonly nextBLOCK_SIZE: number = 25;
     public readonly COLOR_MAPPING = [
         0xFF0000, // red
         0xFFA500, // orange
@@ -203,22 +204,41 @@ export default class GameController {
     public levelThreshold: number = 500;
     public baseDropInterval: number = 800;
     private brickDropInterval: NodeJS.Timeout | null = null;
+    private nextBrickIndex: number = 0;
     constructor() {
 
         this.app = new PIXI.Application({ width: this.COLS * this.BLOCK_SIZE, height: this.ROWS * this.BLOCK_SIZE, backgroundColor: 0xffffff });
         window.document.body.appendChild(this.app.view);
+
+        this.app1 = new PIXI.Application({ width: this.nextCOLS * this.nextBLOCK_SIZE, height: this.nextROWS * this.nextBLOCK_SIZE, backgroundColor: 0xffffff });
+        window.document.body.appendChild(this.app1.view);
+        this.app1.view.classList.add('my-app1');
+        const style = document.createElement('style');
+        style.innerHTML = `
+            .my-app1 {
+                touch-action: none;
+                cursor: inherit;
+                position: absolute;
+                left: 810px;
+                top: 149px;
+            }
+        `;
+        document.head.appendChild(style);
         this.app.renderer.resize(560, 700);
         this.board = new Board(this);
-        this.brick = new Brick(0, this);
+        this.brick = new Brick(2, this);
         this.board.drawBoard();
         this.brick.draw();
-        this.score_Update();
-        this.level_Update();
-        this.startGame();
-        this.keyboard();
+        this.board.drawBoardNextApp1();
+        this.board.drawCellNextApp1(1, 1, 2);
+        // this.score_Update();
+        // this.level_Update();
+        // this.startGame();
+        // this.keyboard();
         this.setupUI();
-        
+
     }
+
     private setupUI() {
         const gameTitle = PIXI.Sprite.from('../assets/logo_tetris.png');
         gameTitle.position.set(325, 10);
@@ -318,7 +338,7 @@ export default class GameController {
     }
     startGame() {
         this.brickDropInterval = setInterval(() => {
-            this.brick.moveDown();  
+            this.brick.moveDown();
             this.updateLevelAndSpeed();
         }, this.baseDropInterval);
     }
@@ -370,10 +390,10 @@ export default class GameController {
                 case this.KEY_CODES.DOWN:
                     this.brick.moveDown();
                     break;
-                    case this.KEY_CODES.SPACE:
+                case this.KEY_CODES.SPACE:
                     this.brickDropInstantly();
                     break;
-                    
+
             }
         });
     }
@@ -387,7 +407,7 @@ export default class GameController {
         const nextLayout = this.brick.layout[this.brick.activeIndex];
         this.brick.fixPosition(nextRow, nextCol, nextLayout);
     }
-    
+
     score_Update() {
         const scoreTextStyle = new PIXI.TextStyle({
             fontFamily: 'Press Start 2P',
@@ -427,6 +447,10 @@ export default class GameController {
         return this.app;
     }
 
+    public getApp1(): PIXI.Application {
+        return this.app1;
+    }
+
     public getBoard() {
         return this.board;
     }
@@ -438,4 +462,7 @@ export default class GameController {
     public generateNewBrick() {
         this.brick = new Brick(Math.floor(Math.random() * 10) % this.BRICK_LAYOUT.length, this);
     }
+
+
+
 } 
