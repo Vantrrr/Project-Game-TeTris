@@ -19,29 +19,26 @@ export class Brick {
         this.game = game;
         this.layout = this.game.getBrickLayout()[id];
         this.activeIndex = 0;
-        this.colPos = 3;
-        this.rowPos = -1;
+        this.colPos = 4;
+        this.rowPos = -2;
         this.board = this.game.getBoard();
         this.isLanded = false;
         this.isCurrentBrickLanded = false;
-        this.gameOver = false;
 
         document.addEventListener('keydown', (e: KeyboardEvent) => {
-           
-                switch (e.code) {
-                    case this.game.KEY_CODES.LEFT:
-                        this.moveLeft();
-                        break;
-                    case this.game.KEY_CODES.RIGHT:
-                        this.moveRight();
-                        break;
-                    case this.game.KEY_CODES.UP:
-                        this.rotate();
-                        break;
-                    case this.game.KEY_CODES.DOWN:
-                        this.moveDown();
-                        break;
-                
+            switch (e.code) {
+                case this.game.KEY_CODES.LEFT:
+                    this.moveLeft();
+                    break;
+                case this.game.KEY_CODES.RIGHT:
+                    this.moveRight();
+                    break;
+                case this.game.KEY_CODES.UP:
+                    this.rotate();
+                    break;
+                case this.game.KEY_CODES.DOWN:
+                    this.moveDown();
+                    break;
             }
         });
     }
@@ -110,6 +107,7 @@ export class Brick {
         if (!this.checkCollision(this.rowPos + 1, this.colPos, this.layout[this.activeIndex])) {
             this.clear();
             this.rowPos++;
+            this.fallBlockSound();
             this.draw();
         } else {
             this.handleLanded();
@@ -123,7 +121,30 @@ export class Brick {
 
 
     }
+    
+    fixPosition(nextRow: number, nextCol: number, nextLayout: any) {
+        this.rowPos = nextRow - 1; // Move the brick to the next position
+        this.draw(); 
+        
+        if (!this.checkCollision(this.rowPos + 1, this.colPos, this.layout[this.activeIndex])) {
+            this.clear();
+            this.rowPos++;
+            this.draw();
+        } else {
+            this.handleLanded();
+            this.isCurrentBrickLanded = true;
+            this.game.generateNewBrick();
+        }
 
+    }
+    fallFastSound() {//âm thanh khối gạch rơi xuống
+        const audio = new Audio('../assets/audio/263006__dermotte__giant-step-1.mp3');
+        audio.play();
+    }
+    fallBlockSound() {//âm thanh khối gạch rơi xuống
+        const audio = new Audio('../assets/audio/263006__dermotte__giant-step-1.mp3');
+        audio.play();
+    }
     rotate() {
         if (this.isLanded) {
             return;
@@ -178,6 +199,8 @@ export class Brick {
             this.board.drawBoard();
         }
     }
+
+
 
 
 } 
