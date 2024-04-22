@@ -10,7 +10,10 @@ export class Brick {
     activeIndex: number;
     colPos: number;
     rowPos: number;
+    nextcolPos: number;
+    nextrowPos: number;
     isLanded: boolean;
+    gameOver: boolean;
 
 
     constructor(id: number, game: Game) {
@@ -18,11 +21,32 @@ export class Brick {
         this.game = game;
         this.layout = this.game.getBrickLayout()[id];
         this.activeIndex = 0;
-        this.colPos = 4;
+
+        this.colPos = 3;
         this.rowPos = 0;
+        this.nextcolPos = 1;
+        this.nextrowPos = 1;
+
         this.board = this.game.getBoard();
         this.isLanded = false;
         this.isCurrentBrickLanded = false;
+
+        // document.addEventListener('keydown', (e: KeyboardEvent) => {
+        //     switch (e.code) {
+        //         case this.game.KEY_CODES.LEFT:
+        //             this.moveLeft();
+        //             break;
+        //         case this.game.KEY_CODES.RIGHT:
+        //             this.moveRight();
+        //             break;
+        //         case this.game.KEY_CODES.UP:
+        //             this.rotate();
+        //             break;
+        //         case this.game.KEY_CODES.DOWN:
+        //             this.moveDown();
+        //             break;
+        //     }
+        // });
     }
 
     draw() {
@@ -35,11 +59,35 @@ export class Brick {
         }
     }
 
+    drawNextBrick() {
+        for (let row = 0; row < this.layout[this.activeIndex].length; row++) {
+            for (let col = 0; col < this.layout[this.activeIndex].length; col++) {
+                if (this.layout[this.activeIndex][row][col] !== this.game.WHITE_COLOR_ID) {
+                    this.board.drawCellNextApp1(col + this.nextcolPos, row + this.nextrowPos, this.game.COLOR_MAPPING[this.id]);
+                }
+            }
+        }
+    }
+
+
+
     clear() {
         for (let row = 0; row < this.layout[this.activeIndex].length; row++) {
             for (let col = 0; col < this.layout[this.activeIndex][row].length; col++) {
                 if (this.layout[this.activeIndex][row][col] !== this.game.WHITE_COLOR_ID) {
                     this.board.drawCell(col + this.colPos, row + this.rowPos, this.game.WHITE_COLOR_ID);
+                }
+            }
+        }
+    }
+
+
+
+    clearNextBrick() {
+        for (let row = 0; row < this.layout[this.activeIndex].length; row++) {
+            for (let col = 0; col < this.layout[this.activeIndex].length; col++) {
+                if (this.layout[this.activeIndex][row][col] !== this.game.WHITE_COLOR_ID) {
+                    this.board.drawCellNextApp1(col + this.nextcolPos, row + this.nextrowPos, this.game.WHITE_COLOR_ID);
                 }
             }
         }
@@ -94,16 +142,31 @@ export class Brick {
         } else {
             this.handleLanded();
             this.isCurrentBrickLanded = true;
-            this.game.generateNewBrick();
+
+            if (!this.board.gameOver) {
+                this.game.generateNewBrick();
+            }
+
         }
 
 
     }
-    
+
+    rotate() {
+        if (this.isLanded) {
+            return;
+        }
+        if (!this.checkCollision(this.rowPos, this.colPos, this.layout[(this.activeIndex + 1) % 4])) {
+            this.clear();
+            this.activeIndex = (this.activeIndex + 1) % 4;
+            this.draw();
+        }
+    }
+
     fixPosition(nextRow: number, nextCol: number, nextLayout: any) {
         this.rowPos = nextRow - 1; // Move the brick to the next position
-        this.draw(); 
-        
+        this.draw();
+
         if (!this.checkCollision(this.rowPos + 1, this.colPos, this.layout[this.activeIndex])) {
             this.clear();
             this.rowPos++;
@@ -112,9 +175,11 @@ export class Brick {
             this.handleLanded();
             this.isCurrentBrickLanded = true;
             this.game.generateNewBrick();
+            // this.game.generateNextBrick();
         }
 
     }
+
 
     rotate() {
         if (this.isLanded) {
@@ -131,6 +196,18 @@ export class Brick {
         const audio = new Audio('../assets/audio/rotate.mp3');
         audio.play();
     }
+
+    fallFastSound() {//âm thanh khối gạch rơi xuống
+        const audio = new Audio('../assets/audio/263006__dermotte__giant-step-1.mp3');
+        audio.play();
+    }
+    fallBlockSound() {//âm thanh khối gạch rơi xuống
+        const audio = new Audio('../assets/audio/263006__dermotte__giant-step-1.mp3');
+        audio.play();
+    }
+
+
+
     // Collision handling
     checkCollision(nextRow: number, nextCol: number, nextLayout: any) {
         for (let row = 0; row < nextLayout.length; row++) {
@@ -157,6 +234,9 @@ export class Brick {
     }
 
     handleLanded() {
+        if (this.rowPos <= 0) {
+            return;
+        }
         if (!this.isCurrentBrickLanded) {
             for (let row = 0; row < this.layout[this.activeIndex].length; row++) {
                 for (let col = 0; col < this.layout[this.activeIndex][row].length; col++) {
@@ -170,4 +250,8 @@ export class Brick {
             this.board.drawBoard();
         }
     }
+
+
+
+
 } 

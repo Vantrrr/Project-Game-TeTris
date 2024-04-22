@@ -7,6 +7,7 @@ export default class GameController {
     private board: Board;
     private brick: Brick;
     public app: PIXI.Application;
+    public app1: PIXI.Application;
     public readonly COLS: number = 10;
     public readonly ROWS: number = 20;
     public readonly BLOCK_SIZE: number = 30;
@@ -14,7 +15,7 @@ export default class GameController {
     // NextBrick
     public readonly nextCOLS: number = 6;
     public readonly nextROWS: number = 5;
-    public readonly nextBLOCK_SIZE: number = 10;
+    public readonly nextBLOCK_SIZE: number = 25;
     public readonly COLOR_MAPPING = [
         0xFF0000, // red
         0xFFA500, // orange
@@ -203,25 +204,46 @@ export default class GameController {
     public levelThreshold: number = 500;
     public baseDropInterval: number = 800;
     private brickDropInterval: NodeJS.Timeout | null = null;
-    private completedRowsText: PIXI.Text;
+
+    nextBrick: Brick;
+
     constructor() {
 
         this.app = new PIXI.Application({ width: this.COLS * this.BLOCK_SIZE, height: this.ROWS * this.BLOCK_SIZE, backgroundColor: 0xffffff });
         window.document.body.appendChild(this.app.view);
+
+        this.app1 = new PIXI.Application({ width: this.nextCOLS * this.nextBLOCK_SIZE, height: this.nextROWS * this.nextBLOCK_SIZE, backgroundColor: 0xffffff });
+        window.document.body.appendChild(this.app1.view);
+        this.app1.view.classList.add('my-app1');
+        const style = document.createElement('style');
+        style.innerHTML = `
+            .my-app1 {
+                touch-action: none;
+                cursor: inherit;
+                position: absolute;
+                left: 810px;
+                top: 149px;
+            }
+        `;
+        document.head.appendChild(style);
         this.app.renderer.resize(560, 700);
+        this.setupUI();
         this.board = new Board(this);
-        this.brick = new Brick(0, this);
+        this.brick = new Brick(2, this);
         this.board.drawBoard();
-        this.brick.draw();
+        this.board.drawBoardNextApp1();
         this.score_Update();
+
+
         this.level_Update();
         this.Line_Update();
         this.startGame();
         this.keyboard();
         this.setupUI();
-        this.board.displayCompletedRows();
+
 
     }
+
     private setupUI() {
         const gameTitle = PIXI.Sprite.from('../assets/logo_tetris.png');
         gameTitle.position.set(325, 10);
@@ -317,9 +339,14 @@ export default class GameController {
     startGame() {
         this.brickDropInterval = setInterval(() => {
             this.brick.moveDown();
+            this.generateNextBrick();
             this.updateLevelAndSpeed();
+
         }, this.baseDropInterval);
     }
+    
+
+
     public pauseGame() {
         if (this.brickDropInterval) {
             clearInterval(this.brickDropInterval);
@@ -453,6 +480,7 @@ export default class GameController {
         const audio = new Audio('../assets/audio/gameover.mp3');
         audio.play();
     }
+
     score_Update() {
         const scoreTextStyle = new PIXI.TextStyle({
             fontFamily: 'Press Start 2P',
@@ -505,6 +533,10 @@ export default class GameController {
         return this.app;
     }
 
+    public getApp1(): PIXI.Application {
+        return this.app1;
+    }
+
     public getBoard() {
         return this.board;
     }
@@ -513,8 +545,36 @@ export default class GameController {
         return this.BRICK_LAYOUT;
     }
 
-    public generateNewBrick() {
-        this.brick = new Brick(Math.floor(Math.random() * 10) % this.BRICK_LAYOUT.length, this);
+
+    generateNewBrick() {
+        // Nếu đã có viên gạch tiếp theo, hãy đặt nó làm viên gạch hiện tại
+        if (this.nextBrick) {
+            this.brick = this.nextBrick;
+        } else {
+            // Nếu không, tạo một viên gạch mới
+            this.brick = new Brick(Math.floor(Math.random() * 10) % this.BRICK_LAYOUT.length, this);
+        }
+
+        // Tạo viên gạch tiếp theo
+        this.generateNextBrick();
         this.endGame();
     }
+
+    generateNextBrick() {
+        // Xóa viên gạch tiếp theo cũ
+        if (this.nextBrick) {
+            this.nextBrick.clearNextBrick();
+        }
+        // Tạo ra ID ngẫu nhiên cho viên gạch tiếp theo
+        let nextBrickId = Math.floor(Math.random() * 10) % this.BRICK_LAYOUT.length;
+
+        // Lưu trữ viên gạch tiếp theo
+        this.nextBrick = new Brick(nextBrickId, this);
+
+        // Vẽ viên gạch tiếp theo
+        this.nextBrick.drawNextBrick();
+
+    }
+
+
 } 
