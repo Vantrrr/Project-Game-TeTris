@@ -232,9 +232,13 @@ export default class GameController {
         this.board.drawBoard();
         this.board.drawBoardNextApp1();
         this.score_Update();
+
+
         this.level_Update();
         this.startGame();
         this.keyboard();
+        this.setupUI();
+
 
 
     }
@@ -341,8 +345,12 @@ export default class GameController {
             this.brick.moveDown();
             this.generateNextBrick();
             this.updateLevelAndSpeed();
+
         }, this.baseDropInterval);
     }
+    
+
+
     public pauseGame() {
         if (this.brickDropInterval) {
             clearInterval(this.brickDropInterval);
@@ -487,5 +495,6 @@ export default class GameController {
         // Vẽ viên gạch tiếp theo
         this.nextBrick.drawNextBrick();
     }
+
 
 } 

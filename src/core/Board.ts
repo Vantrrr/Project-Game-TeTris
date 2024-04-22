@@ -1,6 +1,7 @@
 import * as PIXI from 'pixi.js';
 import Game from './GameControler';
 import { Brick } from './Bricks';
+
 export class Board {
     private app: PIXI.Application;
     private app1: PIXI.Application;
@@ -8,8 +9,10 @@ export class Board {
     public grid: any;
     public score: number;
     private scoreUpdateCallback: () => void;
+
     boardContainerApp: PIXI.Container<PIXI.DisplayObject>;
     boardContainerApp1: PIXI.Container<PIXI.DisplayObject>;
+
     constructor(game: Game) {
         this.game = game;
         this.drawApp();
@@ -29,7 +32,10 @@ export class Board {
         this.boardContainerApp1 = new PIXI.Container();
         this.app1.stage.addChild(this.boardContainerApp1);
         this.grid = this.generateWhiteBoard();
+        this.score = 0;
     }
+
+
 
     generateWhiteBoard() {
         return Array.from({ length: this.game.ROWS }, () => Array(this.game.COLS).fill(this.game.WHITE_COLOR_ID));
@@ -119,8 +125,8 @@ export class Board {
     }
 
     calculateScore(rowsCount: number): number {
-        return (rowsCount * (rowsCount + 1)) / 2 * 100;
 
+        return (rowsCount * (rowsCount + 1)) / 2 * 100;
     }
 
     getScore(): number {
@@ -130,12 +136,11 @@ export class Board {
     setScoreUpdateCallback(callback: () => void) {
         this.scoreUpdateCallback = callback;
     }
+
+
+
     playEatSound() {//âm thanh ăn điểm
-        const audio = new Audio('../assets/audio/258020__kodack__arcade-bleep-sound.mp3');
-        audio.play();
-    }
-
+            const audio = new Audio('../assets/audio/258020__kodack__arcade-bleep-sound.mp3');
+            audio.play();
+        }
 }
-
-
-
