@@ -10,6 +10,8 @@ export class Brick {
     activeIndex: number;
     colPos: number;
     rowPos: number;
+    nextcolPos: number;
+    nextrowPos: number;
     isLanded: boolean;
 
 
@@ -19,7 +21,9 @@ export class Brick {
         this.layout = this.game.getBrickLayout()[id];
         this.activeIndex = 0;
         this.colPos = 3;
-        this.rowPos = 4;
+        this.rowPos = 0;
+        this.nextcolPos = 1;
+        this.nextrowPos = 1;
         this.board = this.game.getBoard();
         this.isLanded = false;
         this.isCurrentBrickLanded = false;
@@ -35,18 +39,16 @@ export class Brick {
         }
     }
 
-    drawBrickNext() {
-        const nextBrickLayout = this.layout;
-        const startX = this.game.nextCOLS + 1; // Đặt vị trí bắt đầu vẽ cho viên gạch tiếp theo
-        const startY = 0; // Cố định vị trí bắt đầu theo y
-        for (let row = 0; row < nextBrickLayout.length; row++) {
-            for (let col = 0; col < nextBrickLayout[row].length; col++) {
-                if (nextBrickLayout[row][col] !== this.game.WHITE_COLOR_ID) {
-                    this.board.drawCellNextApp1(col + startX, row + startY, nextBrickLayout[row][col]);
+    drawNextBrick() {
+        for (let row = 0; row < this.layout[this.activeIndex].length; row++) {
+            for (let col = 0; col < this.layout[this.activeIndex].length; col++) {
+                if (this.layout[this.activeIndex][row][col] !== this.game.WHITE_COLOR_ID) {
+                    this.board.drawCellNextApp1(col + this.nextcolPos, row + this.nextrowPos, this.game.COLOR_MAPPING[this.id]);
                 }
             }
         }
     }
+
 
 
     clear() {
@@ -54,6 +56,18 @@ export class Brick {
             for (let col = 0; col < this.layout[this.activeIndex][row].length; col++) {
                 if (this.layout[this.activeIndex][row][col] !== this.game.WHITE_COLOR_ID) {
                     this.board.drawCell(col + this.colPos, row + this.rowPos, this.game.WHITE_COLOR_ID);
+                }
+            }
+        }
+    }
+
+
+
+    clearNextBrick() {
+        for (let row = 0; row < this.layout[this.activeIndex].length; row++) {
+            for (let col = 0; col < this.layout[this.activeIndex].length; col++) {
+                if (this.layout[this.activeIndex][row][col] !== this.game.WHITE_COLOR_ID) {
+                    this.board.drawCellNextApp1(col + this.nextcolPos, row + this.nextrowPos, this.game.WHITE_COLOR_ID);
                 }
             }
         }
@@ -114,6 +128,17 @@ export class Brick {
 
     }
 
+    rotate() {
+        if (this.isLanded) {
+            return;
+        }
+        if (!this.checkCollision(this.rowPos, this.colPos, this.layout[(this.activeIndex + 1) % 4])) {
+            this.clear();
+            this.activeIndex = (this.activeIndex + 1) % 4;
+            this.draw();
+        }
+    }
+
     fixPosition(nextRow: number, nextCol: number, nextLayout: any) {
         this.rowPos = nextRow - 1; // Move the brick to the next position
         this.draw();
@@ -126,6 +151,7 @@ export class Brick {
             this.handleLanded();
             this.isCurrentBrickLanded = true;
             this.game.generateNewBrick();
+            // this.game.generateNextBrick();
         }
 
     }
@@ -137,16 +163,7 @@ export class Brick {
         const audio = new Audio('../assets/audio/263006__dermotte__giant-step-1.mp3');
         audio.play();
     }
-    rotate() {
-        if (this.isLanded) {
-            return;
-        }
-        if (!this.checkCollision(this.rowPos, this.colPos, this.layout[(this.activeIndex + 1) % 4])) {
-            this.clear();
-            this.activeIndex = (this.activeIndex + 1) % 4;
-            this.draw();
-        }
-    }
+
 
     // Collision handling
     checkCollision(nextRow: number, nextCol: number, nextLayout: any) {

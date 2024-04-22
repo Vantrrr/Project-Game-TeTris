@@ -204,7 +204,8 @@ export default class GameController {
     public levelThreshold: number = 500;
     public baseDropInterval: number = 800;
     private brickDropInterval: NodeJS.Timeout | null = null;
-    private nextBrickIndex: number = 0;
+    nextBrick: Brick;
+
     constructor() {
 
         this.app = new PIXI.Application({ width: this.COLS * this.BLOCK_SIZE, height: this.ROWS * this.BLOCK_SIZE, backgroundColor: 0xffffff });
@@ -225,17 +226,16 @@ export default class GameController {
         `;
         document.head.appendChild(style);
         this.app.renderer.resize(560, 700);
+        this.setupUI();
         this.board = new Board(this);
         this.brick = new Brick(2, this);
         this.board.drawBoard();
-        this.brick.draw();
         this.board.drawBoardNextApp1();
-        this.board.drawCellNextApp1(1, 1, 2);
-        // this.score_Update();
-        // this.level_Update();
-        // this.startGame();
-        // this.keyboard();
-        this.setupUI();
+        this.score_Update();
+        this.level_Update();
+        this.startGame();
+        this.keyboard();
+
 
     }
 
@@ -339,6 +339,7 @@ export default class GameController {
     startGame() {
         this.brickDropInterval = setInterval(() => {
             this.brick.moveDown();
+            this.generateNextBrick();
             this.updateLevelAndSpeed();
         }, this.baseDropInterval);
     }
@@ -459,10 +460,32 @@ export default class GameController {
         return this.BRICK_LAYOUT;
     }
 
-    public generateNewBrick() {
-        this.brick = new Brick(Math.floor(Math.random() * 10) % this.BRICK_LAYOUT.length, this);
+    generateNewBrick() {
+        // Nếu đã có viên gạch tiếp theo, hãy đặt nó làm viên gạch hiện tại
+        if (this.nextBrick) {
+            this.brick = this.nextBrick;
+        } else {
+            // Nếu không, tạo một viên gạch mới
+            this.brick = new Brick(Math.floor(Math.random() * 10) % this.BRICK_LAYOUT.length, this);
+        }
+
+        // Tạo viên gạch tiếp theo
+        this.generateNextBrick();
     }
 
+    generateNextBrick() {
+        // Xóa viên gạch tiếp theo cũ
+        if (this.nextBrick) {
+            this.nextBrick.clearNextBrick();
+        }
+        // Tạo ra ID ngẫu nhiên cho viên gạch tiếp theo
+        let nextBrickId = Math.floor(Math.random() * 10) % this.BRICK_LAYOUT.length;
 
+        // Lưu trữ viên gạch tiếp theo
+        this.nextBrick = new Brick(nextBrickId, this);
+
+        // Vẽ viên gạch tiếp theo
+        this.nextBrick.drawNextBrick();
+    }
 
 } 

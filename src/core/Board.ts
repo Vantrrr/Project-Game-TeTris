@@ -101,8 +101,6 @@ export class Board {
     }
 
 
-
-
     handleCompletRows() {
         const latestGrid = this.grid.filter((row: any[]) => {
             return row.some(col => col === this.game.WHITE_COLOR_ID);
