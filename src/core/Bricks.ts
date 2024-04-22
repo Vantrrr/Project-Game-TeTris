@@ -21,10 +21,12 @@ export class Brick {
         this.game = game;
         this.layout = this.game.getBrickLayout()[id];
         this.activeIndex = 0;
+
         this.colPos = 3;
         this.rowPos = 0;
         this.nextcolPos = 1;
         this.nextrowPos = 1;
+
         this.board = this.game.getBoard();
         this.isLanded = false;
         this.isCurrentBrickLanded = false;
@@ -135,7 +137,7 @@ export class Brick {
         if (!this.checkCollision(this.rowPos + 1, this.colPos, this.layout[this.activeIndex])) {
             this.clear();
             this.rowPos++;
-            this.fallBlockSound();
+            // this.fallBlockSound();
             this.draw();
         } else {
             this.handleLanded();
@@ -177,6 +179,24 @@ export class Brick {
         }
 
     }
+
+
+    rotate() {
+        if (this.isLanded) {
+            return;
+        }
+        if (!this.checkCollision(this.rowPos, this.colPos, this.layout[(this.activeIndex + 1) % 4])) {
+            this.clear();
+            this.activeIndex = (this.activeIndex + 1) % 4;
+            this.draw();
+            this.rotateSound();
+        }
+    }
+    rotateSound() {//âm thanh xoay khối gạch 
+        const audio = new Audio('../assets/audio/rotate.mp3');
+        audio.play();
+    }
+
     fallFastSound() {//âm thanh khối gạch rơi xuống
         const audio = new Audio('../assets/audio/263006__dermotte__giant-step-1.mp3');
         audio.play();
@@ -185,6 +205,7 @@ export class Brick {
         const audio = new Audio('../assets/audio/263006__dermotte__giant-step-1.mp3');
         audio.play();
     }
+
 
 
     // Collision handling

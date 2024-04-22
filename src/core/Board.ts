@@ -123,12 +123,29 @@ export class Board {
             this.playEatSound();
         }
     }
+    countCompletedRows(): number {
+        let completedRows = 0;
+        for (let row = 0; row < this.grid.length; row++) {
+            const isCompleted = this.grid[row].every((col: number) => col !== this.game.WHITE_COLOR_ID);
+            if (isCompleted) {
+                completedRows++;
+            }
+        }
+        return completedRows;
+    }
+    
+    displayCompletedRows(): void {
+        const completedRows = this.countCompletedRows();
+        console.log("Completed Rows:", completedRows);
+        // You can display this count in your game UI or wherever you prefer.
+    }
+    
 
     calculateScore(rowsCount: number): number {
 
         return (rowsCount * (rowsCount + 1)) / 2 * 100;
     }
-
+ 
     getScore(): number {
         return this.score;
     }
