@@ -321,13 +321,8 @@ export default class GameController {
     }
     startGame() {
         this.brickDropInterval = setInterval(() => {
-            if (!this.board.gameOver) {
                 this.brick.moveDown();
                 this.updateLevelAndSpeed();
-            } else {
-                
-            }
-
         }, this.baseDropInterval);
     }
     
@@ -449,9 +444,6 @@ export default class GameController {
     public generateNewBrick() {
         this.brick = new Brick(Math.floor(Math.random() * 10) % this.BRICK_LAYOUT.length, this);
     }
-    handleGameover() {
-        this.board.gameOver = true;
-        alert('GAME OVER!!!')
-    }
+ 
 
 } 

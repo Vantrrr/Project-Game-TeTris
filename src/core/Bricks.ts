@@ -25,22 +25,22 @@ export class Brick {
         this.isLanded = false;
         this.isCurrentBrickLanded = false;
 
-        document.addEventListener('keydown', (e: KeyboardEvent) => {
-            switch (e.code) {
-                case this.game.KEY_CODES.LEFT:
-                    this.moveLeft();
-                    break;
-                case this.game.KEY_CODES.RIGHT:
-                    this.moveRight();
-                    break;
-                case this.game.KEY_CODES.UP:
-                    this.rotate();
-                    break;
-                case this.game.KEY_CODES.DOWN:
-                    this.moveDown();
-                    break;
-            }
-        });
+        // document.addEventListener('keydown', (e: KeyboardEvent) => {
+        //     switch (e.code) {
+        //         case this.game.KEY_CODES.LEFT:
+        //             this.moveLeft();
+        //             break;
+        //         case this.game.KEY_CODES.RIGHT:
+        //             this.moveRight();
+        //             break;
+        //         case this.game.KEY_CODES.UP:
+        //             this.rotate();
+        //             break;
+        //         case this.game.KEY_CODES.DOWN:
+        //             this.moveDown();
+        //             break;
+        //     }
+        // });
     }
 
     draw() {
@@ -183,7 +183,6 @@ export class Brick {
 
     handleLanded() {
         if (this.rowPos <= 0) {
-            this.board.handleGameover();
             return;
         }
         if (!this.isCurrentBrickLanded) {
