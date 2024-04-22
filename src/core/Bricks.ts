@@ -19,7 +19,7 @@ export class Brick {
         this.layout = this.game.getBrickLayout()[id];
         this.activeIndex = 0;
         this.colPos = 4;
-        this.rowPos = -2;
+        this.rowPos = 0;
         this.board = this.game.getBoard();
         this.isLanded = false;
         this.isCurrentBrickLanded = false;
@@ -89,7 +89,7 @@ export class Brick {
         if (!this.checkCollision(this.rowPos + 1, this.colPos, this.layout[this.activeIndex])) {
             this.clear();
             this.rowPos++;
-            this.fallBlockSound();
+            // this.fallBlockSound();
             this.draw();
         } else {
             this.handleLanded();
@@ -115,14 +115,7 @@ export class Brick {
         }
 
     }
-    fallFastSound() {//âm thanh khối gạch rơi xuống
-        const audio = new Audio('../assets/audio/263006__dermotte__giant-step-1.mp3');
-        audio.play();
-    }
-    fallBlockSound() {//âm thanh khối gạch rơi xuống
-        const audio = new Audio('../assets/audio/263006__dermotte__giant-step-1.mp3');
-        audio.play();
-    }
+
     rotate() {
         if (this.isLanded) {
             return;
@@ -131,9 +124,13 @@ export class Brick {
             this.clear();
             this.activeIndex = (this.activeIndex + 1) % 4;
             this.draw();
+            this.rotateSound();
         }
     }
-
+    rotateSound() {//âm thanh xoay khối gạch 
+        const audio = new Audio('../assets/audio/rotate.mp3');
+        audio.play();
+    }
     // Collision handling
     checkCollision(nextRow: number, nextCol: number, nextLayout: any) {
         for (let row = 0; row < nextLayout.length; row++) {

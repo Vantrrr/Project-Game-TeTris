@@ -203,6 +203,7 @@ export default class GameController {
     public levelThreshold: number = 500;
     public baseDropInterval: number = 800;
     private brickDropInterval: NodeJS.Timeout | null = null;
+    private completedRowsText: PIXI.Text;
     constructor() {
 
         this.app = new PIXI.Application({ width: this.COLS * this.BLOCK_SIZE, height: this.ROWS * this.BLOCK_SIZE, backgroundColor: 0xffffff });
@@ -214,10 +215,12 @@ export default class GameController {
         this.brick.draw();
         this.score_Update();
         this.level_Update();
+        this.Line_Update();
         this.startGame();
         this.keyboard();
         this.setupUI();
-        
+        this.board.displayCompletedRows();
+
     }
     private setupUI() {
         const gameTitle = PIXI.Sprite.from('../assets/logo_tetris.png');
@@ -230,25 +233,20 @@ export default class GameController {
         const nextTextStyle = new PIXI.TextStyle({
             fontFamily: 'Press Start 2P',
             fontSize: 18,
-            fill: '##000000',
-            fontWeight: 'bold',
+            fill: '#ffffff',
+            stroke: '#ff0000',
+            strokeThickness: 6,
+            dropShadow: true,
+            dropShadowColor: '#000000',
+            dropShadowBlur: 4,
+            dropShadowAngle: Math.PI / 6,
+            dropShadowDistance: 6,
+
         });
 
         const nextText = new PIXI.Text('Next:', nextTextStyle);
         nextText.position.set(310, 100);
         this.app.stage.addChild(nextText);
-
-        // Text Level
-        // const levelTextStyle = new PIXI.TextStyle({
-        //     fontFamily: 'Press Start 2P',
-        //     fontSize: 18,
-        //     fill: '##000000',
-        //     fontWeight: 'bold',
-        // });
-
-        // const levelText = new PIXI.Text('Level:', levelTextStyle);
-        // levelText.position.set(310, 390);
-        // this.app.stage.addChild(levelText);
 
         // button play game
         const stage = PIXI.Sprite.from('../assets/R.png');
@@ -318,7 +316,7 @@ export default class GameController {
     }
     startGame() {
         this.brickDropInterval = setInterval(() => {
-            this.brick.moveDown();  
+            this.brick.moveDown();
             this.updateLevelAndSpeed();
         }, this.baseDropInterval);
     }
@@ -332,7 +330,61 @@ export default class GameController {
     public exitGame() {
         // Code xử lý kết thúc trò chơi
     }
+    public checkGameOver(): boolean {
+        const startRow = 0;
+        const startCol = this.COLS / 2;
+        const newBrickLayout = this.brick.layout[0]; 
 
+        for (let row = 0; row < newBrickLayout.length; row++) {
+            for (let col = 0; col < newBrickLayout[row].length; col++) {
+                if (newBrickLayout[row][col] !== this.COLOR_MAPPING[7] && this.board.grid[startRow + row][startCol + col] !== this.COLOR_MAPPING[7]) {
+                    // Một khối của viên gạch mới chồng chéo với một khối hiện có trên bảng
+                    return true; // Kết thúc trò chơi
+                }
+            }
+        }
+        return false; // Trò chơi chưa kết thúc
+    }
+
+    public endGame(): void {
+        if (this.checkGameOver()) {
+            if (this.brickDropInterval) {
+                clearInterval(this.brickDropInterval);
+                this.brickDropInterval = null;
+            }
+            //console.log('Kết Thúc Trò Chơi');
+            this.gameoversound();
+            this.showGameOverScreen();
+           
+        }
+    }
+    private showGameOverScreen(): void {
+        const gameOverContainer = new PIXI.Container();
+        this.app.stage.addChild(gameOverContainer);
+        
+        const gameOverTexture = PIXI.Texture.from('../assets/gameovertetris.png');
+        const gameOverSprite = new PIXI.Sprite(gameOverTexture);
+        gameOverSprite.width = 560; 
+        gameOverSprite.height = 700; 
+        gameOverSprite.anchor.set(0.5);
+        gameOverSprite.position.set(this.app.screen.width / 2, this.app.screen.height / 2);
+        gameOverContainer.addChild(gameOverSprite);
+        
+
+        const playButtonTexture = PIXI.Texture.from('../assets/R.png');
+        const playButton = new PIXI.Sprite(playButtonTexture);
+        playButton.anchor.set(0.5);
+        playButton.position.set(275, 500);
+        playButton.width = 175;
+        playButton.height = 55;
+
+        playButton.interactive = true;
+        playButton.buttonMode = true;
+        playButton.on('click', () => {
+            location.reload(); 
+        });
+        gameOverContainer.addChild(playButton);
+        }
     updateLevelAndSpeed() {
         if (this.board.score >= this.level * this.levelThreshold) {
             this.level++;
@@ -369,11 +421,12 @@ export default class GameController {
                     break;
                 case this.KEY_CODES.DOWN:
                     this.brick.moveDown();
+                    this.fallBlockSound();
                     break;
-                    case this.KEY_CODES.SPACE:
+                case this.KEY_CODES.SPACE:
                     this.brickDropInstantly();
                     break;
-                    
+
             }
         });
     }
@@ -386,8 +439,20 @@ export default class GameController {
         const nextCol = this.brick.colPos;
         const nextLayout = this.brick.layout[this.brick.activeIndex];
         this.brick.fixPosition(nextRow, nextCol, nextLayout);
+        this.fallFastSound();
     }
-    
+    fallFastSound() {//âm thanh khối gạch rơi nhanh 
+        const audio = new Audio('../assets/audio/movefastdown.wav');
+        audio.play();
+    }
+    fallBlockSound() {//âm thanh khối gạch rơi xuống
+        const audio = new Audio('../assets/audio/263006__dermotte__giant-step-1.mp3');
+        audio.play();
+    }
+    gameoversound() {//âm thanh khối gạch rơi xuống
+        const audio = new Audio('../assets/audio/gameover.mp3');
+        audio.play();
+    }
     score_Update() {
         const scoreTextStyle = new PIXI.TextStyle({
             fontFamily: 'Press Start 2P',
@@ -417,12 +482,25 @@ export default class GameController {
         LevelText.position.set(310, 400);
         this.app.stage.addChild(LevelText);
     }
+   
     updateLevelDisplay() {
         const levelText = this.app.stage.getChildByName("LEVEL") as PIXI.Text;
         if (levelText) {
             levelText.text = 'Level: ' + this.level;
         }
     }
+
+    Line_Update() {
+        const completedRows = this.board.countCompletedRows();
+        const completedRowsText = new PIXI.Text('Lines: ' + completedRows, {
+        fontFamily: 'Arial',
+        fontSize: 24,
+        fill: '##000000',
+        align: 'center'
+        });
+        completedRowsText.position.set(310, 300); // Cập nhật vị trí phù hợp trên màn hình
+        this.app.stage.addChild(completedRowsText);
+        }
     public getApp(): PIXI.Application {
         return this.app;
     }
@@ -437,5 +515,6 @@ export default class GameController {
 
     public generateNewBrick() {
         this.brick = new Brick(Math.floor(Math.random() * 10) % this.BRICK_LAYOUT.length, this);
+        this.endGame();
     }
 } 
