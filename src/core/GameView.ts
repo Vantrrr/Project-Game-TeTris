@@ -45,7 +45,7 @@ export default class GameView {
         stage.interactive = true;
         stage.buttonMode = true;
         stage.on('click', () => {
-            this.gameController.handlePlayButtonClick();
+            // this.gameController.handlePlayButtonClick();
             console.log("fixx ")
         });
 
