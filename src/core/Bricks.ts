@@ -1,5 +1,6 @@
 import { Board } from './Board';
 import Game from './GameControler';
+import { fallBlockSound, rotateSound, gameoversound } from './sound';
 export class Brick {
     private game: Game;
     private board: Board;
@@ -166,22 +167,22 @@ export class Brick {
             this.clear();
             this.activeIndex = (this.activeIndex + 1) % 4;
             this.draw();
-            this.rotateSound();
+            rotateSound();
         }
     }
-    rotateSound() {//âm thanh xoay khối gạch 
-        const audio = new Audio('../assets/audio/rotate.mp3');
-        audio.play();
-    }
+    // rotateSound() {//âm thanh xoay khối gạch 
+    //     const audio = new Audio('../assets/audio/rotate.mp3');
+    //     audio.play();
+    // }
 
-    fallFastSound() {//âm thanh khối gạch rơi xuống
-        const audio = new Audio('../assets/audio/263006__dermotte__giant-step-1.mp3');
-        audio.play();
-    }
-    fallBlockSound() {//âm thanh khối gạch rơi xuống
-        const audio = new Audio('../assets/audio/263006__dermotte__giant-step-1.mp3');
-        audio.play();
-    }
+    // fallFastSound() {//âm thanh khối gạch rơi xuống
+    //     const audio = new Audio('../assets/audio/263006__dermotte__giant-step-1.mp3');
+    //     audio.play();
+    // }
+    // fallBlockSound() {//âm thanh khối gạch rơi xuống
+    //     const audio = new Audio('../assets/audio/263006__dermotte__giant-step-1.mp3');
+    //     audio.play();
+    // }
 
 
 
@@ -231,12 +232,12 @@ export class Brick {
     handleGameOver() {
         this.gameOver = true;
         this.game.showGameOverScreen();
-        this.gameoversound();
+        gameoversound();
     }
-    gameoversound() {//âm thanh khối gạch rơi xuống
-        const audio = new Audio('../assets/audio/gameover.mp3');
-        audio.play();
-    }
+    // gameoversound() {//âm thanh khối gạch rơi xuống
+    //     const audio = new Audio('../assets/audio/gameover.mp3');
+    //     audio.play();
+    // }
 
 
 } 

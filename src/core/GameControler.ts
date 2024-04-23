@@ -2,6 +2,7 @@ import * as PIXI from 'pixi.js';
 import { Board } from './Board';
 import { Brick } from './Bricks';
 import GameView from './GameView';
+import { fallBlockSound, fallFastSound  } from './sound';
 export default class GameController {
     private gameView: GameView;
     private board: Board;
@@ -230,17 +231,14 @@ export default class GameController {
         document.head.appendChild(style);
         this.app.renderer.resize(560, 700);
         this.board = new Board(this);
-        this.brick = new Brick(2, this);
+        // this.brick = new Brick(this.generateNextBrick()
+        this.nextBrick = new Brick(0, this);
         this.board.drawBoard();
         this.board.drawBoardNextApp1();
-        this.score_Update();
         this.level_Update();
-        this.Line_Update();
         this.startGame();
         this.keyboard();
         this.setupUI();
-
-
     }
 
     private setupUI() {
@@ -340,6 +338,8 @@ export default class GameController {
             this.brick.moveDown();
             this.generateNextBrick();
             this.updateLevelAndSpeed();
+            this.board.updateCompletedLinesDisplay();
+            this.board.updateScoreDisplay();
 
         }, this.baseDropInterval);
     }
@@ -431,7 +431,7 @@ export default class GameController {
                     break;
                 case this.KEY_CODES.DOWN:
                     this.brick.moveDown();
-                    this.fallBlockSound();
+                    fallBlockSound();
                     break;
                 case this.KEY_CODES.SPACE:
                     this.brickDropInstantly();
@@ -449,33 +449,7 @@ export default class GameController {
         const nextCol = this.brick.colPos;
         const nextLayout = this.brick.layout[this.brick.activeIndex];
         this.brick.fixPosition(nextRow, nextCol, nextLayout);
-        this.fallFastSound();
-    }
-    fallFastSound() {//âm thanh khối gạch rơi nhanh 
-        const audio = new Audio('../assets/audio/movefastdown.wav');
-        audio.play();
-    }
-    fallBlockSound() {//âm thanh khối gạch rơi xuống
-        const audio = new Audio('../assets/audio/263006__dermotte__giant-step-1.mp3');
-        audio.play();
-    }
-
-
-    score_Update() {
-        const scoreTextStyle = new PIXI.TextStyle({
-            fontFamily: 'Press Start 2P',
-            fontSize: 18,
-            fill: '##000000',
-            fontWeight: 'bold',
-        });
-        const scoreText = new PIXI.Text('Scores:' + this.board.getScore(), scoreTextStyle);
-        scoreText.name = "scoreText";
-        scoreText.position.set(310, 360);
-        this.app.stage.addChild(scoreText);
-        const updateScoreText = () => {
-            scoreText.text = 'Scores:' + this.board.getScore();
-        };
-        this.board.setScoreUpdateCallback(updateScoreText);
+        fallFastSound();
     }
 
     level_Update() {
@@ -487,7 +461,7 @@ export default class GameController {
         });
         const LevelText = new PIXI.Text('Level:' + this.level, LevelTextStyle);
         LevelText.name = "LEVEL";
-        LevelText.position.set(310, 400);
+        LevelText.position.set(310, 320);
         this.app.stage.addChild(LevelText);
     }
    
@@ -498,17 +472,6 @@ export default class GameController {
         }
     }
 
-    Line_Update() {
-        const completedRows = this.board.countCompletedRows();
-        const completedRowsText = new PIXI.Text('Lines: ' + completedRows, {
-        fontFamily: 'Arial',
-        fontSize: 24,
-        fill: '##000000',
-        align: 'center'
-        });
-        completedRowsText.position.set(310, 300); // Cập nhật vị trí phù hợp trên màn hình
-        this.app.stage.addChild(completedRowsText);
-        }
     public getApp(): PIXI.Application {
         return this.app;
     }
