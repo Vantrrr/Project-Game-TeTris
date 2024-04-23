@@ -118,7 +118,6 @@ export class Board {
         this.score += this.calculateScore(completedRows);
         this.updateScoreDisplay();
         this.grid = [...newRows, ...latestGrid];
-        this.scoreUpdateCallback();
         if (completedRows > 0) {
             playEatSound();
         }
@@ -127,14 +126,16 @@ export class Board {
     }
 
 
-    countCompletedRows(): number {
+    countCompletedRows() {
         let completedRows = 0;
         for (let row = 0; row < this.grid.length; row++) {
             const isCompleted = this.grid[row].every((col: number) => col !== this.game.WHITE_COLOR_ID);
             if (isCompleted) {
                 completedRows++;
             }
-          
+        }
+    }
+
     updateCompletedLinesDisplay() {
         let completedLinesText = this.game.getApp().stage.getChildByName('completedLinesText') as PIXI.Text;
         if (completedLinesText) {
@@ -184,13 +185,6 @@ export class Board {
 
     getScore(): number {
         return this.score;
-    }
-
-
-
-    playEatSound() {
-        const audio = new Audio('../assets/audio/258020__kodack__arcade-bleep-sound.mp3');
-        audio.play();
     }
 
 }
