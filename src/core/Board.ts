@@ -1,7 +1,7 @@
 import * as PIXI from 'pixi.js';
 import Game from './GameControler';
 import { Brick } from './Bricks';
-import { playEatSound} from './sound';
+import { playEatSound } from './sound';
 
 export class Board {
     private app: PIXI.Application;
@@ -9,7 +9,6 @@ export class Board {
     private game: Game;
     public grid: any;
     public score: number;
-    private scoreUpdateCallback: () => void;
     public completedLines: number = 0;
 
     boardContainerApp: PIXI.Container<PIXI.DisplayObject>;
@@ -134,7 +133,6 @@ export class Board {
         if (completedLinesText) {
             completedLinesText.text = 'Lines: ' + this.completedLines;
         } else {
-            // Nếu chưa có, tạo mới và thêm vào stage
             const completedLinesTextStyle = new PIXI.TextStyle({
                 fontFamily: 'Press Start 2P',
                 fontSize: 18,
@@ -143,7 +141,7 @@ export class Board {
             });
             completedLinesText = new PIXI.Text('Lines: ' + this.completedLines, completedLinesTextStyle);
             completedLinesText.name = 'completedLinesText';
-            completedLinesText.position.set(310, 350); // Đặt vị trí phù hợp trên màn hình
+            completedLinesText.position.set(310, 350);
             this.game.getApp().stage.addChild(completedLinesText);
         }
     }
@@ -154,21 +152,20 @@ export class Board {
     updateScoreDisplay() {
         let scoreText = this.game.getApp().stage.getChildByName('scoreText') as PIXI.Text;
         if (scoreText) {
-        scoreText.text = 'Score: ' + this.score;
+            scoreText.text = 'Score: ' + this.score;
         } else {
-        // Nếu chưa có, tạo mới và thêm vào stage
-        const scoreTextStyle = new PIXI.TextStyle({
-        fontFamily: 'Press Start 2P',
-        fontSize: 18,
-        fill: '#000000',
-        fontWeight: 'bold',
-        });
-        scoreText = new PIXI.Text('Score: ' + this.score, scoreTextStyle);
-        scoreText.name = 'scoreText';
-        scoreText.position.set(310, 380); // Đặt vị trí phù hợp trên màn hình
-        this.game.getApp().stage.addChild(scoreText);
+            const scoreTextStyle = new PIXI.TextStyle({
+                fontFamily: 'Press Start 2P',
+                fontSize: 18,
+                fill: '#000000',
+                fontWeight: 'bold',
+            });
+            scoreText = new PIXI.Text('Score: ' + this.score, scoreTextStyle);
+            scoreText.name = 'scoreText';
+            scoreText.position.set(310, 380);
+            this.game.getApp().stage.addChild(scoreText);
         }
-        }
+    }
     getScore(): number {
         return this.score;
     }

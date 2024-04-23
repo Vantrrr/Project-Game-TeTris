@@ -231,16 +231,20 @@ export default class GameController {
         document.head.appendChild(style);
         this.app.renderer.resize(560, 700);
         this.board = new Board(this);
-        // this.brick = new Brick(this.generateNextBrick()
-        this.nextBrick = new Brick(0, this);
+        this.brick = new Brick(this.random(this.BRICK_LAYOUT.length), this);
         this.board.drawBoard();
         this.board.drawBoardNextApp1();
         this.level_Update();
         this.startGame();
         this.keyboard();
         this.setupUI();
-    }
 
+
+    }
+    private random(max: number): number {
+        return Math.floor(Math.random() * (max + 1));
+      }
+      
     private setupUI() {
         const gameTitle = PIXI.Sprite.from('../assets/logo_tetris.png');
         gameTitle.position.set(325, 10);
@@ -277,7 +281,6 @@ export default class GameController {
         stage.buttonMode = true;
         stage.on('click', () => {
             this.handlePlayButtonClick();
-            console.log("fixx ")
         });
 
         // button pause game

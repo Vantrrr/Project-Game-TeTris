@@ -170,21 +170,7 @@ export class Brick {
             rotateSound();
         }
     }
-    // rotateSound() {//âm thanh xoay khối gạch 
-    //     const audio = new Audio('../assets/audio/rotate.mp3');
-    //     audio.play();
-    // }
-
-    // fallFastSound() {//âm thanh khối gạch rơi xuống
-    //     const audio = new Audio('../assets/audio/263006__dermotte__giant-step-1.mp3');
-    //     audio.play();
-    // }
-    // fallBlockSound() {//âm thanh khối gạch rơi xuống
-    //     const audio = new Audio('../assets/audio/263006__dermotte__giant-step-1.mp3');
-    //     audio.play();
-    // }
-
-
+ 
 
     // Collision handling
     checkCollision(nextRow: number, nextCol: number, nextLayout: any) {
@@ -234,10 +220,4 @@ export class Brick {
         this.game.showGameOverScreen();
         gameoversound();
     }
-    // gameoversound() {//âm thanh khối gạch rơi xuống
-    //     const audio = new Audio('../assets/audio/gameover.mp3');
-    //     audio.play();
-    // }
-
-
 } 
