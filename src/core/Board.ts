@@ -1,6 +1,7 @@
 import * as PIXI from 'pixi.js';
 import Game from './GameControler';
 import { Brick } from './Bricks';
+import { playEatSound } from './sound';
 
 export class Board {
     private app: PIXI.Application;
@@ -8,7 +9,7 @@ export class Board {
     private game: Game;
     public grid: any;
     public score: number;
-    private scoreUpdateCallback: () => void;
+    public completedLines: number = 0;
 
     boardContainerApp: PIXI.Container<PIXI.DisplayObject>;
     boardContainerApp1: PIXI.Container<PIXI.DisplayObject>;
@@ -115,13 +116,16 @@ export class Board {
         const newRows = Array.from({ length: completedRows }, () => Array(this.game.COLS).fill(this.game.WHITE_COLOR_ID));
 
         this.score += this.calculateScore(completedRows);
+        this.updateScoreDisplay();
         this.grid = [...newRows, ...latestGrid];
         this.scoreUpdateCallback();
-
         if (completedRows > 0) {
-            this.playEatSound();
+            playEatSound();
         }
+        this.completedLines += completedRows;
+        this.updateCompletedLinesDisplay();
     }
+
 
     countCompletedRows(): number {
         let completedRows = 0;
@@ -130,8 +134,24 @@ export class Board {
             if (isCompleted) {
                 completedRows++;
             }
+          
+    updateCompletedLinesDisplay() {
+        let completedLinesText = this.game.getApp().stage.getChildByName('completedLinesText') as PIXI.Text;
+        if (completedLinesText) {
+            completedLinesText.text = 'Lines: ' + this.completedLines;
+        } else {
+            const completedLinesTextStyle = new PIXI.TextStyle({
+                fontFamily: 'Press Start 2P',
+                fontSize: 18,
+                fill: '#000000',
+                fontWeight: 'bold',
+            });
+            completedLinesText = new PIXI.Text('Lines: ' + this.completedLines, completedLinesTextStyle);
+            completedLinesText.name = 'completedLinesText';
+            completedLinesText.position.set(310, 350);
+            this.game.getApp().stage.addChild(completedLinesText);
+
         }
-        return completedRows;
     }
 
     displayCompletedRows(): void {
@@ -144,16 +164,33 @@ export class Board {
         return (rowsCount * (rowsCount + 1)) / 2 * 100;
     }
 
+    updateScoreDisplay() {
+        let scoreText = this.game.getApp().stage.getChildByName('scoreText') as PIXI.Text;
+        if (scoreText) {
+            scoreText.text = 'Score: ' + this.score;
+        } else {
+            const scoreTextStyle = new PIXI.TextStyle({
+                fontFamily: 'Press Start 2P',
+                fontSize: 18,
+                fill: '#000000',
+                fontWeight: 'bold',
+            });
+            scoreText = new PIXI.Text('Score: ' + this.score, scoreTextStyle);
+            scoreText.name = 'scoreText';
+            scoreText.position.set(310, 380);
+            this.game.getApp().stage.addChild(scoreText);
+        }
+    }
+
     getScore(): number {
         return this.score;
     }
 
-    setScoreUpdateCallback(callback: () => void) {
-        this.scoreUpdateCallback = callback;
-    }
+
 
     playEatSound() {
         const audio = new Audio('../assets/audio/258020__kodack__arcade-bleep-sound.mp3');
         audio.play();
     }
+
 }

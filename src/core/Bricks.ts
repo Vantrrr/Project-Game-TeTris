@@ -1,6 +1,8 @@
 import { Board } from './Board';
 import Game from './GameControler';
 import GameView from './GameView';
+import { fallBlockSound, rotateSound, gameoversound } from './sound';
+
 export class Brick {
     private game: Game;
     private board: Board;
@@ -148,23 +150,12 @@ export class Brick {
             this.clear();
             this.activeIndex = (this.activeIndex + 1) % 4;
             this.draw();
-            this.rotateSound();
+            rotateSound();
         }
     }
-    rotateSound() {
-        const audio = new Audio('../assets/audio/rotate.mp3');
-        audio.play();
-    }
+ 
 
-    fallFastSound() {
-        const audio = new Audio('../assets/audio/263006__dermotte__giant-step-1.mp3');
-        audio.play();
-    }
-    fallBlockSound() {
-        const audio = new Audio('../assets/audio/263006__dermotte__giant-step-1.mp3');
-        audio.play();
-    }
-
+    // Collision handling
     checkCollision(nextRow: number, nextCol: number, nextLayout: any) {
         for (let row = 0; row < nextLayout.length; row++) {
             for (let col = 0; col < nextLayout[row].length; col++) {
@@ -206,8 +197,10 @@ export class Brick {
             this.board.drawBoard();
         }
     }
-    gameoversound() {
-        const audio = new Audio('../assets/audio/gameover.mp3');
-        audio.play();
+
+    handleGameOver() {
+        this.gameOver = true;
+        this.game.showGameOverScreen();
+        gameoversound();
     }
 } 
