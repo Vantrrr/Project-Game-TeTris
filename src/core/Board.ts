@@ -118,9 +118,7 @@ export class Board {
         this.score += this.calculateScore(completedRows);
         this.updateScoreDisplay();
         this.grid = [...newRows, ...latestGrid];
-        // this.scoreUpdateCallback();
-        //console.log("Current Score:", this.getScore());
-
+        this.scoreUpdateCallback();
         if (completedRows > 0) {
             playEatSound();
         }
@@ -128,6 +126,15 @@ export class Board {
         this.updateCompletedLinesDisplay();
     }
 
+
+    countCompletedRows(): number {
+        let completedRows = 0;
+        for (let row = 0; row < this.grid.length; row++) {
+            const isCompleted = this.grid[row].every((col: number) => col !== this.game.WHITE_COLOR_ID);
+            if (isCompleted) {
+                completedRows++;
+            }
+          
     updateCompletedLinesDisplay() {
         let completedLinesText = this.game.getApp().stage.getChildByName('completedLinesText') as PIXI.Text;
         if (completedLinesText) {
@@ -143,12 +150,20 @@ export class Board {
             completedLinesText.name = 'completedLinesText';
             completedLinesText.position.set(310, 350);
             this.game.getApp().stage.addChild(completedLinesText);
+
         }
     }
-    calculateScore(rowsCount: number): number {
 
+    displayCompletedRows(): void {
+        const completedRows = this.countCompletedRows();
+        console.log("Completed Rows:", completedRows);
+    }
+
+
+    calculateScore(rowsCount: number): number {
         return (rowsCount * (rowsCount + 1)) / 2 * 100;
     }
+
     updateScoreDisplay() {
         let scoreText = this.game.getApp().stage.getChildByName('scoreText') as PIXI.Text;
         if (scoreText) {
@@ -166,8 +181,16 @@ export class Board {
             this.game.getApp().stage.addChild(scoreText);
         }
     }
+
     getScore(): number {
         return this.score;
+    }
+
+
+
+    playEatSound() {
+        const audio = new Audio('../assets/audio/258020__kodack__arcade-bleep-sound.mp3');
+        audio.play();
     }
 
 }

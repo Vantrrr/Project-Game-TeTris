@@ -205,17 +205,15 @@ export default class GameController {
     public levelThreshold: number = 500;
     public baseDropInterval: number = 800;
     private brickDropInterval: NodeJS.Timeout | null = null;
-
-    nextBrick: Brick;
+    private nextBrick: Brick;
 
     constructor() {
-
         this.app = new PIXI.Application({ width: this.COLS * this.BLOCK_SIZE, height: this.ROWS * this.BLOCK_SIZE, backgroundColor: 0xffffff });
         window.document.body.appendChild(this.app.view);
 
         this.app1 = new PIXI.Application({ width: this.nextCOLS * this.nextBLOCK_SIZE, height: this.nextROWS * this.nextBLOCK_SIZE, backgroundColor: 0xFFA500 });
         window.document.body.appendChild(this.app1.view);
-        
+
         this.app1.view.classList.add('my-app1');
         const style = document.createElement('style');
         style.innerHTML = `
@@ -230,6 +228,7 @@ export default class GameController {
         `;
         document.head.appendChild(style);
         this.app.renderer.resize(560, 700);
+        this.gameView = new GameView(this);
         this.board = new Board(this);
         this.brick = new Brick(this.random(this.BRICK_LAYOUT.length), this);
         this.board.drawBoard();
@@ -237,10 +236,8 @@ export default class GameController {
         this.level_Update();
         this.startGame();
         this.keyboard();
-        this.setupUI();
-
-
     }
+
     private random(max: number): number {
         return Math.floor(Math.random() * (max + 1));
       }
@@ -325,14 +322,13 @@ export default class GameController {
         arow.interactive = true;
         arow.buttonMode = true;
     }
+  
     private handlePlayButtonClick() {
         this.startGame();
     }
-
-    private handlePauseButtonClick() {
+    public handlePauseButtonClick() {
         this.pauseGame();
     }
-
     private handleExitButtonClick() {
         this.exitGame();
     }
@@ -343,68 +339,27 @@ export default class GameController {
             this.updateLevelAndSpeed();
             this.board.updateCompletedLinesDisplay();
             this.board.updateScoreDisplay();
-
         }, this.baseDropInterval);
     }
-    
-
-
     public pauseGame() {
         if (this.brickDropInterval) {
             clearInterval(this.brickDropInterval);
             this.brickDropInterval = null;
         }
     }
-
     public exitGame() {
         // Code xử lý kết thúc trò chơi
     }
-    private hideApp1(): void {
+    public hideApp1(): void {
         if (this.app1 && this.app1.view) {
-        // Ẩn view của app1 bằng cách sử dụng CSS
-        this.app1.view.style.visibility = 'hidden';
+            this.app1.view.style.visibility = 'hidden';
         }
-        }
-        
-    public showGameOverScreen(): void {
-        const gameOverContainer = new PIXI.Container();
-        
-        this.app.stage.addChild(gameOverContainer);
-        gameOverContainer.zIndex = 2;
-        const gameOverTexture = PIXI.Texture.from('../assets/gameovertetris.png');
-        const gameOverSprite = new PIXI.Sprite(gameOverTexture);
-        gameOverSprite.width = 560; 
-        gameOverSprite.height = 700; 
-        gameOverSprite.anchor.set(0.5);
-        gameOverSprite.position.set(this.app.screen.width / 2, this.app.screen.height / 2);
-        gameOverContainer.addChild(gameOverSprite);
-        
+    }
 
-        const playButtonTexture = PIXI.Texture.from('../assets/R.png');
-        const playButton = new PIXI.Sprite(playButtonTexture);
-        playButton.anchor.set(0.5);
-        playButton.position.set(275, 500);
-        playButton.width = 175;
-        playButton.height = 55;
-
-        playButton.interactive = true;
-        playButton.buttonMode = true;
-        playButton.on('click', () => {
-            location.reload(); 
-        });
-        gameOverContainer.addChild(playButton);
-        this.app.stage.addChildAt(gameOverContainer, this.app.stage.children.length);
-        this.app.stage.addChild(gameOverContainer);
-        this.hideApp1();
-
-        }
     updateLevelAndSpeed() {
         if (this.board.score >= this.level * this.levelThreshold) {
             this.level++;
             this.adjustDropSpeed();
-            // console.log('Level:', this.level);
-            // console.log('score:', this.board.score);
-
             this.updateLevelDisplay();
             if (this.brickDropInterval) {
                 clearInterval(this.brickDropInterval);
@@ -415,10 +370,8 @@ export default class GameController {
             }, this.baseDropInterval);
         }
     }
-
     adjustDropSpeed() {
         this.baseDropInterval -= 50;
-        // console.log('Drop Speed:', this.baseDropInterval);
     }
     keyboard() {
         document.addEventListener('keydown', (e: KeyboardEvent) => {
@@ -452,9 +405,34 @@ export default class GameController {
         const nextCol = this.brick.colPos;
         const nextLayout = this.brick.layout[this.brick.activeIndex];
         this.brick.fixPosition(nextRow, nextCol, nextLayout);
+        this.fallFastSound();
+    }
+  
+    fallFastSound() {
+        const audio = new Audio('../assets/audio/movefastdown.wav');
+        audio.play();
+    }
+    fallBlockSound() {
+        const audio = new Audio('../assets/audio/263006__dermotte__giant-step-1.mp3');
+        audio.play();
+    }
+    score_Update() {
+        const scoreTextStyle = new PIXI.TextStyle({
+            fontFamily: 'Press Start 2P',
+            fontSize: 18,
+            fill: '##000000',
+            fontWeight: 'bold',
+        });
+        const scoreText = new PIXI.Text('Scores:' + this.board.getScore(), scoreTextStyle);
+        scoreText.name = "scoreText";
+        scoreText.position.set(310, 360);
+        this.app.stage.addChild(scoreText);
+        const updateScoreText = () => {
+            scoreText.text = 'Scores:' + this.board.getScore();
+        };
+        this.board.setScoreUpdateCallback(updateScoreText);
         fallFastSound();
     }
-
     level_Update() {
         const LevelTextStyle = new PIXI.TextStyle({
             fontFamily: 'Press Start 2P',
@@ -467,60 +445,59 @@ export default class GameController {
         LevelText.position.set(310, 320);
         this.app.stage.addChild(LevelText);
     }
-   
+  
     updateLevelDisplay() {
         const levelText = this.app.stage.getChildByName("LEVEL") as PIXI.Text;
         if (levelText) {
             levelText.text = 'Level: ' + this.level;
         }
     }
+  
+    Line_Update() {
+        const completedRows = this.board.countCompletedRows();
+        const completedRowsText = new PIXI.Text('Lines: ' + completedRows, {
+            fontFamily: 'Arial',
+            fontSize: 24,
+            fill: '##000000',
+            align: 'center'
+        });
+        completedRowsText.position.set(310, 300); // Cập nhật vị trí phù hợp trên màn hình
+        this.app.stage.addChild(completedRowsText);
+    }
 
+    handleGameOver() {
+        this.brick.gameOver = true;
+        this.gameView.showGameOverScreen();
+        this.brick.gameoversound();
+    }
+  
     public getApp(): PIXI.Application {
         return this.app;
     }
-
     public getApp1(): PIXI.Application {
         return this.app1;
     }
-
     public getBoard() {
         return this.board;
     }
-
     public getBrickLayout() {
         return this.BRICK_LAYOUT;
     }
-
-
     generateNewBrick() {
-        // Nếu đã có viên gạch tiếp theo, hãy đặt nó làm viên gạch hiện tại
         if (this.nextBrick) {
             this.brick = this.nextBrick;
         } else {
-            // Nếu không, tạo một viên gạch mới
             this.brick = new Brick(Math.floor(Math.random() * 10) % this.BRICK_LAYOUT.length, this);
         }
-
-        // Tạo viên gạch tiếp theo
         this.generateNextBrick();
 
     }
-
     generateNextBrick() {
-        // Xóa viên gạch tiếp theo cũ
         if (this.nextBrick) {
             this.nextBrick.clearNextBrick();
         }
-        // Tạo ra ID ngẫu nhiên cho viên gạch tiếp theo
         let nextBrickId = Math.floor(Math.random() * 10) % this.BRICK_LAYOUT.length;
-
-        // Lưu trữ viên gạch tiếp theo
         this.nextBrick = new Brick(nextBrickId, this);
-
-        // Vẽ viên gạch tiếp theo
         this.nextBrick.drawNextBrick();
-        
     }
-
-
 } 
