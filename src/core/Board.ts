@@ -117,12 +117,12 @@ export class Board {
         this.score += this.calculateScore(completedRows);
         this.grid = [...newRows, ...latestGrid];
         this.scoreUpdateCallback();
-        //console.log("Current Score:", this.getScore());
 
         if (completedRows > 0) {
             this.playEatSound();
         }
     }
+
     countCompletedRows(): number {
         let completedRows = 0;
         for (let row = 0; row < this.grid.length; row++) {
@@ -133,19 +133,17 @@ export class Board {
         }
         return completedRows;
     }
-    
+
     displayCompletedRows(): void {
         const completedRows = this.countCompletedRows();
         console.log("Completed Rows:", completedRows);
-        // You can display this count in your game UI or wherever you prefer.
     }
-    
+
 
     calculateScore(rowsCount: number): number {
-
         return (rowsCount * (rowsCount + 1)) / 2 * 100;
     }
- 
+
     getScore(): number {
         return this.score;
     }
@@ -154,10 +152,8 @@ export class Board {
         this.scoreUpdateCallback = callback;
     }
 
-
-
-    playEatSound() {//âm thanh ăn điểm
-            const audio = new Audio('../assets/audio/258020__kodack__arcade-bleep-sound.mp3');
-            audio.play();
-        }
+    playEatSound() {
+        const audio = new Audio('../assets/audio/258020__kodack__arcade-bleep-sound.mp3');
+        audio.play();
+    }
 }
