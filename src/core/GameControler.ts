@@ -212,8 +212,9 @@ export default class GameController {
         this.app = new PIXI.Application({ width: this.COLS * this.BLOCK_SIZE, height: this.ROWS * this.BLOCK_SIZE, backgroundColor: 0xffffff });
         window.document.body.appendChild(this.app.view);
 
-        this.app1 = new PIXI.Application({ width: this.nextCOLS * this.nextBLOCK_SIZE, height: this.nextROWS * this.nextBLOCK_SIZE, backgroundColor: 0xffffff });
+        this.app1 = new PIXI.Application({ width: this.nextCOLS * this.nextBLOCK_SIZE, height: this.nextROWS * this.nextBLOCK_SIZE, backgroundColor: 0xFFA500 });
         window.document.body.appendChild(this.app1.view);
+        
         this.app1.view.classList.add('my-app1');
         const style = document.createElement('style');
         style.innerHTML = `
@@ -223,18 +224,16 @@ export default class GameController {
                 position: absolute;
                 left: 810px;
                 top: 149px;
+                z-index: 0;
             }
         `;
         document.head.appendChild(style);
         this.app.renderer.resize(560, 700);
-        this.setupUI();
         this.board = new Board(this);
         this.brick = new Brick(2, this);
         this.board.drawBoard();
         this.board.drawBoardNextApp1();
         this.score_Update();
-
-
         this.level_Update();
         this.Line_Update();
         this.startGame();
@@ -357,38 +356,18 @@ export default class GameController {
     public exitGame() {
         // Code xử lý kết thúc trò chơi
     }
-    public checkGameOver(): boolean {
-        const startRow = 0;
-        const startCol = this.COLS / 2;
-        const newBrickLayout = this.brick.layout[0]; 
-
-        for (let row = 0; row < newBrickLayout.length; row++) {
-            for (let col = 0; col < newBrickLayout[row].length; col++) {
-                if (newBrickLayout[row][col] !== this.COLOR_MAPPING[7] && this.board.grid[startRow + row][startCol + col] !== this.COLOR_MAPPING[7]) {
-                    // Một khối của viên gạch mới chồng chéo với một khối hiện có trên bảng
-                    return true; // Kết thúc trò chơi
-                }
-            }
+    private hideApp1(): void {
+        if (this.app1 && this.app1.view) {
+        // Ẩn view của app1 bằng cách sử dụng CSS
+        this.app1.view.style.visibility = 'hidden';
         }
-        return false; // Trò chơi chưa kết thúc
-    }
-
-    public endGame(): void {
-        if (this.checkGameOver()) {
-            if (this.brickDropInterval) {
-                clearInterval(this.brickDropInterval);
-                this.brickDropInterval = null;
-            }
-            //console.log('Kết Thúc Trò Chơi');
-            this.gameoversound();
-            this.showGameOverScreen();
-           
         }
-    }
-    private showGameOverScreen(): void {
-        const gameOverContainer = new PIXI.Container();
-        this.app.stage.addChild(gameOverContainer);
         
+    public showGameOverScreen(): void {
+        const gameOverContainer = new PIXI.Container();
+        
+        this.app.stage.addChild(gameOverContainer);
+        gameOverContainer.zIndex = 2;
         const gameOverTexture = PIXI.Texture.from('../assets/gameovertetris.png');
         const gameOverSprite = new PIXI.Sprite(gameOverTexture);
         gameOverSprite.width = 560; 
@@ -411,6 +390,10 @@ export default class GameController {
             location.reload(); 
         });
         gameOverContainer.addChild(playButton);
+        this.app.stage.addChildAt(gameOverContainer, this.app.stage.children.length);
+        this.app.stage.addChild(gameOverContainer);
+        this.hideApp1();
+
         }
     updateLevelAndSpeed() {
         if (this.board.score >= this.level * this.levelThreshold) {
@@ -476,10 +459,7 @@ export default class GameController {
         const audio = new Audio('../assets/audio/263006__dermotte__giant-step-1.mp3');
         audio.play();
     }
-    gameoversound() {//âm thanh khối gạch rơi xuống
-        const audio = new Audio('../assets/audio/gameover.mp3');
-        audio.play();
-    }
+
 
     score_Update() {
         const scoreTextStyle = new PIXI.TextStyle({
@@ -557,7 +537,7 @@ export default class GameController {
 
         // Tạo viên gạch tiếp theo
         this.generateNextBrick();
-        this.endGame();
+
     }
 
     generateNextBrick() {
@@ -573,7 +553,7 @@ export default class GameController {
 
         // Vẽ viên gạch tiếp theo
         this.nextBrick.drawNextBrick();
-
+        
     }
 
 

@@ -13,7 +13,7 @@ export class Brick {
     nextcolPos: number;
     nextrowPos: number;
     isLanded: boolean;
-    gameOver: boolean;
+    gameOver: any;
 
 
     constructor(id: number, game: Game) {
@@ -22,31 +22,17 @@ export class Brick {
         this.layout = this.game.getBrickLayout()[id];
         this.activeIndex = 0;
 
-        this.colPos = 3;
-        this.rowPos = 0;
+        this.colPos = 4;
+        this.rowPos = -1;
         this.nextcolPos = 1;
         this.nextrowPos = 1;
 
         this.board = this.game.getBoard();
         this.isLanded = false;
         this.isCurrentBrickLanded = false;
+        this.gameOver = false;
 
-        // document.addEventListener('keydown', (e: KeyboardEvent) => {
-        //     switch (e.code) {
-        //         case this.game.KEY_CODES.LEFT:
-        //             this.moveLeft();
-        //             break;
-        //         case this.game.KEY_CODES.RIGHT:
-        //             this.moveRight();
-        //             break;
-        //         case this.game.KEY_CODES.UP:
-        //             this.rotate();
-        //             break;
-        //         case this.game.KEY_CODES.DOWN:
-        //             this.moveDown();
-        //             break;
-        //     }
-        // });
+
     }
 
     draw() {
@@ -143,25 +129,16 @@ export class Brick {
             this.handleLanded();
             this.isCurrentBrickLanded = true;
 
-            if (!this.board.gameOver) {
-                this.game.generateNewBrick();
-            }
+            // if (!this.board.gameOver) {
+            this.game.generateNewBrick();
+            // }
 
         }
 
 
     }
 
-    rotate() {
-        if (this.isLanded) {
-            return;
-        }
-        if (!this.checkCollision(this.rowPos, this.colPos, this.layout[(this.activeIndex + 1) % 4])) {
-            this.clear();
-            this.activeIndex = (this.activeIndex + 1) % 4;
-            this.draw();
-        }
-    }
+
 
     fixPosition(nextRow: number, nextCol: number, nextLayout: any) {
         this.rowPos = nextRow - 1; // Move the brick to the next position
@@ -235,6 +212,7 @@ export class Brick {
 
     handleLanded() {
         if (this.rowPos <= 0) {
+            this.handleGameOver();
             return;
         }
         if (!this.isCurrentBrickLanded) {
@@ -250,8 +228,15 @@ export class Brick {
             this.board.drawBoard();
         }
     }
-
-
+    handleGameOver() {
+        this.gameOver = true;
+        this.game.showGameOverScreen();
+        this.gameoversound();
+    }
+    gameoversound() {//âm thanh khối gạch rơi xuống
+        const audio = new Audio('../assets/audio/gameover.mp3');
+        audio.play();
+    }
 
 
 } 
