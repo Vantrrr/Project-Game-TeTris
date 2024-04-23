@@ -29,7 +29,7 @@ export class Brick {
         this.isLanded = false;
         this.isCurrentBrickLanded = false;
 
-        // document.addEventListener('keydown', (e: KeyboardEvent) => {
+        // document.addEventListener('keydown', (e: KeyboardEvent) => {z
         //     switch (e.code) {
         //         case this.game.KEY_CODES.LEFT:
         //             this.moveLeft();
