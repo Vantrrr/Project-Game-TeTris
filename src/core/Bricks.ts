@@ -1,16 +1,22 @@
 import { Board } from './Board';
 import Game from './GameControler';
+import GameView from './GameView';
+import { fallBlockSound, rotateSound, gameoversound } from './sound';
+
 export class Brick {
     private game: Game;
     private board: Board;
     private isCurrentBrickLanded: boolean;
-
-    id: number;
-    layout: any;
-    activeIndex: number;
-    colPos: number;
-    rowPos: number;
-    isLanded: boolean;
+    private gameView: GameView;
+    public id: number;
+    public layout: any;
+    public activeIndex: number;
+    public colPos: number;
+    public rowPos: number;
+    public nextcolPos: number;
+    public nextrowPos: number;
+    public isLanded: boolean;
+    public gameOver: any;
 
 
     constructor(id: number, game: Game) {
@@ -18,28 +24,14 @@ export class Brick {
         this.game = game;
         this.layout = this.game.getBrickLayout()[id];
         this.activeIndex = 0;
-        this.colPos = 3;
+        this.colPos = 4;
         this.rowPos = -1;
+        this.nextcolPos = 1;
+        this.nextrowPos = 1;
         this.board = this.game.getBoard();
         this.isLanded = false;
         this.isCurrentBrickLanded = false;
-
-        document.addEventListener('keydown', (e: KeyboardEvent) => {
-            switch (e.code) {
-                case this.game.KEY_CODES.LEFT:
-                    this.moveLeft();
-                    break;
-                case this.game.KEY_CODES.RIGHT:
-                    this.moveRight();
-                    break;
-                case this.game.KEY_CODES.UP:
-                    this.rotate();
-                    break;
-                case this.game.KEY_CODES.DOWN:
-                    this.moveDown();
-                    break;
-            }
-        });
+        this.gameOver = false;
     }
 
     draw() {
@@ -52,11 +44,31 @@ export class Brick {
         }
     }
 
+    drawNextBrick() {
+        for (let row = 0; row < this.layout[this.activeIndex].length; row++) {
+            for (let col = 0; col < this.layout[this.activeIndex].length; col++) {
+                if (this.layout[this.activeIndex][row][col] !== this.game.WHITE_COLOR_ID) {
+                    this.board.drawCellNextApp1(col + this.nextcolPos, row + this.nextrowPos, this.game.COLOR_MAPPING[this.id]);
+                }
+            }
+        }
+    }
+
     clear() {
         for (let row = 0; row < this.layout[this.activeIndex].length; row++) {
             for (let col = 0; col < this.layout[this.activeIndex][row].length; col++) {
                 if (this.layout[this.activeIndex][row][col] !== this.game.WHITE_COLOR_ID) {
                     this.board.drawCell(col + this.colPos, row + this.rowPos, this.game.WHITE_COLOR_ID);
+                }
+            }
+        }
+    }
+
+    clearNextBrick() {
+        for (let row = 0; row < this.layout[this.activeIndex].length; row++) {
+            for (let col = 0; col < this.layout[this.activeIndex].length; col++) {
+                if (this.layout[this.activeIndex][row][col] !== this.game.WHITE_COLOR_ID) {
+                    this.board.drawCellNextApp1(col + this.nextcolPos, row + this.nextrowPos, this.game.WHITE_COLOR_ID);
                 }
             }
         }
@@ -102,7 +114,23 @@ export class Brick {
         if (this.isLanded) {
             return;
         }
+        if (!this.checkCollision(this.rowPos + 1, this.colPos, this.layout[this.activeIndex])) {
+            this.clear();
+            this.rowPos++;
+            // this.fallBlockSound();
+            this.draw();
+        } else {
+            this.handleLanded();
+            this.isCurrentBrickLanded = true;
+            this.game.generateNewBrick();
+        }
+    }
 
+
+
+    fixPosition(nextRow: number, nextCol: number, nextLayout: any) {
+        this.rowPos = nextRow - 1;
+        this.draw();
         if (!this.checkCollision(this.rowPos + 1, this.colPos, this.layout[this.activeIndex])) {
             this.clear();
             this.rowPos++;
@@ -112,8 +140,6 @@ export class Brick {
             this.isCurrentBrickLanded = true;
             this.game.generateNewBrick();
         }
-
-
     }
 
     rotate() {
@@ -124,8 +150,10 @@ export class Brick {
             this.clear();
             this.activeIndex = (this.activeIndex + 1) % 4;
             this.draw();
+            rotateSound();
         }
     }
+ 
 
     // Collision handling
     checkCollision(nextRow: number, nextCol: number, nextLayout: any) {
@@ -153,6 +181,10 @@ export class Brick {
     }
 
     handleLanded() {
+        if (this.rowPos <= 0) {
+            this.game.handleGameOver();
+            return;
+        }
         if (!this.isCurrentBrickLanded) {
             for (let row = 0; row < this.layout[this.activeIndex].length; row++) {
                 for (let col = 0; col < this.layout[this.activeIndex][row].length; col++) {
@@ -161,13 +193,14 @@ export class Brick {
                     }
                 }
             }
-
             this.board.handleCompletRows();
             this.board.drawBoard();
         }
     }
 
-
-
-
+    handleGameOver() {
+        this.gameOver = true;
+        this.game.showGameOverScreen();
+        gameoversound();
+    }
 } 

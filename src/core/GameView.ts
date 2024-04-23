@@ -1,16 +1,16 @@
 import * as PIXI from 'pixi.js';
-import { Board } from './Board';
+import GameController from './GameControler';
 export default class GameView {
+    private gameController: GameController;
     private app: PIXI.Application;
-    private board: any;
-    constructor(cols: number, rows: number, blockSize: number) {
-        this.app = new PIXI.Application({ width: cols * blockSize, height: rows * blockSize, backgroundColor: 0xFFFFFF });
-        window.document.body.appendChild(this.app.view);
-        this.app.renderer.resize(560, 700);
+
+    constructor(gameController: GameController) {
+        this.gameController = gameController;
+        this.app = gameController.getApp();
         this.setupUI();
     }
 
-    private setupUI() {
+    public setupUI() {
         const gameTitle = PIXI.Sprite.from('../assets/logo_tetris.png');
         gameTitle.position.set(325, 10);
         gameTitle.width = 200;
@@ -21,25 +21,20 @@ export default class GameView {
         const nextTextStyle = new PIXI.TextStyle({
             fontFamily: 'Press Start 2P',
             fontSize: 18,
-            fill: '##000000',
-            fontWeight: 'bold',
+            fill: '#ffffff',
+            stroke: '#ff0000',
+            strokeThickness: 6,
+            dropShadow: true,
+            dropShadowColor: '#000000',
+            dropShadowBlur: 4,
+            dropShadowAngle: Math.PI / 6,
+            dropShadowDistance: 6,
+
         });
 
         const nextText = new PIXI.Text('Next:', nextTextStyle);
         nextText.position.set(310, 100);
         this.app.stage.addChild(nextText);
-
-        // Text Level
-        const levelTextStyle = new PIXI.TextStyle({
-            fontFamily: 'Press Start 2P',
-            fontSize: 18,
-            fill: '##000000',
-            fontWeight: 'bold',
-        });
-
-        const levelText = new PIXI.Text('Level:', levelTextStyle);
-        levelText.position.set(310, 390);
-        this.app.stage.addChild(levelText);
 
         // button play game
         const stage = PIXI.Sprite.from('../assets/R.png');
@@ -50,12 +45,13 @@ export default class GameView {
         stage.interactive = true;
         stage.buttonMode = true;
         stage.on('click', () => {
-            location.reload();
+            // this.gameController.handlePlayButtonClick();
+            console.log("fixx ")
         });
 
         // button pause game
         const replay = PIXI.Sprite.from('../assets/replay.png');
-        replay.position.set(340, 490);
+        replay.position.set(340, 560);
         replay.width = 173
         replay.height = 60;
         this.app.stage.addChild(replay);
@@ -66,14 +62,14 @@ export default class GameView {
         });
         // button pause game
         const pause = PIXI.Sprite.from('../assets/pause.png');
-        pause.position.set(333, 560);
+        pause.position.set(333, 490);
         pause.width = 190;
         pause.height = 70;
         this.app.stage.addChild(pause);
         pause.interactive = true;
         pause.buttonMode = true;
         pause.on('click', () => {
-            location.reload();
+            this.gameController.handlePauseButtonClick();
         });
         //  button exit game
         const exit = PIXI.Sprite.from('../assets/exit.png');
@@ -87,16 +83,46 @@ export default class GameView {
             location.reload();
         });
 
-        //  button exit game
-        const arow = PIXI.Sprite.from('../assets/arow2.png');
-        arow.position.set(20, 610);
+        const arow = PIXI.Sprite.from('../assets/arowpress.png');
+        arow.position.set(50, 600);
         arow.width = 220;
-        arow.height = 90;
+        arow.height = 100;
         this.app.stage.addChild(arow);
         arow.interactive = true;
         arow.buttonMode = true;
     }
-    
+
+    public showGameOverScreen(): void {
+        const gameOverContainer = new PIXI.Container();
+        this.app.stage.addChild(gameOverContainer);
+        gameOverContainer.zIndex = 2;
+        const gameOverTexture = PIXI.Texture.from('../assets/gameovertetris.png');
+        const gameOverSprite = new PIXI.Sprite(gameOverTexture);
+        gameOverSprite.width = 560;
+        gameOverSprite.height = 700;
+        gameOverSprite.anchor.set(0.5);
+        gameOverSprite.position.set(this.app.screen.width / 2, this.app.screen.height / 2);
+        gameOverContainer.addChild(gameOverSprite);
+
+        const playButtonTexture = PIXI.Texture.from('../assets/R.png');
+        const playButton = new PIXI.Sprite(playButtonTexture);
+        playButton.anchor.set(0.5);
+        playButton.position.set(275, 500);
+        playButton.width = 175;
+        playButton.height = 55;
+
+        playButton.interactive = true;
+        playButton.buttonMode = true;
+        playButton.on('click', () => {
+            location.reload();
+        });
+
+        gameOverContainer.addChild(playButton);
+        this.app.stage.addChildAt(gameOverContainer, this.app.stage.children.length);
+        this.app.stage.addChild(gameOverContainer);
+        this.gameController.hideApp1();
+
+    }
 
     public getApp(): PIXI.Application {
         return this.app;
