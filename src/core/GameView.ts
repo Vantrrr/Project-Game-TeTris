@@ -1,8 +1,12 @@
 import * as PIXI from 'pixi.js';
 import GameController from './GameControler';
+import { Board } from './Board';
+
 export default class GameView {
     private gameController: GameController;
     private app: PIXI.Application;
+    public isGameOverScreenVisible: boolean = false;
+
 
     constructor(gameController: GameController) {
         this.gameController = gameController;
@@ -92,6 +96,7 @@ export default class GameView {
         arow.buttonMode = true;
     }
 
+
     public showGameOverScreen(): void {
         const gameOverContainer = new PIXI.Container();
         this.app.stage.addChild(gameOverContainer);
@@ -103,6 +108,21 @@ export default class GameView {
         gameOverSprite.anchor.set(0.5);
         gameOverSprite.position.set(this.app.screen.width / 2, this.app.screen.height / 2);
         gameOverContainer.addChild(gameOverSprite);
+
+        const bgScore = PIXI.Texture.from('../assets/bgscore.jpg');
+        const score = new PIXI.Sprite(bgScore);
+        score.anchor.set(0.5);
+        score.position.set(275, 400);
+        score.width = 300;
+        score.height = 130;
+
+        score.interactive = true;
+        score.buttonMode = true;
+        score.on('click', () => {
+            location.reload();
+        });
+
+        gameOverContainer.addChild(score);
 
         const playButtonTexture = PIXI.Texture.from('../assets/R.png');
         const playButton = new PIXI.Sprite(playButtonTexture);
@@ -118,11 +138,24 @@ export default class GameView {
         });
 
         gameOverContainer.addChild(playButton);
-        this.app.stage.addChildAt(gameOverContainer, this.app.stage.children.length);
-        this.app.stage.addChild(gameOverContainer);
-        this.gameController.hideApp1();
 
+        // Tạo một đối tượng Text để hiển thị điểm số
+        const scoreTextStyle = new PIXI.TextStyle({
+            fontFamily: 'Arial',
+            fontSize: 24,
+            fill: '#ffffff',
+            fontWeight: 'bold',
+        });
+        const scoreText = new PIXI.Text(localStorage.getItem('playerName') + " " + localStorage.getItem('score') + " điểm!", scoreTextStyle);
+        scoreText.position.set(200, 370);
+        gameOverContainer.addChild(scoreText);
+
+        // Gọi hàm hideApp1() nếu nó tồn tại
+        if (this.gameController.hideApp1) {
+            this.gameController.hideApp1();
+        }
     }
+
 
     public getApp(): PIXI.Application {
         return this.app;

@@ -181,7 +181,10 @@ export class Board {
             scoreText.position.set(310, 380);
             this.game.getApp().stage.addChild(scoreText);
         }
+        // Lưu điểm số vào localStorage
+        localStorage.setItem('score', this.score.toString());
     }
+
 
     getScore(): number {
         return this.score;

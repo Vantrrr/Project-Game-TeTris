@@ -153,7 +153,7 @@ export class Brick {
             rotateSound();
         }
     }
- 
+
 
     // Collision handling
     checkCollision(nextRow: number, nextCol: number, nextLayout: any) {
@@ -200,7 +200,7 @@ export class Brick {
 
     handleGameOver() {
         this.gameOver = true;
-        this.game.showGameOverScreen();
+        this.gameView.showGameOverScreen();
         gameoversound();
     }
 } 

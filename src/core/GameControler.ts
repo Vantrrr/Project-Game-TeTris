@@ -253,6 +253,10 @@ export default class GameController {
         this.exitGame();
     }
     startGame() {
+        let playerName: string | null = prompt("Nhập tên của bạn:");
+        if (playerName) {
+            localStorage.setItem('playerName', playerName);
+        }
         this.brickDropInterval = setInterval(() => {
             this.brick.moveDown();
             this.generateNextBrick();
