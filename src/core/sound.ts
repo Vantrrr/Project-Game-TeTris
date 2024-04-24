@@ -1,4 +1,8 @@
 
+
+
+
+
     export function  rotateSound() {//âm thanh xoay khối gạch 
         const audio = new Audio('../assets/audio/rotate.mp3');
         audio.play();
@@ -15,7 +19,8 @@
         const audio = new Audio('../assets/audio/258020__kodack__arcade-bleep-sound.mp3');
         audio.play();
     }
-    export function gameoversound() {//âm thanh khối gạch rơi xuống
+     export function gameoversound() {//âm thanh khối gạch rơi xuống
         const audio = new Audio('../assets/audio/gameover.mp3');
         audio.play();
     }
+   
