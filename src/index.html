@@ -14,88 +14,10 @@
     <link rel="stylesheet" href="styles/main.css">
     <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
     <title>Project Game</title>
-    <style>
-        #game-container {
-            position: relative;
-        }
-
-        #form-container {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            padding: 10px;
-            background-color: rgba(255, 255, 255, 0.8);
-            border-radius: 5px;
-        }
-
-        #form-container label,
-        #form-container input,
-        #form-container button {
-            display: block;
-            margin-bottom: 5px;
-        }
-
-        #form-container button {
-            padding: 5px 10px;
-        }
-    </style>
+  
 </head>
 
 <body>
-    <div id="game-container">
-        <!-- Đặt nội dung trò chơi của bạn ở đây -->
-    </div>
-
-    <div id="form-container">
-        <label for="player-name">Tên người chơi:</label>
-        <input type="text" id="player-name">
-        <button id="save-button">Lưu</button>
-    </div>
-
-    <script>
-        // Tạo sự kiện click cho nút "Lưu"
-        document.getElementById('save-button').addEventListener('click', function() {
-            var playerName = document.getElementById('player-name').value;
-            if (playerName.trim() !== '') {
-                savePlayerName(playerName);
-            }
-        });
-
-        // Hàm để xử lý tên người chơi
-        function savePlayerName(playerName) {
-            // Xử lý tên người chơi theo nhu cầu
-            console.log('Lưu tên người chơi:', playerName);
-        }
-    </script>
-    <script>
-    // Hàm để xử lý khi trò chơi kết thúc
-    function gameEnd(score) {
-        var playerName = document.getElementById('player-name').value;
-        if (playerName.trim() !== '') {
-            savePlayerData(playerName, score);
-        }
-    }
-
-    // Hàm để lưu tên người chơi và điểm số vào localStorage
-    function savePlayerData(playerName, score) {
-        var playerData = {
-            name: playerName,
-            score: score
-        };
-
-        var players = [];
-        var storedPlayers = localStorage.getItem('players');
-        if (storedPlayers) {
-            players = JSON.parse(storedPlayers);
-        }
-        players.push(playerData);
-        localStorage.setItem('players', JSON.stringify(players));
-
-        console.log('Lưu tên người chơi:', playerData.name);
-        console.log('Dữ liệu người chơi đã được lưu trữ:', players);
-    }
-</script>
-
 </body>
 
 </html>
