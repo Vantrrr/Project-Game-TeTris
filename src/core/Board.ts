@@ -12,6 +12,7 @@ export class Board {
 
     boardContainerApp: PIXI.Container<PIXI.DisplayObject>;
     boardContainerApp1: PIXI.Container<PIXI.DisplayObject>;
+    gameOver: any;
 
     constructor(game: Game) {
         this.game = game;
