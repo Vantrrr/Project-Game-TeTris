@@ -200,7 +200,7 @@ export class Brick {
 
     handleGameOver() {
         this.gameOver = true;
-        this.game.showGameOverScreen();
+        this.gameView.showGameOverScreen();
         gameoversound();
     }
 } 

@@ -17,6 +17,7 @@ export default class GameController {
     public readonly nextCOLS: number = 6;
     public readonly nextROWS: number = 5;
     public readonly nextBLOCK_SIZE: number = 25;
+    public isPaused: boolean = false;
     public readonly COLOR_MAPPING = [
         0xFF0000, // red
         0xFFA500, // orange
@@ -221,13 +222,13 @@ export default class GameController {
                 touch-action: none;
                 cursor: inherit;
                 position: absolute;
-                left: 810px;
+                left: 835px;
                 top: 149px;
                 z-index: 0;
             }
         `;
         document.head.appendChild(style);
-        this.app.renderer.resize(560, 700);
+        this.app.renderer.resize(530, 700);
         this.gameView = new GameView(this);
         this.board = new Board(this);
         this.brick = new Brick(this.random(this.BRICK_LAYOUT.length), this);
@@ -243,14 +244,17 @@ export default class GameController {
     }
 
 
-    private handlePlayButtonClick() {
+    public handlePlayButtonClick() {
         this.startGame();
     }
     public handlePauseButtonClick() {
-        this.pauseGame();
-    }
-    private handleExitButtonClick() {
-        this.exitGame();
+        if (!this.isPaused) {
+            this.pauseGame();
+            this.isPaused = true;
+        } else {
+            this.resumeGame();
+            this.isPaused = false;
+        }
     }
     startGame() {
         this.brickDropInterval = setInterval(() => {
@@ -265,6 +269,16 @@ export default class GameController {
         if (this.brickDropInterval) {
             clearInterval(this.brickDropInterval);
             this.brickDropInterval = null;
+        }
+    }
+    public resumeGame() {
+        if (!this.brickDropInterval) {
+            this.brickDropInterval = setInterval(() => {
+                this.brick.moveDown();
+                this.updateLevelAndSpeed();
+                this.board.updateCompletedLinesDisplay();
+                this.board.updateScoreDisplay();
+            }, this.baseDropInterval);
         }
     }
     public exitGame() {
@@ -330,10 +344,19 @@ export default class GameController {
 
     level_Update() {
         const LevelTextStyle = new PIXI.TextStyle({
-            fontFamily: 'Press Start 2P',
-            fontSize: 18,
-            fill: '##000000',
-            fontWeight: 'bold',
+            fontFamily: 'Press Start 2P', 
+                fontSize: 18, 
+                fill: '#000000', 
+                fontWeight: 'bold', 
+                stroke: '#ffffff', 
+                strokeThickness: 3, 
+                dropShadow: true, 
+                dropShadowColor: '#000000',
+                dropShadowBlur: 4, 
+                dropShadowAngle: Math.PI / 6,
+                dropShadowDistance: 6, 
+                wordWrap: true, 
+                wordWrapWidth: 440, 
         });
         const LevelText = new PIXI.Text('Level:' + this.level, LevelTextStyle);
         LevelText.name = "LEVEL";

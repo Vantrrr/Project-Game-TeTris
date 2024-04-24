@@ -142,14 +142,23 @@ export class Board {
             completedLinesText.text = 'Lines: ' + this.completedLines;
         } else {
             const completedLinesTextStyle = new PIXI.TextStyle({
-                fontFamily: 'Press Start 2P',
-                fontSize: 18,
-                fill: '#000000',
-                fontWeight: 'bold',
+                fontFamily: 'Press Start 2P', 
+                fontSize: 18, 
+                fill: '#000000', 
+                fontWeight: 'bold', 
+                stroke: '#ffffff', 
+                strokeThickness: 3, 
+                dropShadow: true, 
+                dropShadowColor: '#000000',
+                dropShadowBlur: 4, 
+                dropShadowAngle: Math.PI / 6,
+                dropShadowDistance: 6, 
+                wordWrap: true, 
+                wordWrapWidth: 440, 
             });
             completedLinesText = new PIXI.Text('Lines: ' + this.completedLines, completedLinesTextStyle);
             completedLinesText.name = 'completedLinesText';
-            completedLinesText.position.set(310, 350);
+            completedLinesText.position.set(310, 370);
             this.game.getApp().stage.addChild(completedLinesText);
 
         }
@@ -171,14 +180,23 @@ export class Board {
             scoreText.text = 'Score: ' + this.score;
         } else {
             const scoreTextStyle = new PIXI.TextStyle({
-                fontFamily: 'Press Start 2P',
-                fontSize: 18,
-                fill: '#000000',
-                fontWeight: 'bold',
+                fontFamily: 'Press Start 2P', 
+                fontSize: 18, 
+                fill: '#000000', 
+                fontWeight: 'bold', 
+                stroke: '#ffffff', 
+                strokeThickness: 3, 
+                dropShadow: true, 
+                dropShadowColor: '#000000',
+                dropShadowBlur: 4, 
+                dropShadowAngle: Math.PI / 6,
+                dropShadowDistance: 6, 
+                wordWrap: true, 
+                wordWrapWidth: 440, 
             });
             scoreText = new PIXI.Text('Score: ' + this.score, scoreTextStyle);
             scoreText.name = 'scoreText';
-            scoreText.position.set(310, 380);
+            scoreText.position.set(310, 420);
             this.game.getApp().stage.addChild(scoreText);
         }
     }
