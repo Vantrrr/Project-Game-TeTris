@@ -121,6 +121,32 @@ export default class GameView {
     );
     gameOverContainer.addChild(gameOverSprite);
 
+    const bgScore = PIXI.Texture.from('../assets/bgscore.jpg');
+        const score = new PIXI.Sprite(bgScore);
+        score.anchor.set(0.5);
+        score.position.set(275, 400);
+        score.width = 300;
+        score.height = 130;
+
+        score.interactive = true;
+        score.buttonMode = true;
+        score.on('click', () => {
+            location.reload();
+        });
+    gameOverContainer.addChild(score);
+    
+
+    // Tạo một đối tượng Text để hiển thị điểm số
+        const scoreTextStyle = new PIXI.TextStyle({
+            fontFamily: 'Arial',
+            fontSize: 24,
+            fill: '#ffffff',
+            fontWeight: 'bold',
+        });
+        const scoreText = new PIXI.Text(localStorage.getItem('playerName') + " " + localStorage.getItem('score') + " điểm!", scoreTextStyle);
+        scoreText.position.set(200, 370);
+        gameOverContainer.addChild(scoreText);
+
     // Thêm nút Retry
     const retryButtonTexture = PIXI.Texture.from("../assets/retry.png");
     const retryButton = new PIXI.Sprite(retryButtonTexture);
