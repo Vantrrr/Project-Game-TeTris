@@ -162,6 +162,7 @@ export class Board {
             this.game.getApp().stage.addChild(completedLinesText);
 
         }
+        localStorage.setItem('score', this.score.toString());
     }
 
     displayCompletedRows(): void {
