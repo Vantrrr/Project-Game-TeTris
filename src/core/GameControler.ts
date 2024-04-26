@@ -237,6 +237,8 @@ export default class GameController {
         this.level_Update();
         this.startGame();
         this.keyboard();
+        this.gameView.showGameStart();
+        this.generateNextBrick();
     }
 
     private random(max: number): number {
@@ -257,10 +259,10 @@ export default class GameController {
         }
     }
     startGame() {
-         let playerName: string | null = prompt("Nhập tên của bạn:");
-        if (playerName) {
-            localStorage.setItem('playerName', playerName);
-        }
+        //  let playerName: string | null = prompt("Nhập tên của bạn:");
+        // if (playerName) {
+        //     localStorage.setItem('playerName', playerName);
+        // }
         this.brickDropInterval = setInterval(() => {
             this.brick.moveDown();
             this.generateNextBrick();
@@ -279,6 +281,7 @@ export default class GameController {
         if (!this.brickDropInterval) {
             this.brickDropInterval = setInterval(() => {
                 this.brick.moveDown();
+              //  this.generateNextBrick();
                 this.updateLevelAndSpeed();
                 this.board.updateCompletedLinesDisplay();
                 this.board.updateScoreDisplay();
@@ -293,7 +296,11 @@ export default class GameController {
             this.app1.view.style.visibility = 'hidden';
         }
     }
-
+    public showApp1(): void {
+        if (this.app1 && this.app1.view) {
+            this.app1.view.style.visibility = 'visible';
+        }
+    }  
     updateLevelAndSpeed() {
         if (this.board.score >= this.level * this.levelThreshold) {
             this.level++;
@@ -375,17 +382,7 @@ export default class GameController {
         }
     }
 
-    Line_Update() {
-        const completedRows = this.board.countCompletedRows();
-        const completedRowsText = new PIXI.Text('Lines: ' + completedRows, {
-            fontFamily: 'Arial',
-            fontSize: 24,
-            fill: '##000000',
-            align: 'center'
-        });
-        completedRowsText.position.set(310, 300); // Cập nhật vị trí phù hợp trên màn hình
-        this.app.stage.addChild(completedRowsText);
-    }
+
 
     handleGameOver() {
         this.brick.gameOver = true;
