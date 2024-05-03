@@ -1,17 +1,18 @@
-import * as PIXI from 'pixi.js';
-import Game from './GameControler';
-import { Brick } from './Bricks';
-import { playEatSound } from './sound';
+import * as PIXI from "pixi.js";
+import Game from "./GameControler";
+import { Brick } from "./Bricks";
+import { playEatSound } from "./sound";
 
 export class Board {
     private app: PIXI.Application;
     private app1: PIXI.Application;
-    private boardContainerApp: PIXI.Container<PIXI.DisplayObject>;
-    private boardContainerApp1: PIXI.Container<PIXI.DisplayObject>;
     private game: Game;
     public grid: any;
     public score: number;
     public completedLines: number = 0;
+
+    boardContainerApp: PIXI.Container<PIXI.DisplayObject>;
+    boardContainerApp1: PIXI.Container<PIXI.DisplayObject>;
 
     constructor(game: Game) {
         this.game = game;
@@ -36,7 +37,9 @@ export class Board {
     }
 
     generateWhiteBoard() {
-        return Array.from({ length: this.game.ROWS }, () => Array(this.game.COLS).fill(this.game.WHITE_COLOR_ID));
+        return Array.from({ length: this.game.ROWS }, () =>
+            Array(this.game.COLS).fill(this.game.WHITE_COLOR_ID)
+        );
     }
 
     drawCell(xAxis: number, yAxis: number, colorID: number) {
@@ -45,10 +48,22 @@ export class Board {
         const y = yAxis * this.game.BLOCK_SIZE;
         const size = this.game.BLOCK_SIZE;
         const borderSize = 0.5;
+        const color = this.game.COLOR_MAPPING[colorID];
+
+        // Vẽ viền
         cellGraphics.lineStyle(borderSize, 0x000000, 1);
+        cellGraphics.drawRect(x, y, size, size);
+
+        // Vẽ màu nền
         cellGraphics.beginFill(colorID);
-        cellGraphics.drawRect(x + borderSize, y + borderSize, size - 2 * borderSize, size - 2 * borderSize);
+        cellGraphics.drawRect(
+            x + borderSize,
+            y + borderSize,
+            size - 2 * borderSize,
+            size - 2 * borderSize
+        );
         cellGraphics.endFill();
+
         this.boardContainerApp.addChild(cellGraphics);
     }
 
@@ -67,11 +82,21 @@ export class Board {
         const size = this.game.nextBLOCK_SIZE;
         const borderSize = 0.5;
         const color = this.game.COLOR_MAPPING[colorID];
+
+        // Vẽ viền
         cellGraphics.lineStyle(borderSize, 0x000000, 1);
         cellGraphics.drawRect(x, y, size, size);
+
+        // Vẽ màu nền
         cellGraphics.beginFill(colorID);
-        cellGraphics.drawRect(x + borderSize, y + borderSize, size - 2 * borderSize, size - 2 * borderSize);
+        cellGraphics.drawRect(
+            x + borderSize,
+            y + borderSize,
+            size - 2 * borderSize,
+            size - 2 * borderSize
+        );
         cellGraphics.endFill();
+
         this.boardContainerApp1.addChild(cellGraphics);
     }
 
@@ -83,12 +108,22 @@ export class Board {
         }
     }
 
-    handleCompleteRows() {
+    resetBoardNextApp1() {
+        for (let row = 0; row < this.grid.length; row++) {
+            for (let col = 0; col < this.grid[0].length; col++) {
+                this.grid[row][col] = this.game.WHITE_COLOR_ID;
+            }
+        }
+    }
+
+    handleCompletRows() {
         const latestGrid = this.grid.filter((row: any[]) => {
-            return row.some(col => col === this.game.WHITE_COLOR_ID);
+            return row.some((col) => col === this.game.WHITE_COLOR_ID);
         });
         const completedRows = this.game.ROWS - latestGrid.length;
-        const newRows = Array.from({ length: completedRows }, () => Array(this.game.COLS).fill(this.game.WHITE_COLOR_ID));
+        const newRows = Array.from({ length: completedRows }, () =>
+            Array(this.game.COLS).fill(this.game.WHITE_COLOR_ID)
+        );
 
         this.score += this.calculateScore(completedRows);
         this.updateScoreDisplay();
@@ -100,42 +135,12 @@ export class Board {
         this.updateCompletedLinesDisplay();
     }
 
-    calculateScore(rowsCount: number): number {
-        return (rowsCount * (rowsCount + 1)) / 2 * 100;
-    }
-
-    updateScoreDisplay() {
-        let scoreText = this.game.getApp().stage.getChildByName('scoreText') as PIXI.Text;
-        if (scoreText) {
-            scoreText.text = 'Score: ' + this.score;
-        } else {
-            const scoreTextStyle = new PIXI.TextStyle({
-                fontFamily: 'Press Start 2P',
-                fontSize: 18,
-                fill: '#000000',
-                fontWeight: 'bold',
-                stroke: '#ffffff',
-                strokeThickness: 3,
-                dropShadow: true,
-                dropShadowColor: '#000000',
-                dropShadowBlur: 4,
-                dropShadowAngle: Math.PI / 6,
-                dropShadowDistance: 6,
-                wordWrap: true,
-                wordWrapWidth: 440,
-            });
-            scoreText = new PIXI.Text('Score: ' + this.score, scoreTextStyle);
-            scoreText.name = 'scoreText';
-            scoreText.position.set(310, 380);
-            this.game.getApp().stage.addChild(scoreText);
-        }
-        localStorage.setItem('score', this.score.toString());
-    }
-
     countCompletedRows() {
         let completedRows = 0;
         for (let row = 0; row < this.grid.length; row++) {
-            const isCompleted = this.grid[row].every((col: number) => col !== this.game.WHITE_COLOR_ID);
+            const isCompleted = this.grid[row].every(
+                (col: number) => col !== this.game.WHITE_COLOR_ID
+            );
             if (isCompleted) {
                 completedRows++;
             }
@@ -143,35 +148,83 @@ export class Board {
     }
 
     updateCompletedLinesDisplay() {
-        let completedLinesText = this.game.getApp().stage.getChildByName('completedLinesText') as PIXI.Text;
+        let completedLinesText = this.game
+            .getApp()
+            .stage.getChildByName("completedLinesText") as PIXI.Text;
         if (completedLinesText) {
-            completedLinesText.text = 'Lines: ' + this.completedLines;
+            completedLinesText.text = "Lines: " + this.completedLines;
         } else {
             const completedLinesTextStyle = new PIXI.TextStyle({
-                fontFamily: 'Press Start 2P',
+                fontFamily: "Press Start 2P",
                 fontSize: 18,
-                fill: '#000000',
-                fontWeight: 'bold',
-                stroke: '#ffffff',
+                fill: "#000000",
+                fontWeight: "bold",
+                stroke: "#ffffff",
                 strokeThickness: 3,
                 dropShadow: true,
-                dropShadowColor: '#000000',
+                dropShadowColor: "#000000",
                 dropShadowBlur: 4,
                 dropShadowAngle: Math.PI / 6,
                 dropShadowDistance: 6,
                 wordWrap: true,
                 wordWrapWidth: 440,
             });
-            completedLinesText = new PIXI.Text('Lines: ' + this.completedLines, completedLinesTextStyle);
-            completedLinesText.name = 'completedLinesText';
-            completedLinesText.position.set(310, 350);
+            completedLinesText = new PIXI.Text(
+                "Lines: " + this.completedLines,
+                completedLinesTextStyle
+            );
+            completedLinesText.name = "completedLinesText";
+            completedLinesText.position.set(310, 370);
             this.game.getApp().stage.addChild(completedLinesText);
-
         }
+        localStorage.setItem("score", this.score.toString());
     }
 
     displayCompletedRows(): void {
         const completedRows = this.countCompletedRows();
         console.log("Completed Rows:", completedRows);
+    }
+
+    calculateScore(rowsCount: number): number {
+        return ((rowsCount * (rowsCount + 1)) / 2) * 100;
+    }
+
+    updateScoreDisplay() {
+        let scoreText = this.game
+            .getApp()
+            .stage.getChildByName("scoreText") as PIXI.Text;
+        if (scoreText) {
+            scoreText.text = "Score: " + this.score;
+        } else {
+            const scoreTextStyle = new PIXI.TextStyle({
+                fontFamily: "Press Start 2P",
+                fontSize: 18,
+                fill: "#000000",
+                fontWeight: "bold",
+                stroke: "#ffffff",
+                strokeThickness: 3,
+                dropShadow: true,
+                dropShadowColor: "#000000",
+                dropShadowBlur: 4,
+                dropShadowAngle: Math.PI / 6,
+                dropShadowDistance: 6,
+                wordWrap: true,
+                wordWrapWidth: 440,
+            });
+            scoreText = new PIXI.Text("Score: " + this.score, scoreTextStyle);
+            scoreText.name = "scoreText";
+            scoreText.position.set(310, 420);
+            this.game.getApp().stage.addChild(scoreText);
+        }
+    }
+    //   clearBoard() {
+    //     this.boardContainerApp.removeChildren();
+    //   }
+
+    clearBoardNextApp1() {
+        this.boardContainerApp1.removeChildren();
+    }
+    getScore(): number {
+        return this.score;
     }
 }

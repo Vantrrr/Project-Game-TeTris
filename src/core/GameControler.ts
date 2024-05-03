@@ -228,12 +228,12 @@ export default class GameController {
         this.gameView = new GameView(this);
         this.board = new Board(this);
         this.brick = new Brick(this.random(this.BRICK_LAYOUT.length), this);
+        this.board.drawCell()
         this.board.drawBoard();
         this.board.drawBoardNextApp1();
         this.level_Update();
-        this.startGame();
+        // this.startGame();
         this.keyboard();
-        // this.board.drawCell(1, 1, 4);
     }
 
     private random(max: number): number {
