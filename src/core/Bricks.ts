@@ -1,7 +1,7 @@
 import { Board } from './Board';
 import Game from './GameControler';
 import GameView from './GameView';
-import { rotateSound, gameOverSound } from './sound';
+import { rotateSound, gameoversound } from './sound';
 
 export class Brick {
     private game: Game;
@@ -188,7 +188,7 @@ export class Brick {
                     }
                 }
             }
-            this.board.handleCompleteRows();
+            this.board.handleCompletRows();
             this.board.drawBoard();
         }
     }
@@ -196,6 +196,6 @@ export class Brick {
     handleGameOver() {
         this.gameOver = true;
         this.gameView.showGameOverScreen();
-        gameOverSound();
+        gameoversound();
     }
 } 

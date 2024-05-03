@@ -2,7 +2,7 @@ import * as PIXI from 'pixi.js';
 import { Board } from './Board';
 import { Brick } from './Bricks';
 import GameView from './GameView';
-import { fallBlockSound, fallFastSound, gameOverSound } from './sound';
+import { fallBlockSound, fallFastSound, gameoversound } from './sound';
 export default class GameController {
     private gameView: GameView;
     private board: Board;
@@ -228,11 +228,10 @@ export default class GameController {
         this.gameView = new GameView(this);
         this.board = new Board(this);
         this.brick = new Brick(this.random(this.BRICK_LAYOUT.length), this);
-        this.board.drawCell()
         this.board.drawBoard();
         this.board.drawBoardNextApp1();
         this.level_Update();
-        // this.startGame();
+        this.startGame();
         this.keyboard();
     }
 
@@ -385,7 +384,7 @@ export default class GameController {
     handleGameOver() {
         this.brick.gameOver = true;
         this.gameView.showGameOverScreen();
-        gameOverSound();
+        gameoversound();
     }
 
     public getApp(): PIXI.Application {
