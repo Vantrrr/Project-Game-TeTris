@@ -17,7 +17,6 @@ export default class GameView {
     gameTitle.height = 50;
     this.app.stage.addChild(gameTitle);
 
-    // Text NEXT
     const nextTextStyle = new PIXI.TextStyle({
       fontFamily: "Press Start 2P",
       fontSize: 18,
@@ -35,7 +34,6 @@ export default class GameView {
     nextText.position.set(310, 90);
     this.app.stage.addChild(nextText);
 
-    // button replay game
     const replay = PIXI.Sprite.from("../assets/replay.png");
     replay.position.set(310, 550);
     replay.width = 173;
@@ -46,6 +44,7 @@ export default class GameView {
     replay.on("click", () => {
       location.reload();
     });
+
     const exit = PIXI.Sprite.from("../assets/exit.png");
     exit.position.set(285, 620);
     exit.width = 230;
@@ -56,14 +55,12 @@ export default class GameView {
     exit.on("click", () => {
       window.close();
     });
-    // Tạo texture từ hình ảnh chứa cả pause và resume
+
     const combinedTexture = PIXI.Texture.from("../assets/pauseresume.png");
     const pauseRect = new PIXI.Rectangle(0, 0, 200, 400);
     const resumeRect = new PIXI.Rectangle(200, 0, 200, 400);
-
     const pauseTexture = new PIXI.Texture(combinedTexture.baseTexture, pauseRect);
     const resumeTexture = new PIXI.Texture(combinedTexture.baseTexture, resumeRect);
-
     const pauseButton = new PIXI.Sprite(pauseTexture);
     pauseButton.position.set(310, 430);
     pauseButton.width = 70;
@@ -76,7 +73,6 @@ export default class GameView {
       pauseButton.texture = this.gameController.isPaused ? resumeTexture : pauseTexture;
     });
 
-    // Tạo texture từ hình ảnh chứa cả sound on và sound off
     const combinedSoundTexture = PIXI.Texture.from("../assets/soundimage.png");
     const soundOffRect = new PIXI.Rectangle(0, 0, 1920 / 2, 960);
     const soundOnRect = new PIXI.Rectangle(1920 / 2, 0, 1920 / 2, 960);
@@ -87,10 +83,8 @@ export default class GameView {
     soundButton.width = 85;
     soundButton.height = 85;
     this.app.stage.addChild(soundButton);
-
     soundButton.interactive = true;
     soundButton.buttonMode = true;
-
     let isSoundOn = true;
     soundButton.on("pointerdown", () => {
       isSoundOn = !isSoundOn;
@@ -121,7 +115,30 @@ export default class GameView {
     );
     gameOverContainer.addChild(gameOverSprite);
 
-    // Thêm nút Retry
+    const bgScore = PIXI.Texture.from('../assets/bgscore.jpg');
+    const score = new PIXI.Sprite(bgScore);
+    score.anchor.set(0.5);
+    score.position.set(260, 400);
+    score.width = 300;
+    score.height = 130;
+
+    score.interactive = true;
+    score.buttonMode = true;
+    score.on('click', () => {
+      location.reload();
+    });
+    gameOverContainer.addChild(score);
+
+    const scoreTextStyle = new PIXI.TextStyle({
+      fontFamily: 'Arial',
+      fontSize: 24,
+      fill: '#ffffff',
+      fontWeight: 'bold',
+    });
+    const scoreText = new PIXI.Text(localStorage.getItem('playerName') + " " + localStorage.getItem('score') + " điểm!", scoreTextStyle);
+    scoreText.position.set(190, 370);
+    gameOverContainer.addChild(scoreText);
+
     const retryButtonTexture = PIXI.Texture.from("../assets/retry.png");
     const retryButton = new PIXI.Sprite(retryButtonTexture);
     retryButton.anchor.set(0.5);
@@ -131,13 +148,10 @@ export default class GameView {
     retryButton.interactive = true;
     retryButton.buttonMode = true;
     retryButton.on("click", () => {
-      // location.reload();
-      this.gameController.handlePlayButtonClick();
-      console.log("eeeee")
+      location.reload();
     });
     gameOverContainer.addChild(retryButton);
 
-    // Thêm nút Quit
     const quitButtonTexture = PIXI.Texture.from("../assets/quit.png");
     const quitButton = new PIXI.Sprite(quitButtonTexture);
     quitButton.anchor.set(0.5);

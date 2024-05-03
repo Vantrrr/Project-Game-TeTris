@@ -1,7 +1,7 @@
 import { Board } from './Board';
 import Game from './GameControler';
 import GameView from './GameView';
-import { fallBlockSound, rotateSound, gameoversound } from './sound';
+import { rotateSound, gameOverSound } from './sound';
 
 export class Brick {
     private game: Game;
@@ -13,8 +13,8 @@ export class Brick {
     public activeIndex: number;
     public colPos: number;
     public rowPos: number;
-    public nextcolPos: number;
-    public nextrowPos: number;
+    public nextColPos: number;
+    public nextRowPos: number;
     public isLanded: boolean;
     public gameOver: any;
 
@@ -26,8 +26,8 @@ export class Brick {
         this.activeIndex = 0;
         this.colPos = 4;
         this.rowPos = -1;
-        this.nextcolPos = 1;
-        this.nextrowPos = 1;
+        this.nextColPos = 1;
+        this.nextRowPos = 1;
         this.board = this.game.getBoard();
         this.isLanded = false;
         this.isCurrentBrickLanded = false;
@@ -48,7 +48,7 @@ export class Brick {
         for (let row = 0; row < this.layout[this.activeIndex].length; row++) {
             for (let col = 0; col < this.layout[this.activeIndex].length; col++) {
                 if (this.layout[this.activeIndex][row][col] !== this.game.WHITE_COLOR_ID) {
-                    this.board.drawCellNextApp1(col + this.nextcolPos, row + this.nextrowPos, this.game.COLOR_MAPPING[this.id]);
+                    this.board.drawCellNextApp1(col + this.nextColPos, row + this.nextRowPos, this.game.COLOR_MAPPING[this.id]);
                 }
             }
         }
@@ -68,7 +68,7 @@ export class Brick {
         for (let row = 0; row < this.layout[this.activeIndex].length; row++) {
             for (let col = 0; col < this.layout[this.activeIndex].length; col++) {
                 if (this.layout[this.activeIndex][row][col] !== this.game.WHITE_COLOR_ID) {
-                    this.board.drawCellNextApp1(col + this.nextcolPos, row + this.nextrowPos, this.game.WHITE_COLOR_ID);
+                    this.board.drawCellNextApp1(col + this.nextColPos, row + this.nextRowPos, this.game.WHITE_COLOR_ID);
                 }
             }
         }
@@ -117,7 +117,6 @@ export class Brick {
         if (!this.checkCollision(this.rowPos + 1, this.colPos, this.layout[this.activeIndex])) {
             this.clear();
             this.rowPos++;
-            // this.fallBlockSound();
             this.draw();
         } else {
             this.handleLanded();
@@ -125,8 +124,6 @@ export class Brick {
             this.game.generateNewBrick();
         }
     }
-
-
 
     fixPosition(nextRow: number, nextCol: number, nextLayout: any) {
         this.rowPos = nextRow - 1;
@@ -154,8 +151,6 @@ export class Brick {
         }
     }
 
-
-    // Collision handling
     checkCollision(nextRow: number, nextCol: number, nextLayout: any) {
         for (let row = 0; row < nextLayout.length; row++) {
             for (let col = 0; col < nextLayout[row].length; col++) {
@@ -193,7 +188,7 @@ export class Brick {
                     }
                 }
             }
-            this.board.handleCompletRows();
+            this.board.handleCompleteRows();
             this.board.drawBoard();
         }
     }
@@ -201,6 +196,6 @@ export class Brick {
     handleGameOver() {
         this.gameOver = true;
         this.gameView.showGameOverScreen();
-        gameoversound();
+        gameOverSound();
     }
 } 

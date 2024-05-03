@@ -2,23 +2,17 @@ import * as PIXI from 'pixi.js';
 import { Board } from './Board';
 import { Brick } from './Bricks';
 import GameView from './GameView';
-import { fallBlockSound, fallFastSound, gameoversound } from './sound';
+import { fallBlockSound, fallFastSound, gameOverSound } from './sound';
 export default class GameController {
     private gameView: GameView;
     private board: Board;
     private brick: Brick;
     public app: PIXI.Application;
     public app1: PIXI.Application;
-    public readonly COLS: number = 10;
-    public readonly ROWS: number = 20;
-    public readonly BLOCK_SIZE: number = 30;
-
-    // NextBrick
-    public readonly nextCOLS: number = 6;
-    public readonly nextROWS: number = 5;
-    public readonly nextBLOCK_SIZE: number = 25;
-    public isPaused: boolean = false;
-    public readonly COLOR_MAPPING = [
+    public COLS: number = 10;
+    public ROWS: number = 20;
+    public BLOCK_SIZE: number = 30;
+    public COLOR_MAPPING = [
         0xFF0000, // red
         0xFFA500, // orange
         0x00FF00, // green
@@ -28,8 +22,8 @@ export default class GameController {
         0xFFFF00, // yellow
         0xFFFFFF, // white
     ];
-    public readonly WHITE_COLOR_ID = this.COLOR_MAPPING[7];
-    public readonly BRICK_LAYOUT = [
+    public WHITE_COLOR_ID = this.COLOR_MAPPING[7];
+    public BRICK_LAYOUT = [
         [
             [
                 [1, this.COLOR_MAPPING[7], this.COLOR_MAPPING[7]],
@@ -193,7 +187,7 @@ export default class GameController {
             ],
         ],
     ];
-    public readonly KEY_CODES = {
+    public KEY_CODES = {
         'LEFT': 'ArrowLeft',
         'UP': 'ArrowUp',
         'RIGHT': 'ArrowRight',
@@ -201,12 +195,15 @@ export default class GameController {
         'SPACE': 'Space',
         'ENTER': 'Enter',
     }
-
+    public isPaused: boolean = false;
     public level: number = 0;
     public levelThreshold: number = 500;
     public baseDropInterval: number = 800;
     private brickDropInterval: NodeJS.Timeout | null = null;
     private nextBrick: Brick;
+    public nextCOLS: number = 6;
+    public nextROWS: number = 5;
+    public nextBLOCK_SIZE: number = 25;
 
     constructor() {
         this.app = new PIXI.Application({ width: this.COLS * this.BLOCK_SIZE, height: this.ROWS * this.BLOCK_SIZE, backgroundColor: 0xffffff });
@@ -214,7 +211,6 @@ export default class GameController {
 
         this.app1 = new PIXI.Application({ width: this.nextCOLS * this.nextBLOCK_SIZE, height: this.nextROWS * this.nextBLOCK_SIZE, backgroundColor: 0xFFA500 });
         window.document.body.appendChild(this.app1.view);
-
         this.app1.view.classList.add('my-app1');
         const style = document.createElement('style');
         style.innerHTML = `
@@ -237,12 +233,12 @@ export default class GameController {
         this.level_Update();
         this.startGame();
         this.keyboard();
+        // this.board.drawCell(1, 1, 4);
     }
 
     private random(max: number): number {
         return Math.floor(Math.random() * (max + 1));
     }
-
 
     public handlePlayButtonClick() {
         this.startGame();
@@ -286,7 +282,7 @@ export default class GameController {
         }
     }
     public exitGame() {
-        // Code xử lý kết thúc trò chơi
+
     }
     public hideApp1(): void {
         if (this.app1 && this.app1.view) {
@@ -335,7 +331,6 @@ export default class GameController {
         });
     }
     brickDropInstantly() {
-        // Move the brick down instantly
         while (!this.brick.checkCollision(this.brick.rowPos + 1, this.brick.colPos, this.brick.layout[this.brick.activeIndex])) {
             this.brick.moveDown();
         }
@@ -348,19 +343,19 @@ export default class GameController {
 
     level_Update() {
         const LevelTextStyle = new PIXI.TextStyle({
-            fontFamily: 'Press Start 2P', 
-                fontSize: 18, 
-                fill: '#000000', 
-                fontWeight: 'bold', 
-                stroke: '#ffffff', 
-                strokeThickness: 3, 
-                dropShadow: true, 
-                dropShadowColor: '#000000',
-                dropShadowBlur: 4, 
-                dropShadowAngle: Math.PI / 6,
-                dropShadowDistance: 6, 
-                wordWrap: true, 
-                wordWrapWidth: 440, 
+            fontFamily: 'Press Start 2P',
+            fontSize: 18,
+            fill: '#000000',
+            fontWeight: 'bold',
+            stroke: '#ffffff',
+            strokeThickness: 3,
+            dropShadow: true,
+            dropShadowColor: '#000000',
+            dropShadowBlur: 4,
+            dropShadowAngle: Math.PI / 6,
+            dropShadowDistance: 6,
+            wordWrap: true,
+            wordWrapWidth: 440,
         });
         const LevelText = new PIXI.Text('Level:' + this.level, LevelTextStyle);
         LevelText.name = "LEVEL";
@@ -383,14 +378,14 @@ export default class GameController {
             fill: '##000000',
             align: 'center'
         });
-        completedRowsText.position.set(310, 300); // Cập nhật vị trí phù hợp trên màn hình
+        completedRowsText.position.set(310, 300);
         this.app.stage.addChild(completedRowsText);
     }
 
     handleGameOver() {
         this.brick.gameOver = true;
         this.gameView.showGameOverScreen();
-        gameoversound();
+        gameOverSound();
     }
 
     public getApp(): PIXI.Application {
@@ -422,4 +417,5 @@ export default class GameController {
         this.nextBrick = new Brick(nextBrickId, this);
         this.nextBrick.drawNextBrick();
     }
+
 } 
