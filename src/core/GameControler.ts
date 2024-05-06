@@ -204,6 +204,7 @@ export default class GameController {
     public nextCOLS: number = 6;
     public nextROWS: number = 5;
     public nextBLOCK_SIZE: number = 25;
+    audio: any;
 
     constructor() {
         this.app = new PIXI.Application({ width: this.COLS * this.BLOCK_SIZE, height: this.ROWS * this.BLOCK_SIZE, backgroundColor: 0xffffff });
@@ -415,6 +416,14 @@ export default class GameController {
         let nextBrickId = Math.floor(Math.random() * 10) % this.BRICK_LAYOUT.length;
         this.nextBrick = new Brick(nextBrickId, this);
         this.nextBrick.drawNextBrick();
+    }
+
+    public toggleSound(isSoundOn: boolean) {
+        if (isSoundOn) {
+            this.audio.play();
+        } else {
+            this.audio.pause();
+        }
     }
 
 } 
