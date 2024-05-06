@@ -27,7 +27,7 @@ export function playEatSound() {
 }
 export function gameoversound() {
   if (!isGameOverSoundPlaying) {
-    const audio = new Audio("../assets/audio/gameover.mp3");
+    const audio = new Audio("../assets/audio/game-over-160612.mp3");
     isGameOverSoundPlaying = true;
     audio.play();
     // Khi âm thanh kết thúc, đặt lại cờ
@@ -37,7 +37,8 @@ export function gameoversound() {
     return audio;
   }
 }
-export function playAndStop() {
-  const audio = playEatSound();
-  audio.pause();
+export function soundgame() {
+  const audio = new Audio("../assets/audio/soundgame.mp3");
+  // audio.play();
+  return audio;
 }

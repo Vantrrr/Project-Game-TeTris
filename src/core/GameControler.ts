@@ -2,7 +2,12 @@ import * as PIXI from "pixi.js";
 import { Board } from "./Board";
 import { Brick } from "./Bricks";
 import GameView from "./GameView";
-import { fallBlockSound, fallFastSound, gameoversound } from "./sound";
+import {
+  fallBlockSound,
+  fallFastSound,
+  gameoversound,
+  soundgame,
+} from "./sound";
 export default class GameController {
   private gameView: GameView;
   private board: Board;
@@ -12,6 +17,7 @@ export default class GameController {
   public readonly COLS: number = 10;
   public readonly ROWS: number = 20;
   public readonly BLOCK_SIZE: number = 30;
+  private audio: HTMLAudioElement;
 
   // NextBrick
   public readonly nextCOLS: number = 6;
@@ -356,6 +362,8 @@ export default class GameController {
     this.keyboard();
     this.gameView.showGameStart();
     this.generateNextBrick();
+    this.audio = soundgame();
+    this.audio.play();
   }
 
   private random(max: number): number {
@@ -368,10 +376,14 @@ export default class GameController {
   public handlePauseButtonClick() {
     if (!this.isPaused) {
       this.pauseGame();
+      this.audio.pause();
       this.isPaused = true;
+      this.gameView.isSoundOn = false;
     } else {
       this.resumeGame();
+      this.audio.play();
       this.isPaused = false;
+      this.gameView.isSoundOn = true;
     }
   }
   resetGame() {
@@ -570,5 +582,12 @@ export default class GameController {
     let nextBrickId = Math.floor(Math.random() * 10) % this.BRICK_LAYOUT.length;
     this.nextBrick = new Brick(nextBrickId, this);
     this.nextBrick.drawNextBrick();
+  }
+  public toggleSound(isSoundOn: boolean) {
+    if (isSoundOn) {
+      this.audio.play();
+    } else {
+      this.audio.pause();
+    }
   }
 }
