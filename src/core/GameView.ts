@@ -1,13 +1,16 @@
 import * as PIXI from "pixi.js";
 import GameController from "./GameControler";
+import { soundgame } from "./sound";
 export default class GameView {
   private gameController: GameController;
   private app: PIXI.Application;
+  public isSoundOn: boolean;
 
   constructor(gameController: GameController) {
     this.gameController = gameController;
     this.app = gameController.getApp();
     this.setupUI();
+    this.isSoundOn = true;
   }
 
   public setupUI() {
@@ -105,10 +108,10 @@ export default class GameView {
     soundButton.interactive = true;
     soundButton.buttonMode = true;
 
-    let isSoundOn = true;
     soundButton.on("pointerdown", () => {
-      isSoundOn = !isSoundOn;
-      soundButton.texture = isSoundOn ? soundOnTexture : soundOffTexture;
+      this.isSoundOn = !this.isSoundOn;
+      soundButton.texture = this.isSoundOn ? soundOffTexture : soundOnTexture;
+      this.gameController.toggleSound(this.isSoundOn);
     });
 
     const arow = PIXI.Sprite.from("../assets/arowpress.png");
@@ -195,10 +198,10 @@ export default class GameView {
   }
   showGameStart() {
     // Yêu cầu người chơi nhập tên
-    let playerName = prompt("Nhập tên của bạn:");
-    if (playerName) {
-      localStorage.setItem("playerName", playerName);
-    }
+    // let playerName = prompt("Nhập tên của bạn:");
+    // if (playerName) {
+    //   localStorage.setItem("playerName", playerName);
+    // }
     this.gameController.hideApp1();
     const startScreen = new PIXI.Container();
     this.app.stage.addChild(startScreen);
