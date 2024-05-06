@@ -397,12 +397,14 @@ export default class GameController {
     this.board.score = 0;
     this.level = 0;
     this.baseDropInterval = 800;
+    this.board.completedLines = 0;
 
     const levelText = this.app.stage.getChildByName("LEVEL");
     if (levelText) {
       this.app.stage.removeChild(levelText);
     }
     this.level_Update();
+
     // Đặt lại trạng thái của viên gạch và bắt đầu trò chơi mới
     this.brick = new Brick(this.random(this.BRICK_LAYOUT.length), this);
     this.nextBrick = null;

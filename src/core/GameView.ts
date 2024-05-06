@@ -168,7 +168,7 @@ export default class GameView {
     );
     scoreText.position.set(200, 370);
     gameOverContainer.addChild(scoreText);
-    this.gameController.pauseGame();
+    // this.gameController.pauseGame();
     // Thêm nút Retry
     const retryButtonTexture = PIXI.Texture.from("../assets/retry.png");
     const retryButton = new PIXI.Sprite(retryButtonTexture);
@@ -179,13 +179,15 @@ export default class GameView {
     retryButton.interactive = true;
     retryButton.buttonMode = true;
     this.gameController.resetGame();
+    // this.gameController.pauseGame();
 
     retryButton.on("click", () => {
-      this.gameController.resumeGame();
+      // this.gameController.resumeGame();
       this.app.stage.removeChild(gameOverContainer);
-      this.gameController.showApp1();
+      this.showGameStart();
+      // this.gameController.showApp1();
     });
-
+    this.gameController.pauseGame();
     gameOverContainer.addChild(retryButton);
     this.app.stage.removeChild(gameOverContainer);
 
@@ -198,10 +200,10 @@ export default class GameView {
   }
   showGameStart() {
     // Yêu cầu người chơi nhập tên
-    // let playerName = prompt("Nhập tên của bạn:");
-    // if (playerName) {
-    //   localStorage.setItem("playerName", playerName);
-    // }
+    let playerName = prompt("Nhập tên của bạn:");
+    if (playerName) {
+      localStorage.setItem("playerName", playerName);
+    }
     this.gameController.hideApp1();
     const startScreen = new PIXI.Container();
     this.app.stage.addChild(startScreen);

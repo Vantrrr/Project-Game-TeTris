@@ -180,10 +180,10 @@ export class Board {
     localStorage.setItem("score", this.score.toString());
   }
 
-  displayCompletedRows(): void {
-    const completedRows = this.countCompletedRows();
-    console.log("Completed Rows:", completedRows);
-  }
+  // displayCompletedRows(): void {
+  //   const completedRows = this.countCompletedRows();
+  //   console.log("Completed Rows:", completedRows);
+  // }
 
   calculateScore(rowsCount: number): number {
     return ((rowsCount * (rowsCount + 1)) / 2) * 100;
