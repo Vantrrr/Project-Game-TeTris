@@ -1,13 +1,16 @@
 import * as PIXI from "pixi.js";
 import GameController from "./GameControler";
+import { soundgame } from "./sound";
 export default class GameView {
   private gameController: GameController;
   private app: PIXI.Application;
+  public isSoundOn: boolean;
 
   constructor(gameController: GameController) {
     this.gameController = gameController;
     this.app = gameController.getApp();
     this.setupUI();
+    this.isSoundOn = true;
   }
 
   public setupUI() {
@@ -85,10 +88,10 @@ export default class GameView {
     this.app.stage.addChild(soundButton);
     soundButton.interactive = true;
     soundButton.buttonMode = true;
-    let isSoundOn = true;
     soundButton.on("pointerdown", () => {
-      isSoundOn = !isSoundOn;
-      soundButton.texture = isSoundOn ? soundOnTexture : soundOffTexture;
+      this.isSoundOn = !this.isSoundOn;
+      soundButton.texture = this.isSoundOn ? soundOffTexture : soundOnTexture;
+      this.gameController.toggleSound(this.isSoundOn);
     });
 
     const arow = PIXI.Sprite.from("../assets/arowpress.png");
