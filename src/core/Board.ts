@@ -1,24 +1,28 @@
 import * as PIXI from "pixi.js";
 import Game from "./GameControler";
-import { Brick } from "./Bricks";
 import { playEatSound } from "./sound";
 
 export class Board {
     private app: PIXI.Application;
     private app1: PIXI.Application;
+    private boardContainerApp: PIXI.Container<PIXI.DisplayObject>;
+    private boardContainerApp1: PIXI.Container<PIXI.DisplayObject>;
     private game: Game;
     public grid: any;
     public score: number;
     public completedLines: number = 0;
-
-    boardContainerApp: PIXI.Container<PIXI.DisplayObject>;
-    boardContainerApp1: PIXI.Container<PIXI.DisplayObject>;
 
     constructor(game: Game) {
         this.game = game;
         this.drawApp();
         this.drawApp1();
         this.score = 0;
+    }
+
+    generateWhiteBoard() {
+        return Array.from({ length: this.game.ROWS }, () =>
+            Array(this.game.COLS).fill(this.game.WHITE_COLOR_ID)
+        );
     }
 
     drawApp() {
@@ -36,11 +40,6 @@ export class Board {
         this.score = 0;
     }
 
-    generateWhiteBoard() {
-        return Array.from({ length: this.game.ROWS }, () =>
-            Array(this.game.COLS).fill(this.game.WHITE_COLOR_ID)
-        );
-    }
 
     drawCell(xAxis: number, yAxis: number, colorID: number) {
         const cellGraphics = new PIXI.Graphics();
@@ -49,12 +48,7 @@ export class Board {
         const size = this.game.BLOCK_SIZE;
         const borderSize = 0.5;
         const color = this.game.COLOR_MAPPING[colorID];
-
-        // Vẽ viền
         cellGraphics.lineStyle(borderSize, 0x000000, 1);
-        cellGraphics.drawRect(x, y, size, size);
-
-        // Vẽ màu nền
         cellGraphics.beginFill(colorID);
         cellGraphics.drawRect(
             x + borderSize,
@@ -63,7 +57,6 @@ export class Board {
             size - 2 * borderSize
         );
         cellGraphics.endFill();
-
         this.boardContainerApp.addChild(cellGraphics);
     }
 
@@ -82,12 +75,7 @@ export class Board {
         const size = this.game.nextBLOCK_SIZE;
         const borderSize = 0.5;
         const color = this.game.COLOR_MAPPING[colorID];
-
-        // Vẽ viền
         cellGraphics.lineStyle(borderSize, 0x000000, 1);
-        cellGraphics.drawRect(x, y, size, size);
-
-        // Vẽ màu nền
         cellGraphics.beginFill(colorID);
         cellGraphics.drawRect(
             x + borderSize,
@@ -96,7 +84,6 @@ export class Board {
             size - 2 * borderSize
         );
         cellGraphics.endFill();
-
         this.boardContainerApp1.addChild(cellGraphics);
     }
 
@@ -108,15 +95,7 @@ export class Board {
         }
     }
 
-    resetBoardNextApp1() {
-        for (let row = 0; row < this.grid.length; row++) {
-            for (let col = 0; col < this.grid[0].length; col++) {
-                this.grid[row][col] = this.game.WHITE_COLOR_ID;
-            }
-        }
-    }
-
-    handleCompletRows() {
+    handleCompleteRows() {
         const latestGrid = this.grid.filter((row: any[]) => {
             return row.some((col) => col === this.game.WHITE_COLOR_ID);
         });
@@ -133,6 +112,39 @@ export class Board {
         }
         this.completedLines += completedRows;
         this.updateCompletedLinesDisplay();
+    }
+
+    calculateScore(rowsCount: number): number {
+        return ((rowsCount * (rowsCount + 1)) / 2) * 100;
+    }
+
+    updateScoreDisplay() {
+        let scoreText = this.game
+            .getApp()
+            .stage.getChildByName("scoreText") as PIXI.Text;
+        if (scoreText) {
+            scoreText.text = "Score: " + this.score;
+        } else {
+            const scoreTextStyle = new PIXI.TextStyle({
+                fontFamily: "Press Start 2P",
+                fontSize: 18,
+                fill: "#000000",
+                fontWeight: "bold",
+                stroke: "#ffffff",
+                strokeThickness: 3,
+                dropShadow: true,
+                dropShadowColor: "#000000",
+                dropShadowBlur: 4,
+                dropShadowAngle: Math.PI / 6,
+                dropShadowDistance: 6,
+                wordWrap: true,
+                wordWrapWidth: 440,
+            });
+            scoreText = new PIXI.Text("Score: " + this.score, scoreTextStyle);
+            scoreText.name = "scoreText";
+            scoreText.position.set(310, 420);
+            this.game.getApp().stage.addChild(scoreText);
+        }
     }
 
     countCompletedRows() {
@@ -180,46 +192,6 @@ export class Board {
         localStorage.setItem("score", this.score.toString());
     }
 
-    displayCompletedRows(): void {
-        const completedRows = this.countCompletedRows();
-        console.log("Completed Rows:", completedRows);
-    }
-
-    calculateScore(rowsCount: number): number {
-        return ((rowsCount * (rowsCount + 1)) / 2) * 100;
-    }
-
-    updateScoreDisplay() {
-        let scoreText = this.game
-            .getApp()
-            .stage.getChildByName("scoreText") as PIXI.Text;
-        if (scoreText) {
-            scoreText.text = "Score: " + this.score;
-        } else {
-            const scoreTextStyle = new PIXI.TextStyle({
-                fontFamily: "Press Start 2P",
-                fontSize: 18,
-                fill: "#000000",
-                fontWeight: "bold",
-                stroke: "#ffffff",
-                strokeThickness: 3,
-                dropShadow: true,
-                dropShadowColor: "#000000",
-                dropShadowBlur: 4,
-                dropShadowAngle: Math.PI / 6,
-                dropShadowDistance: 6,
-                wordWrap: true,
-                wordWrapWidth: 440,
-            });
-            scoreText = new PIXI.Text("Score: " + this.score, scoreTextStyle);
-            scoreText.name = "scoreText";
-            scoreText.position.set(310, 420);
-            this.game.getApp().stage.addChild(scoreText);
-        }
-    }
-    //   clearBoard() {
-    //     this.boardContainerApp.removeChildren();
-    //   }
 
     clearBoardNextApp1() {
         this.boardContainerApp1.removeChildren();

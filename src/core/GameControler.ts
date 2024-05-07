@@ -1,219 +1,345 @@
-import * as PIXI from 'pixi.js';
-import { Board } from './Board';
-import { Brick } from './Bricks';
-import GameView from './GameView';
-import { fallBlockSound, fallFastSound, gameoversound } from './sound';
+import * as PIXI from "pixi.js";
+import { Board } from "./Board";
+import { Brick } from "./Bricks";
+import GameView from "./GameView";
+import {
+    fallBlockSound,
+    fallFastSound,
+    gameOverSound,
+    soundGame,
+} from "./sound";
 export default class GameController {
     private gameView: GameView;
     private board: Board;
     private brick: Brick;
     public app: PIXI.Application;
     public app1: PIXI.Application;
-    public COLS: number = 10;
-    public ROWS: number = 20;
-    public BLOCK_SIZE: number = 30;
-    public COLOR_MAPPING = [
-        0xFF0000, // red
-        0xFFA500, // orange
-        0x00FF00, // green
-        0x800080, // purple
-        0x0000FF, // blue
-        0x00FFFF, // cyan
-        0xFFFF00, // yellow
-        0xFFFFFF, // white
-    ];
-    public WHITE_COLOR_ID = this.COLOR_MAPPING[7];
-    public BRICK_LAYOUT = [
-        [
-            [
-                [1, this.COLOR_MAPPING[7], this.COLOR_MAPPING[7]],
-                [1, 1, 1],
-                [this.COLOR_MAPPING[7], this.COLOR_MAPPING[7], this.COLOR_MAPPING[7]],
-            ],
-            [
-                [this.COLOR_MAPPING[7], 1, 1],
-                [this.COLOR_MAPPING[7], 1, this.COLOR_MAPPING[7]],
-                [this.COLOR_MAPPING[7], 1, this.COLOR_MAPPING[7]],
-            ],
-            [
-                [this.COLOR_MAPPING[7], this.COLOR_MAPPING[7], this.COLOR_MAPPING[7]],
-                [1, 1, 1],
-                [this.COLOR_MAPPING[7], this.COLOR_MAPPING[7], 1],
-            ],
-            [
-                [this.COLOR_MAPPING[7], 1, this.COLOR_MAPPING[7]],
-                [this.COLOR_MAPPING[7], 1, this.COLOR_MAPPING[7]],
-                [1, 1, this.COLOR_MAPPING[7]],
-            ],
-        ],
-        [
-            [
-                [this.COLOR_MAPPING[7], 1, this.COLOR_MAPPING[7]],
-                [this.COLOR_MAPPING[7], 1, this.COLOR_MAPPING[7]],
-                [this.COLOR_MAPPING[7], 1, 1],
-            ],
-            [
-                [this.COLOR_MAPPING[7], this.COLOR_MAPPING[7], this.COLOR_MAPPING[7]],
-                [1, 1, 1],
-                [1, this.COLOR_MAPPING[7], this.COLOR_MAPPING[7]],
-            ],
-            [
-                [1, 1, this.COLOR_MAPPING[7]],
-                [this.COLOR_MAPPING[7], 1, this.COLOR_MAPPING[7]],
-                [this.COLOR_MAPPING[7], 1, this.COLOR_MAPPING[7]],
-            ],
-            [
-                [this.COLOR_MAPPING[7], this.COLOR_MAPPING[7], 1],
-                [1, 1, 1],
-                [this.COLOR_MAPPING[7], this.COLOR_MAPPING[7], this.COLOR_MAPPING[7]],
-            ],
-        ],
-        [
-            [
-                [1, this.COLOR_MAPPING[7], this.COLOR_MAPPING[7]],
-                [1, 1, this.COLOR_MAPPING[7]],
-                [this.COLOR_MAPPING[7], 1, this.COLOR_MAPPING[7]],
-            ],
-            [
-                [this.COLOR_MAPPING[7], 1, 1],
-                [1, 1, this.COLOR_MAPPING[7]],
-                [this.COLOR_MAPPING[7], this.COLOR_MAPPING[7], this.COLOR_MAPPING[7]],
-            ],
-            [
-                [this.COLOR_MAPPING[7], 1, this.COLOR_MAPPING[7]],
-                [this.COLOR_MAPPING[7], 1, 1],
-                [this.COLOR_MAPPING[7], this.COLOR_MAPPING[7], 1],
-            ],
-            [
-                [this.COLOR_MAPPING[7], this.COLOR_MAPPING[7], this.COLOR_MAPPING[7]],
-                [this.COLOR_MAPPING[7], 1, 1],
-                [1, 1, this.COLOR_MAPPING[7]],
-            ],
-        ],
-        [
-            [
-                [this.COLOR_MAPPING[7], 1, this.COLOR_MAPPING[7]],
-                [1, 1, this.COLOR_MAPPING[7]],
-                [1, this.COLOR_MAPPING[7], this.COLOR_MAPPING[7]],
-            ],
-            [
-                [1, 1, this.COLOR_MAPPING[7]],
-                [this.COLOR_MAPPING[7], 1, 1],
-                [this.COLOR_MAPPING[7], this.COLOR_MAPPING[7], this.COLOR_MAPPING[7]],
-            ],
-            [
-                [this.COLOR_MAPPING[7], this.COLOR_MAPPING[7], 1],
-                [this.COLOR_MAPPING[7], 1, 1],
-                [this.COLOR_MAPPING[7], 1, this.COLOR_MAPPING[7]],
-            ],
-            [
-                [this.COLOR_MAPPING[7], this.COLOR_MAPPING[7], this.COLOR_MAPPING[7]],
-                [1, 1, this.COLOR_MAPPING[7]],
-                [this.COLOR_MAPPING[7], 1, 1],
-            ],
-        ],
-        [
-            [
-                [this.COLOR_MAPPING[7], this.COLOR_MAPPING[7], this.COLOR_MAPPING[7], this.COLOR_MAPPING[7]],
-                [1, 1, 1, 1],
-                [this.COLOR_MAPPING[7], this.COLOR_MAPPING[7], this.COLOR_MAPPING[7], this.COLOR_MAPPING[7]],
-                [this.COLOR_MAPPING[7], this.COLOR_MAPPING[7], this.COLOR_MAPPING[7], this.COLOR_MAPPING[7]],
-            ],
-            [
-                [this.COLOR_MAPPING[7], this.COLOR_MAPPING[7], 1, this.COLOR_MAPPING[7]],
-                [this.COLOR_MAPPING[7], this.COLOR_MAPPING[7], 1, this.COLOR_MAPPING[7]],
-                [this.COLOR_MAPPING[7], this.COLOR_MAPPING[7], 1, this.COLOR_MAPPING[7]],
-                [this.COLOR_MAPPING[7], this.COLOR_MAPPING[7], 1, this.COLOR_MAPPING[7]],
-            ],
-            [
-                [this.COLOR_MAPPING[7], this.COLOR_MAPPING[7], this.COLOR_MAPPING[7], this.COLOR_MAPPING[7]],
-                [this.COLOR_MAPPING[7], this.COLOR_MAPPING[7], this.COLOR_MAPPING[7], this.COLOR_MAPPING[7]],
-                [1, 1, 1, 1],
-                [this.COLOR_MAPPING[7], this.COLOR_MAPPING[7], this.COLOR_MAPPING[7], this.COLOR_MAPPING[7]],
-            ],
-            [
-                [this.COLOR_MAPPING[7], 1, this.COLOR_MAPPING[7], this.COLOR_MAPPING[7]],
-                [this.COLOR_MAPPING[7], 1, this.COLOR_MAPPING[7], this.COLOR_MAPPING[7]],
-                [this.COLOR_MAPPING[7], 1, this.COLOR_MAPPING[7], this.COLOR_MAPPING[7]],
-                [this.COLOR_MAPPING[7], 1, this.COLOR_MAPPING[7], this.COLOR_MAPPING[7]],
-            ],
-        ],
-        [
-            [
-                [this.COLOR_MAPPING[7], this.COLOR_MAPPING[7], this.COLOR_MAPPING[7], this.COLOR_MAPPING[7]],
-                [this.COLOR_MAPPING[7], 1, 1, this.COLOR_MAPPING[7]],
-                [this.COLOR_MAPPING[7], 1, 1, this.COLOR_MAPPING[7]],
-                [this.COLOR_MAPPING[7], this.COLOR_MAPPING[7], this.COLOR_MAPPING[7], this.COLOR_MAPPING[7]],
-            ],
-            [
-                [this.COLOR_MAPPING[7], this.COLOR_MAPPING[7], this.COLOR_MAPPING[7], this.COLOR_MAPPING[7]],
-                [this.COLOR_MAPPING[7], 1, 1, this.COLOR_MAPPING[7]],
-                [this.COLOR_MAPPING[7], 1, 1, this.COLOR_MAPPING[7]],
-                [this.COLOR_MAPPING[7], this.COLOR_MAPPING[7], this.COLOR_MAPPING[7], this.COLOR_MAPPING[7]],
-            ],
-            [
-                [this.COLOR_MAPPING[7], this.COLOR_MAPPING[7], this.COLOR_MAPPING[7], this.COLOR_MAPPING[7]],
-                [this.COLOR_MAPPING[7], 1, 1, this.COLOR_MAPPING[7]],
-                [this.COLOR_MAPPING[7], 1, 1, this.COLOR_MAPPING[7]],
-                [this.COLOR_MAPPING[7], this.COLOR_MAPPING[7], this.COLOR_MAPPING[7], this.COLOR_MAPPING[7]],
-            ],
-            [
-                [this.COLOR_MAPPING[7], this.COLOR_MAPPING[7], this.COLOR_MAPPING[7], this.COLOR_MAPPING[7]],
-                [this.COLOR_MAPPING[7], 1, 1, this.COLOR_MAPPING[7]],
-                [this.COLOR_MAPPING[7], 1, 1, this.COLOR_MAPPING[7]],
-                [this.COLOR_MAPPING[7], this.COLOR_MAPPING[7], this.COLOR_MAPPING[7], this.COLOR_MAPPING[7]],
-            ],
-        ],
-        [
-            [
-                [this.COLOR_MAPPING[7], 1, this.COLOR_MAPPING[7]],
-                [1, 1, 1],
-                [this.COLOR_MAPPING[7], this.COLOR_MAPPING[7], this.COLOR_MAPPING[7]],
-            ],
-            [
-                [this.COLOR_MAPPING[7], 1, this.COLOR_MAPPING[7]],
-                [this.COLOR_MAPPING[7], 1, 1],
-                [this.COLOR_MAPPING[7], 1, this.COLOR_MAPPING[7]],
-            ],
-            [
-                [this.COLOR_MAPPING[7], this.COLOR_MAPPING[7], this.COLOR_MAPPING[7]],
-                [1, 1, 1],
-                [this.COLOR_MAPPING[7], 1, this.COLOR_MAPPING[7]],
-            ],
-            [
-                [this.COLOR_MAPPING[7], 1, this.COLOR_MAPPING[7]],
-                [1, 1, this.COLOR_MAPPING[7]],
-                [this.COLOR_MAPPING[7], 1, this.COLOR_MAPPING[7]],
-            ],
-        ],
-    ];
-    public KEY_CODES = {
-        'LEFT': 'ArrowLeft',
-        'UP': 'ArrowUp',
-        'RIGHT': 'ArrowRight',
-        'DOWN': 'ArrowDown',
-        'SPACE': 'Space',
-        'ENTER': 'Enter',
-    }
+    public readonly COLS: number = 10;
+    public readonly ROWS: number = 20;
+    public readonly BLOCK_SIZE: number = 30;
+    private audio: HTMLAudioElement;
+
+    // NextBrick
+    public readonly nextCOLS: number = 6;
+    public readonly nextROWS: number = 5;
+    public readonly nextBLOCK_SIZE: number = 25;
     public isPaused: boolean = false;
+    public readonly COLOR_MAPPING = [
+        0xff0000, // red
+        0xffa500, // orange
+        0x00ff00, // green
+        0x800080, // purple
+        0x0000ff, // blue
+        0x00ffff, // cyan
+        0xffff00, // yellow
+        0xffffff, // white
+    ];
+    public readonly WHITE_COLOR_ID = this.COLOR_MAPPING[7];
+    public readonly BRICK_LAYOUT = [
+        [
+            [
+                [1, this.COLOR_MAPPING[7], this.COLOR_MAPPING[7]],
+                [1, 1, 1],
+                [this.COLOR_MAPPING[7], this.COLOR_MAPPING[7], this.COLOR_MAPPING[7]],
+            ],
+            [
+                [this.COLOR_MAPPING[7], 1, 1],
+                [this.COLOR_MAPPING[7], 1, this.COLOR_MAPPING[7]],
+                [this.COLOR_MAPPING[7], 1, this.COLOR_MAPPING[7]],
+            ],
+            [
+                [this.COLOR_MAPPING[7], this.COLOR_MAPPING[7], this.COLOR_MAPPING[7]],
+                [1, 1, 1],
+                [this.COLOR_MAPPING[7], this.COLOR_MAPPING[7], 1],
+            ],
+            [
+                [this.COLOR_MAPPING[7], 1, this.COLOR_MAPPING[7]],
+                [this.COLOR_MAPPING[7], 1, this.COLOR_MAPPING[7]],
+                [1, 1, this.COLOR_MAPPING[7]],
+            ],
+        ],
+        [
+            [
+                [this.COLOR_MAPPING[7], 1, this.COLOR_MAPPING[7]],
+                [this.COLOR_MAPPING[7], 1, this.COLOR_MAPPING[7]],
+                [this.COLOR_MAPPING[7], 1, 1],
+            ],
+            [
+                [this.COLOR_MAPPING[7], this.COLOR_MAPPING[7], this.COLOR_MAPPING[7]],
+                [1, 1, 1],
+                [1, this.COLOR_MAPPING[7], this.COLOR_MAPPING[7]],
+            ],
+            [
+                [1, 1, this.COLOR_MAPPING[7]],
+                [this.COLOR_MAPPING[7], 1, this.COLOR_MAPPING[7]],
+                [this.COLOR_MAPPING[7], 1, this.COLOR_MAPPING[7]],
+            ],
+            [
+                [this.COLOR_MAPPING[7], this.COLOR_MAPPING[7], 1],
+                [1, 1, 1],
+                [this.COLOR_MAPPING[7], this.COLOR_MAPPING[7], this.COLOR_MAPPING[7]],
+            ],
+        ],
+        [
+            [
+                [1, this.COLOR_MAPPING[7], this.COLOR_MAPPING[7]],
+                [1, 1, this.COLOR_MAPPING[7]],
+                [this.COLOR_MAPPING[7], 1, this.COLOR_MAPPING[7]],
+            ],
+            [
+                [this.COLOR_MAPPING[7], 1, 1],
+                [1, 1, this.COLOR_MAPPING[7]],
+                [this.COLOR_MAPPING[7], this.COLOR_MAPPING[7], this.COLOR_MAPPING[7]],
+            ],
+            [
+                [this.COLOR_MAPPING[7], 1, this.COLOR_MAPPING[7]],
+                [this.COLOR_MAPPING[7], 1, 1],
+                [this.COLOR_MAPPING[7], this.COLOR_MAPPING[7], 1],
+            ],
+            [
+                [this.COLOR_MAPPING[7], this.COLOR_MAPPING[7], this.COLOR_MAPPING[7]],
+                [this.COLOR_MAPPING[7], 1, 1],
+                [1, 1, this.COLOR_MAPPING[7]],
+            ],
+        ],
+        [
+            [
+                [this.COLOR_MAPPING[7], 1, this.COLOR_MAPPING[7]],
+                [1, 1, this.COLOR_MAPPING[7]],
+                [1, this.COLOR_MAPPING[7], this.COLOR_MAPPING[7]],
+            ],
+            [
+                [1, 1, this.COLOR_MAPPING[7]],
+                [this.COLOR_MAPPING[7], 1, 1],
+                [this.COLOR_MAPPING[7], this.COLOR_MAPPING[7], this.COLOR_MAPPING[7]],
+            ],
+            [
+                [this.COLOR_MAPPING[7], this.COLOR_MAPPING[7], 1],
+                [this.COLOR_MAPPING[7], 1, 1],
+                [this.COLOR_MAPPING[7], 1, this.COLOR_MAPPING[7]],
+            ],
+            [
+                [this.COLOR_MAPPING[7], this.COLOR_MAPPING[7], this.COLOR_MAPPING[7]],
+                [1, 1, this.COLOR_MAPPING[7]],
+                [this.COLOR_MAPPING[7], 1, 1],
+            ],
+        ],
+        [
+            [
+                [
+                    this.COLOR_MAPPING[7],
+                    this.COLOR_MAPPING[7],
+                    this.COLOR_MAPPING[7],
+                    this.COLOR_MAPPING[7],
+                ],
+                [1, 1, 1, 1],
+                [
+                    this.COLOR_MAPPING[7],
+                    this.COLOR_MAPPING[7],
+                    this.COLOR_MAPPING[7],
+                    this.COLOR_MAPPING[7],
+                ],
+                [
+                    this.COLOR_MAPPING[7],
+                    this.COLOR_MAPPING[7],
+                    this.COLOR_MAPPING[7],
+                    this.COLOR_MAPPING[7],
+                ],
+            ],
+            [
+                [
+                    this.COLOR_MAPPING[7],
+                    this.COLOR_MAPPING[7],
+                    1,
+                    this.COLOR_MAPPING[7],
+                ],
+                [
+                    this.COLOR_MAPPING[7],
+                    this.COLOR_MAPPING[7],
+                    1,
+                    this.COLOR_MAPPING[7],
+                ],
+                [
+                    this.COLOR_MAPPING[7],
+                    this.COLOR_MAPPING[7],
+                    1,
+                    this.COLOR_MAPPING[7],
+                ],
+                [
+                    this.COLOR_MAPPING[7],
+                    this.COLOR_MAPPING[7],
+                    1,
+                    this.COLOR_MAPPING[7],
+                ],
+            ],
+            [
+                [
+                    this.COLOR_MAPPING[7],
+                    this.COLOR_MAPPING[7],
+                    this.COLOR_MAPPING[7],
+                    this.COLOR_MAPPING[7],
+                ],
+                [
+                    this.COLOR_MAPPING[7],
+                    this.COLOR_MAPPING[7],
+                    this.COLOR_MAPPING[7],
+                    this.COLOR_MAPPING[7],
+                ],
+                [1, 1, 1, 1],
+                [
+                    this.COLOR_MAPPING[7],
+                    this.COLOR_MAPPING[7],
+                    this.COLOR_MAPPING[7],
+                    this.COLOR_MAPPING[7],
+                ],
+            ],
+            [
+                [
+                    this.COLOR_MAPPING[7],
+                    1,
+                    this.COLOR_MAPPING[7],
+                    this.COLOR_MAPPING[7],
+                ],
+                [
+                    this.COLOR_MAPPING[7],
+                    1,
+                    this.COLOR_MAPPING[7],
+                    this.COLOR_MAPPING[7],
+                ],
+                [
+                    this.COLOR_MAPPING[7],
+                    1,
+                    this.COLOR_MAPPING[7],
+                    this.COLOR_MAPPING[7],
+                ],
+                [
+                    this.COLOR_MAPPING[7],
+                    1,
+                    this.COLOR_MAPPING[7],
+                    this.COLOR_MAPPING[7],
+                ],
+            ],
+        ],
+        [
+            [
+                [
+                    this.COLOR_MAPPING[7],
+                    this.COLOR_MAPPING[7],
+                    this.COLOR_MAPPING[7],
+                    this.COLOR_MAPPING[7],
+                ],
+                [this.COLOR_MAPPING[7], 1, 1, this.COLOR_MAPPING[7]],
+                [this.COLOR_MAPPING[7], 1, 1, this.COLOR_MAPPING[7]],
+                [
+                    this.COLOR_MAPPING[7],
+                    this.COLOR_MAPPING[7],
+                    this.COLOR_MAPPING[7],
+                    this.COLOR_MAPPING[7],
+                ],
+            ],
+            [
+                [
+                    this.COLOR_MAPPING[7],
+                    this.COLOR_MAPPING[7],
+                    this.COLOR_MAPPING[7],
+                    this.COLOR_MAPPING[7],
+                ],
+                [this.COLOR_MAPPING[7], 1, 1, this.COLOR_MAPPING[7]],
+                [this.COLOR_MAPPING[7], 1, 1, this.COLOR_MAPPING[7]],
+                [
+                    this.COLOR_MAPPING[7],
+                    this.COLOR_MAPPING[7],
+                    this.COLOR_MAPPING[7],
+                    this.COLOR_MAPPING[7],
+                ],
+            ],
+            [
+                [
+                    this.COLOR_MAPPING[7],
+                    this.COLOR_MAPPING[7],
+                    this.COLOR_MAPPING[7],
+                    this.COLOR_MAPPING[7],
+                ],
+                [this.COLOR_MAPPING[7], 1, 1, this.COLOR_MAPPING[7]],
+                [this.COLOR_MAPPING[7], 1, 1, this.COLOR_MAPPING[7]],
+                [
+                    this.COLOR_MAPPING[7],
+                    this.COLOR_MAPPING[7],
+                    this.COLOR_MAPPING[7],
+                    this.COLOR_MAPPING[7],
+                ],
+            ],
+            [
+                [
+                    this.COLOR_MAPPING[7],
+                    this.COLOR_MAPPING[7],
+                    this.COLOR_MAPPING[7],
+                    this.COLOR_MAPPING[7],
+                ],
+                [this.COLOR_MAPPING[7], 1, 1, this.COLOR_MAPPING[7]],
+                [this.COLOR_MAPPING[7], 1, 1, this.COLOR_MAPPING[7]],
+                [
+                    this.COLOR_MAPPING[7],
+                    this.COLOR_MAPPING[7],
+                    this.COLOR_MAPPING[7],
+                    this.COLOR_MAPPING[7],
+                ],
+            ],
+        ],
+        [
+            [
+                [this.COLOR_MAPPING[7], 1, this.COLOR_MAPPING[7]],
+                [1, 1, 1],
+                [this.COLOR_MAPPING[7], this.COLOR_MAPPING[7], this.COLOR_MAPPING[7]],
+            ],
+            [
+                [this.COLOR_MAPPING[7], 1, this.COLOR_MAPPING[7]],
+                [this.COLOR_MAPPING[7], 1, 1],
+                [this.COLOR_MAPPING[7], 1, this.COLOR_MAPPING[7]],
+            ],
+            [
+                [this.COLOR_MAPPING[7], this.COLOR_MAPPING[7], this.COLOR_MAPPING[7]],
+                [1, 1, 1],
+                [this.COLOR_MAPPING[7], 1, this.COLOR_MAPPING[7]],
+            ],
+            [
+                [this.COLOR_MAPPING[7], 1, this.COLOR_MAPPING[7]],
+                [1, 1, this.COLOR_MAPPING[7]],
+                [this.COLOR_MAPPING[7], 1, this.COLOR_MAPPING[7]],
+            ],
+        ],
+    ];
+    public readonly KEY_CODES = {
+        LEFT: "ArrowLeft",
+        UP: "ArrowUp",
+        RIGHT: "ArrowRight",
+        DOWN: "ArrowDown",
+        SPACE: "Space",
+        ENTER: "Enter",
+    };
+
     public level: number = 0;
     public levelThreshold: number = 500;
     public baseDropInterval: number = 800;
     private brickDropInterval: NodeJS.Timeout | null = null;
-    private nextBrick: Brick;
-    public nextCOLS: number = 6;
-    public nextROWS: number = 5;
-    public nextBLOCK_SIZE: number = 25;
-    audio: any;
-
+    private nextBrick: Brick | null;
     constructor() {
-        this.app = new PIXI.Application({ width: this.COLS * this.BLOCK_SIZE, height: this.ROWS * this.BLOCK_SIZE, backgroundColor: 0xffffff });
+        this.app = new PIXI.Application({
+            width: this.COLS * this.BLOCK_SIZE,
+            height: this.ROWS * this.BLOCK_SIZE,
+            backgroundColor: 0xffffff,
+        });
         window.document.body.appendChild(this.app.view);
 
-        this.app1 = new PIXI.Application({ width: this.nextCOLS * this.nextBLOCK_SIZE, height: this.nextROWS * this.nextBLOCK_SIZE, backgroundColor: 0xFFA500 });
+        this.app1 = new PIXI.Application({
+            width: this.nextCOLS * this.nextBLOCK_SIZE,
+            height: this.nextROWS * this.nextBLOCK_SIZE,
+            backgroundColor: 0xffa500,
+        });
         window.document.body.appendChild(this.app1.view);
-        this.app1.view.classList.add('my-app1');
-        const style = document.createElement('style');
+
+        this.app1.view.classList.add("my-app1");
+        const style = document.createElement("style");
         style.innerHTML = `
             .my-app1 {
                 touch-action: none;
@@ -234,6 +360,10 @@ export default class GameController {
         this.level_Update();
         this.startGame();
         this.keyboard();
+        this.gameView.showGameStart();
+        this.generateNextBrick();
+        this.audio = soundGame();
+        this.audio.play();
     }
 
     private random(max: number): number {
@@ -246,23 +376,59 @@ export default class GameController {
     public handlePauseButtonClick() {
         if (!this.isPaused) {
             this.pauseGame();
+            this.audio.pause();
             this.isPaused = true;
+            this.gameView.isSoundOn = false;
         } else {
             this.resumeGame();
+            this.audio.play();
             this.isPaused = false;
+            this.gameView.isSoundOn = true;
         }
     }
-    startGame() {
-        let playerName: string | null = prompt("Nhập tên của bạn:");
-        if (playerName) {
-            localStorage.setItem('playerName', playerName);
+    resetGame() {
+        if (this.brickDropInterval) {
+            clearInterval(this.brickDropInterval);
+            this.brickDropInterval = null;
         }
+        this.clearBoard();
+        this.board.clearBoardNextApp1();
+
+        this.board.score = 0;
+        this.level = 0;
+        this.baseDropInterval = 800;
+
+        const levelText = this.app.stage.getChildByName("LEVEL");
+        if (levelText) {
+            this.app.stage.removeChild(levelText);
+        }
+        this.level_Update();
+        // Đặt lại trạng thái của viên gạch và bắt đầu trò chơi mới
+        this.brick = new Brick(this.random(this.BRICK_LAYOUT.length), this);
+        this.nextBrick = null;
+        this.board.drawBoard();
+        this.board.drawBoardNextApp1();
+        this.updateLevelDisplay();
+        this.startGame();
+        this.showApp1();
+    }
+    clearBoard(): void {
+        for (let row = 0; row < this.ROWS; row++) {
+            for (let col = 0; col < this.COLS; col++) {
+                this.board.grid[row][col] = this.WHITE_COLOR_ID;
+            }
+        }
+        this.board.drawBoard();
+    }
+
+    startGame() {
         this.brickDropInterval = setInterval(() => {
             this.brick.moveDown();
             this.generateNextBrick();
             this.updateLevelAndSpeed();
             this.board.updateCompletedLinesDisplay();
             this.board.updateScoreDisplay();
+
         }, this.baseDropInterval);
     }
     public pauseGame() {
@@ -281,15 +447,16 @@ export default class GameController {
             }, this.baseDropInterval);
         }
     }
-    public exitGame() {
-
-    }
     public hideApp1(): void {
         if (this.app1 && this.app1.view) {
-            this.app1.view.style.visibility = 'hidden';
+            this.app1.view.style.visibility = "hidden";
         }
     }
-
+    public showApp1(): void {
+        if (this.app1 && this.app1.view) {
+            this.app1.view.style.visibility = "visible";
+        }
+    }
     updateLevelAndSpeed() {
         if (this.board.score >= this.level * this.levelThreshold) {
             this.level++;
@@ -308,7 +475,7 @@ export default class GameController {
         this.baseDropInterval -= 50;
     }
     keyboard() {
-        document.addEventListener('keydown', (e: KeyboardEvent) => {
+        document.addEventListener("keydown", (e: KeyboardEvent) => {
             switch (e.code) {
                 case this.KEY_CODES.LEFT:
                     this.brick.moveLeft();
@@ -326,12 +493,17 @@ export default class GameController {
                 case this.KEY_CODES.SPACE:
                     this.brickDropInstantly();
                     break;
-
             }
         });
     }
     brickDropInstantly() {
-        while (!this.brick.checkCollision(this.brick.rowPos + 1, this.brick.colPos, this.brick.layout[this.brick.activeIndex])) {
+        while (
+            !this.brick.checkCollision(
+                this.brick.rowPos + 1,
+                this.brick.colPos,
+                this.brick.layout[this.brick.activeIndex]
+            )
+        ) {
             this.brick.moveDown();
         }
         const nextRow = this.brick.rowPos + 1;
@@ -343,21 +515,21 @@ export default class GameController {
 
     level_Update() {
         const LevelTextStyle = new PIXI.TextStyle({
-            fontFamily: 'Press Start 2P',
+            fontFamily: "Press Start 2P",
             fontSize: 18,
-            fill: '#000000',
-            fontWeight: 'bold',
-            stroke: '#ffffff',
+            fill: "#000000",
+            fontWeight: "bold",
+            stroke: "#ffffff",
             strokeThickness: 3,
             dropShadow: true,
-            dropShadowColor: '#000000',
+            dropShadowColor: "#000000",
             dropShadowBlur: 4,
             dropShadowAngle: Math.PI / 6,
             dropShadowDistance: 6,
             wordWrap: true,
             wordWrapWidth: 440,
         });
-        const LevelText = new PIXI.Text('Level:' + this.level, LevelTextStyle);
+        const LevelText = new PIXI.Text("Level:" + this.level, LevelTextStyle);
         LevelText.name = "LEVEL";
         LevelText.position.set(310, 320);
         this.app.stage.addChild(LevelText);
@@ -366,26 +538,14 @@ export default class GameController {
     updateLevelDisplay() {
         const levelText = this.app.stage.getChildByName("LEVEL") as PIXI.Text;
         if (levelText) {
-            levelText.text = 'Level: ' + this.level;
+            levelText.text = "Level: " + this.level;
         }
-    }
-
-    Line_Update() {
-        const completedRows = this.board.countCompletedRows();
-        const completedRowsText = new PIXI.Text('Lines: ' + completedRows, {
-            fontFamily: 'Arial',
-            fontSize: 24,
-            fill: '##000000',
-            align: 'center'
-        });
-        completedRowsText.position.set(310, 300);
-        this.app.stage.addChild(completedRowsText);
     }
 
     handleGameOver() {
         this.brick.gameOver = true;
         this.gameView.showGameOverScreen();
-        gameoversound();
+        gameOverSound();
     }
 
     public getApp(): PIXI.Application {
@@ -404,10 +564,12 @@ export default class GameController {
         if (this.nextBrick) {
             this.brick = this.nextBrick;
         } else {
-            this.brick = new Brick(Math.floor(Math.random() * 10) % this.BRICK_LAYOUT.length, this);
+            this.brick = new Brick(
+                Math.floor(Math.random() * 10) % this.BRICK_LAYOUT.length,
+                this
+            );
         }
         this.generateNextBrick();
-
     }
     generateNextBrick() {
         if (this.nextBrick) {
@@ -417,7 +579,6 @@ export default class GameController {
         this.nextBrick = new Brick(nextBrickId, this);
         this.nextBrick.drawNextBrick();
     }
-
     public toggleSound(isSoundOn: boolean) {
         if (isSoundOn) {
             this.audio.play();
@@ -426,4 +587,13 @@ export default class GameController {
         }
     }
 
-} 
+    hidePlayerNameInput() {
+        debugger
+        const inputElement = document.getElementById("playerNameInput");
+        if (inputElement) {
+            inputElement.style.display = "none";
+        }
+    }
+
+
+}
