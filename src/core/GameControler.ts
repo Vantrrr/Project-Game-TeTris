@@ -18,6 +18,7 @@ export default class GameController {
   public readonly ROWS: number = 20;
   public readonly BLOCK_SIZE: number = 30;
   private audio: HTMLAudioElement;
+  public gameEnded: boolean = false;
 
   // NextBrick
   public readonly nextCOLS: number = 6;
@@ -381,11 +382,12 @@ export default class GameController {
       this.gameView.isSoundOn = false;
     } else {
       this.resumeGame();
-      this.audio.play();
+      // this.audio.play();
       this.isPaused = false;
-      this.gameView.isSoundOn = true;
+      // this.gameView.isSoundOn = false;
     }
   }
+
   resetGame() {
     if (this.brickDropInterval) {
       clearInterval(this.brickDropInterval);
@@ -424,10 +426,6 @@ export default class GameController {
   }
 
   startGame() {
-    //  let playerName: string | null = prompt("Nhập tên của bạn:");
-    // if (playerName) {
-    //     localStorage.setItem('playerName', playerName);
-    // }
     this.brickDropInterval = setInterval(() => {
       this.brick.moveDown();
       this.generateNextBrick();
@@ -481,26 +479,29 @@ export default class GameController {
   }
   keyboard() {
     document.addEventListener("keydown", (e: KeyboardEvent) => {
-      switch (e.code) {
-        case this.KEY_CODES.LEFT:
-          this.brick.moveLeft();
-          break;
-        case this.KEY_CODES.RIGHT:
-          this.brick.moveRight();
-          break;
-        case this.KEY_CODES.UP:
-          this.brick.rotate();
-          break;
-        case this.KEY_CODES.DOWN:
-          this.brick.moveDown();
-          fallBlockSound();
-          break;
-        case this.KEY_CODES.SPACE:
-          this.brickDropInstantly();
-          break;
+      if (!this.isPaused && !this.gameEnded) {
+        switch (e.code) {
+          case this.KEY_CODES.LEFT:
+            this.brick.moveLeft();
+            break;
+          case this.KEY_CODES.RIGHT:
+            this.brick.moveRight();
+            break;
+          case this.KEY_CODES.UP:
+            this.brick.rotate();
+            break;
+          case this.KEY_CODES.DOWN:
+            this.brick.moveDown();
+            fallBlockSound();
+            break;
+          case this.KEY_CODES.SPACE:
+            this.brickDropInstantly();
+            break;
+        }
       }
     });
   }
+
   brickDropInstantly() {
     // Move the brick down instantly
     while (

@@ -124,6 +124,7 @@ export default class GameView {
   }
 
   public showGameOverScreen(): void {
+    this.gameController.gameEnded = true;
     const gameOverContainer = new PIXI.Container();
     this.app.stage.addChild(gameOverContainer);
     const gameOverTexture = PIXI.Texture.from("../assets/gameovertetris.png");
@@ -161,7 +162,7 @@ export default class GameView {
       localStorage.getItem("playerName") +
         " " +
         localStorage.getItem("score") +
-        " điểm!",
+        " Score",
       scoreTextStyle
     );
     scoreText.position.set(200, 370);
@@ -192,16 +193,11 @@ export default class GameView {
     this.gameController.hideApp1();
   }
   showGameStart() {
-    // // Yêu cầu người chơi nhập tên
-    // let playerName = prompt("Nhập tên của bạn:");
-    // if (playerName) {
-    //   localStorage.setItem("playerName", playerName);
-    // }
     // Create the player name input
     const playerNameInput = document.createElement("input");
     playerNameInput.id = "playerNameInput";
     playerNameInput.type = "text";
-    playerNameInput.placeholder = "Nhập tên của bạn";
+    playerNameInput.placeholder = "Enter your name";
     playerNameInput.style.position = "absolute";
     playerNameInput.style.left = "665px";
     playerNameInput.style.top = "370px";
@@ -241,6 +237,7 @@ export default class GameView {
       this.app.stage.removeChild(startScreen);
       document.body.removeChild(playerNameInput);
       this.gameController.resumeGame();
+      this.gameController.gameEnded = false;
       this.gameController.showApp1();
     });
 
