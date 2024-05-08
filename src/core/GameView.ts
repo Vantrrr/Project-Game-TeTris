@@ -1,13 +1,16 @@
 import * as PIXI from "pixi.js";
 import GameController from "./GameControler";
+import { soundgame } from "./sound";
 export default class GameView {
   private gameController: GameController;
   private app: PIXI.Application;
+  public isSoundOn: boolean;
 
   constructor(gameController: GameController) {
     this.gameController = gameController;
     this.app = gameController.getApp();
     this.setupUI();
+    this.isSoundOn = true;
   }
 
   public setupUI() {
@@ -44,7 +47,8 @@ export default class GameView {
     replay.interactive = true;
     replay.buttonMode = true;
     replay.on("click", () => {
-      location.reload();
+      // location.reload();
+      this.gameController.resetGame();
     });
     const exit = PIXI.Sprite.from("../assets/exit.png");
     exit.position.set(285, 620);
@@ -58,11 +62,16 @@ export default class GameView {
     });
     // Tạo texture từ hình ảnh chứa cả pause và resume
     const combinedTexture = PIXI.Texture.from("../assets/pauseresume.png");
-    const pauseRect = new PIXI.Rectangle(0, 0, 200, 400);
-    const resumeRect = new PIXI.Rectangle(200, 0, 200, 400);
-
-    const pauseTexture = new PIXI.Texture(combinedTexture.baseTexture, pauseRect);
-    const resumeTexture = new PIXI.Texture(combinedTexture.baseTexture, resumeRect);
+    const pauseRect = new PIXI.Rectangle(200, 0, 200, 400);
+    const resumeRect = new PIXI.Rectangle(0, 0, 200, 400);
+    const pauseTexture = new PIXI.Texture(
+      combinedTexture.baseTexture,
+      pauseRect
+    );
+    const resumeTexture = new PIXI.Texture(
+      combinedTexture.baseTexture,
+      resumeRect
+    );
 
     const pauseButton = new PIXI.Sprite(pauseTexture);
     pauseButton.position.set(310, 430);
@@ -73,15 +82,23 @@ export default class GameView {
     pauseButton.buttonMode = true;
     pauseButton.on("click", () => {
       this.gameController.handlePauseButtonClick();
-      pauseButton.texture = this.gameController.isPaused ? resumeTexture : pauseTexture;
+      pauseButton.texture = this.gameController.isPaused
+        ? resumeTexture
+        : pauseTexture;
     });
 
     // Tạo texture từ hình ảnh chứa cả sound on và sound off
     const combinedSoundTexture = PIXI.Texture.from("../assets/soundimage.png");
     const soundOffRect = new PIXI.Rectangle(0, 0, 1920 / 2, 960);
     const soundOnRect = new PIXI.Rectangle(1920 / 2, 0, 1920 / 2, 960);
-    const soundOffTexture = new PIXI.Texture(combinedSoundTexture.baseTexture, soundOffRect);
-    const soundOnTexture = new PIXI.Texture(combinedSoundTexture.baseTexture, soundOnRect);
+    const soundOffTexture = new PIXI.Texture(
+      combinedSoundTexture.baseTexture,
+      soundOffRect
+    );
+    const soundOnTexture = new PIXI.Texture(
+      combinedSoundTexture.baseTexture,
+      soundOnRect
+    );
     const soundButton = new PIXI.Sprite(soundOffTexture);
     soundButton.position.set(400, 454);
     soundButton.width = 85;
@@ -91,10 +108,10 @@ export default class GameView {
     soundButton.interactive = true;
     soundButton.buttonMode = true;
 
-    let isSoundOn = true;
     soundButton.on("pointerdown", () => {
-      isSoundOn = !isSoundOn;
-      soundButton.texture = isSoundOn ? soundOnTexture : soundOffTexture;
+      this.isSoundOn = !this.isSoundOn;
+      soundButton.texture = this.isSoundOn ? soundOffTexture : soundOnTexture;
+      this.gameController.toggleSound(this.isSoundOn);
     });
 
     const arow = PIXI.Sprite.from("../assets/arowpress.png");
@@ -107,9 +124,9 @@ export default class GameView {
   }
 
   public showGameOverScreen(): void {
+    this.gameController.gameEnded = true;
     const gameOverContainer = new PIXI.Container();
     this.app.stage.addChild(gameOverContainer);
-    gameOverContainer.zIndex = 2;
     const gameOverTexture = PIXI.Texture.from("../assets/gameovertetris.png");
     const gameOverSprite = new PIXI.Sprite(gameOverTexture);
     gameOverSprite.width = 560;
@@ -121,35 +138,53 @@ export default class GameView {
     );
     gameOverContainer.addChild(gameOverSprite);
 
+    const bgScore = PIXI.Texture.from("../assets/bgscore.jpg");
+    const score = new PIXI.Sprite(bgScore);
+    score.anchor.set(0.5);
+    score.position.set(275, 400);
+    score.width = 300;
+    score.height = 130;
+
+    score.interactive = true;
+    score.buttonMode = true;
+    score.on("click", () => {
+      location.reload();
+    });
+    gameOverContainer.addChild(score);
+
+    const scoreTextStyle = new PIXI.TextStyle({
+      fontFamily: "Arial",
+      fontSize: 24,
+      fill: "#ffffff",
+      fontWeight: "bold",
+    });
+    const scoreText = new PIXI.Text(
+      localStorage.getItem("playerName") +
+        " " +
+        localStorage.getItem("score") +
+        " Score",
+      scoreTextStyle
+    );
+    scoreText.position.set(200, 370);
+    gameOverContainer.addChild(scoreText);
     // Thêm nút Retry
     const retryButtonTexture = PIXI.Texture.from("../assets/retry.png");
     const retryButton = new PIXI.Sprite(retryButtonTexture);
     retryButton.anchor.set(0.5);
-    retryButton.position.set(190, 550);
+    retryButton.position.set(280, 550);
     retryButton.width = 190;
     retryButton.height = 70;
     retryButton.interactive = true;
     retryButton.buttonMode = true;
+    this.gameController.resetGame();
+
     retryButton.on("click", () => {
-      // location.reload();
-      this.gameController.handlePlayButtonClick();
-      console.log("eeeee")
+      this.app.stage.removeChild(gameOverContainer);
+      this.showGameStart();
     });
     gameOverContainer.addChild(retryButton);
+    this.app.stage.removeChild(gameOverContainer);
 
-    // Thêm nút Quit
-    const quitButtonTexture = PIXI.Texture.from("../assets/quit.png");
-    const quitButton = new PIXI.Sprite(quitButtonTexture);
-    quitButton.anchor.set(0.5);
-    quitButton.position.set(400, 550);
-    quitButton.width = 150;
-    quitButton.height = 60;
-    quitButton.interactive = true;
-    quitButton.buttonMode = true;
-    quitButton.on("click", () => {
-      location.reload();
-    });
-    gameOverContainer.addChild(quitButton);
     this.app.stage.addChildAt(
       gameOverContainer,
       this.app.stage.children.length
@@ -157,7 +192,57 @@ export default class GameView {
     this.app.stage.addChild(gameOverContainer);
     this.gameController.hideApp1();
   }
+  showGameStart() {
+    // Create the player name input
+    const playerNameInput = document.createElement("input");
+    playerNameInput.id = "playerNameInput";
+    playerNameInput.type = "text";
+    playerNameInput.placeholder = "Enter your name";
+    playerNameInput.style.position = "absolute";
+    playerNameInput.style.left = "665px";
+    playerNameInput.style.top = "370px";
+    playerNameInput.style.width = "200px";
+    playerNameInput.style.padding = "10px";
 
+    playerNameInput.addEventListener("input", (event: Event) => {
+      if (event.target instanceof HTMLInputElement) {
+        const playerName = event.target.value;
+        localStorage.setItem("playerName", playerName);
+      }
+    });
+    document.body.appendChild(playerNameInput);
+
+    this.gameController.hideApp1();
+    const startScreen = new PIXI.Container();
+    this.app.stage.addChild(startScreen);
+
+    const backgroundTexture = PIXI.Texture.from("../assets/startttt.png");
+    const backgroundSprite = new PIXI.Sprite(backgroundTexture);
+    backgroundSprite.width = 560;
+    backgroundSprite.height = 700;
+    startScreen.addChild(backgroundSprite);
+
+    const playButton = PIXI.Sprite.from("../assets/R.png");
+    playButton.position.set(190, 400);
+    playButton.width = 173;
+    playButton.height = 60;
+    this.app.stage.addChild(playButton);
+
+    playButton.interactive = true;
+    playButton.buttonMode = true;
+
+    this.gameController.pauseGame();
+
+    playButton.on("pointerdown", () => {
+      this.app.stage.removeChild(startScreen);
+      document.body.removeChild(playerNameInput);
+      this.gameController.resumeGame();
+      this.gameController.gameEnded = false;
+      this.gameController.showApp1();
+    });
+
+    startScreen.addChild(playButton);
+  }
   public getApp(): PIXI.Application {
     return this.app;
   }
