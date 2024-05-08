@@ -180,11 +180,6 @@ export class Board {
     localStorage.setItem("score", this.score.toString());
   }
 
-  displayCompletedRows(): void {
-    const completedRows = this.countCompletedRows();
-    console.log("Completed Rows:", completedRows);
-  }
-
   calculateScore(rowsCount: number): number {
     return ((rowsCount * (rowsCount + 1)) / 2) * 100;
   }
@@ -217,9 +212,6 @@ export class Board {
       this.game.getApp().stage.addChild(scoreText);
     }
   }
-  //   clearBoard() {
-  //     this.boardContainerApp.removeChildren();
-  //   }
 
   clearBoardNextApp1() {
     this.boardContainerApp1.removeChildren();

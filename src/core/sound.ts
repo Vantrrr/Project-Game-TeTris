@@ -7,7 +7,7 @@ export function rotateSound() {
 }
 export function fallFastSound() {
   //âm thanh khối gạch rơi nhanh
-  const audio = new Audio("../assets/audio/movefastdown.wav");
+  const audio = new Audio("../assets/audio/fallfastdown.mp3");
   audio.play();
   return audio;
 }

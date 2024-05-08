@@ -124,9 +124,9 @@ export default class GameView {
   }
 
   public showGameOverScreen(): void {
+    this.gameController.gameEnded = true;
     const gameOverContainer = new PIXI.Container();
     this.app.stage.addChild(gameOverContainer);
-    // gameOverContainer.zIndex = 2;
     const gameOverTexture = PIXI.Texture.from("../assets/gameovertetris.png");
     const gameOverSprite = new PIXI.Sprite(gameOverTexture);
     gameOverSprite.width = 560;
@@ -152,7 +152,6 @@ export default class GameView {
     });
     gameOverContainer.addChild(score);
 
-    // Tạo một đối tượng Text để hiển thị điểm số
     const scoreTextStyle = new PIXI.TextStyle({
       fontFamily: "Arial",
       fontSize: 24,
@@ -163,12 +162,11 @@ export default class GameView {
       localStorage.getItem("playerName") +
         " " +
         localStorage.getItem("score") +
-        " điểm!",
+        " Score",
       scoreTextStyle
     );
     scoreText.position.set(200, 370);
     gameOverContainer.addChild(scoreText);
-    this.gameController.pauseGame();
     // Thêm nút Retry
     const retryButtonTexture = PIXI.Texture.from("../assets/retry.png");
     const retryButton = new PIXI.Sprite(retryButtonTexture);
@@ -181,11 +179,9 @@ export default class GameView {
     this.gameController.resetGame();
 
     retryButton.on("click", () => {
-      this.gameController.resumeGame();
       this.app.stage.removeChild(gameOverContainer);
-      this.gameController.showApp1();
+      this.showGameStart();
     });
-
     gameOverContainer.addChild(retryButton);
     this.app.stage.removeChild(gameOverContainer);
 
@@ -197,11 +193,25 @@ export default class GameView {
     this.gameController.hideApp1();
   }
   showGameStart() {
-    // Yêu cầu người chơi nhập tên
-    // let playerName = prompt("Nhập tên của bạn:");
-    // if (playerName) {
-    //   localStorage.setItem("playerName", playerName);
-    // }
+    // Create the player name input
+    const playerNameInput = document.createElement("input");
+    playerNameInput.id = "playerNameInput";
+    playerNameInput.type = "text";
+    playerNameInput.placeholder = "Enter your name";
+    playerNameInput.style.position = "absolute";
+    playerNameInput.style.left = "665px";
+    playerNameInput.style.top = "370px";
+    playerNameInput.style.width = "200px";
+    playerNameInput.style.padding = "10px";
+
+    playerNameInput.addEventListener("input", (event: Event) => {
+      if (event.target instanceof HTMLInputElement) {
+        const playerName = event.target.value;
+        localStorage.setItem("playerName", playerName);
+      }
+    });
+    document.body.appendChild(playerNameInput);
+
     this.gameController.hideApp1();
     const startScreen = new PIXI.Container();
     this.app.stage.addChild(startScreen);
@@ -213,10 +223,11 @@ export default class GameView {
     startScreen.addChild(backgroundSprite);
 
     const playButton = PIXI.Sprite.from("../assets/R.png");
-    playButton.position.set(190, 350);
+    playButton.position.set(190, 400);
     playButton.width = 173;
     playButton.height = 60;
     this.app.stage.addChild(playButton);
+
     playButton.interactive = true;
     playButton.buttonMode = true;
 
@@ -224,7 +235,9 @@ export default class GameView {
 
     playButton.on("pointerdown", () => {
       this.app.stage.removeChild(startScreen);
+      document.body.removeChild(playerNameInput);
       this.gameController.resumeGame();
+      this.gameController.gameEnded = false;
       this.gameController.showApp1();
     });
 
