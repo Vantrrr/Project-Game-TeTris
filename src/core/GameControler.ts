@@ -320,7 +320,7 @@ export default class GameController {
 
     public level: number = 0;
     public levelThreshold: number = 500;
-    public baseDropInterval: number = 800;
+    public baseDropInterval: number = 1000;
     private brickDropInterval: NodeJS.Timeout | null = null;
     private nextBrick: Brick | null;
     constructor() {
@@ -420,7 +420,6 @@ export default class GameController {
         }
         this.board.drawBoard();
     }
-
     startGame() {
         this.brickDropInterval = setInterval(() => {
             this.brick.moveDown();
@@ -428,16 +427,17 @@ export default class GameController {
             this.updateLevelAndSpeed();
             this.board.updateCompletedLinesDisplay();
             this.board.updateScoreDisplay();
-
         }, this.baseDropInterval);
     }
     public pauseGame() {
+        this.isPaused = true;
         if (this.brickDropInterval) {
             clearInterval(this.brickDropInterval);
             this.brickDropInterval = null;
         }
     }
     public resumeGame() {
+        this.isPaused = false;
         if (!this.brickDropInterval) {
             this.brickDropInterval = setInterval(() => {
                 this.brick.moveDown();
@@ -476,26 +476,29 @@ export default class GameController {
     }
     keyboard() {
         document.addEventListener("keydown", (e: KeyboardEvent) => {
-            switch (e.code) {
-                case this.KEY_CODES.LEFT:
-                    this.brick.moveLeft();
-                    break;
-                case this.KEY_CODES.RIGHT:
-                    this.brick.moveRight();
-                    break;
-                case this.KEY_CODES.UP:
-                    this.brick.rotate();
-                    break;
-                case this.KEY_CODES.DOWN:
-                    this.brick.moveDown();
-                    fallBlockSound();
-                    break;
-                case this.KEY_CODES.SPACE:
-                    this.brickDropInstantly();
-                    break;
+            if (!this.brick.gameOver && !this.isPaused) {
+                switch (e.code) {
+                    case this.KEY_CODES.LEFT:
+                        this.brick.moveLeft();
+                        break;
+                    case this.KEY_CODES.RIGHT:
+                        this.brick.moveRight();
+                        break;
+                    case this.KEY_CODES.UP:
+                        this.brick.rotate();
+                        break;
+                    case this.KEY_CODES.DOWN:
+                        this.brick.moveDown();
+                        fallBlockSound();
+                        break;
+                    case this.KEY_CODES.SPACE:
+                        this.brickDropInstantly();
+                        break;
+                }
             }
         });
     }
+
     brickDropInstantly() {
         while (
             !this.brick.checkCollision(
@@ -534,20 +537,20 @@ export default class GameController {
         LevelText.position.set(310, 320);
         this.app.stage.addChild(LevelText);
     }
-
     updateLevelDisplay() {
         const levelText = this.app.stage.getChildByName("LEVEL") as PIXI.Text;
         if (levelText) {
             levelText.text = "Level: " + this.level;
         }
     }
-
     handleGameOver() {
         this.brick.gameOver = true;
+        this.board.saveScore();
         this.gameView.showGameOverScreen();
         gameOverSound();
-    }
+        this.pauseGame();
 
+    }
     public getApp(): PIXI.Application {
         return this.app;
     }
@@ -586,14 +589,4 @@ export default class GameController {
             this.audio.pause();
         }
     }
-
-    hidePlayerNameInput() {
-        debugger
-        const inputElement = document.getElementById("playerNameInput");
-        if (inputElement) {
-            inputElement.style.display = "none";
-        }
-    }
-
-
 }

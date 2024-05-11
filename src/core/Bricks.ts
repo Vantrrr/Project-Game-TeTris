@@ -18,7 +18,6 @@ export class Brick {
     public isLanded: boolean;
     public gameOver: any;
 
-
     constructor(id: number, game: Game) {
         this.id = id;
         this.game = game;

@@ -1,18 +1,20 @@
 import * as PIXI from "pixi.js";
 import Game from "./GameControler";
 import { playEatSound } from "./sound";
+import { Brick } from "./Bricks";
+import GameController from "./GameControler";
 
 export class Board {
     private app: PIXI.Application;
     private app1: PIXI.Application;
     private boardContainerApp: PIXI.Container<PIXI.DisplayObject>;
     private boardContainerApp1: PIXI.Container<PIXI.DisplayObject>;
-    private game: Game;
+    private game: GameController;
     public grid: any;
     public score: number;
     public completedLines: number = 0;
 
-    constructor(game: Game) {
+    constructor(game: GameController) {
         this.game = game;
         this.drawApp();
         this.drawApp1();
@@ -39,7 +41,6 @@ export class Board {
         this.grid = this.generateWhiteBoard();
         this.score = 0;
     }
-
 
     drawCell(xAxis: number, yAxis: number, colorID: number) {
         const cellGraphics = new PIXI.Graphics();
@@ -104,10 +105,11 @@ export class Board {
             Array(this.game.COLS).fill(this.game.WHITE_COLOR_ID)
         );
 
-        this.score += this.calculateScore(completedRows);
-        this.updateScoreDisplay();
+
         this.grid = [...newRows, ...latestGrid];
         if (completedRows > 0) {
+            this.score += this.calculateScore(completedRows);
+            this.updateScoreDisplay();
             playEatSound();
         }
         this.completedLines += completedRows;
@@ -146,6 +148,19 @@ export class Board {
             this.game.getApp().stage.addChild(scoreText);
         }
     }
+
+    saveScore() {
+        let scores: number[] = JSON.parse(localStorage.getItem("scores") || "[]");
+        scores.push(this.score);
+        scores.sort((a, b) => b - a); // Sort scores in descending order
+        scores = scores.slice(0, 5); // Keep only the top 5 scores
+        localStorage.setItem("scores", JSON.stringify(scores));
+    }
+
+
+
+
+
 
     countCompletedRows() {
         let completedRows = 0;
@@ -189,13 +204,12 @@ export class Board {
             completedLinesText.position.set(310, 370);
             this.game.getApp().stage.addChild(completedLinesText);
         }
-        localStorage.setItem("score", this.score.toString());
     }
-
 
     clearBoardNextApp1() {
         this.boardContainerApp1.removeChildren();
     }
+
     getScore(): number {
         return this.score;
     }
