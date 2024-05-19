@@ -151,14 +151,13 @@ export class Board {
 
     saveScore() {
         let scores: number[] = JSON.parse(localStorage.getItem("scores") || "[]");
-        scores.push(this.score);
-        scores.sort((a, b) => b - a); // Sort scores in descending order
-        scores = scores.slice(0, 5); // Keep only the top 5 scores
-        localStorage.setItem("scores", JSON.stringify(scores));
+        if (scores.length === 0 || this.score > scores[0]) {
+            scores.push(this.score);
+            scores.sort((a, b) => b - a);
+            scores = scores.slice(0, 5);
+            localStorage.setItem("scores", JSON.stringify(scores));
+        }
     }
-
-
-
 
 
 

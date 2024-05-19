@@ -1,5 +1,6 @@
 import * as PIXI from "pixi.js";
 import GameController from "./GameControler";
+// import Game1 from "./Game1";
 export default class GameView {
   private gameController: GameController;
   private app: PIXI.Application;
@@ -166,10 +167,10 @@ export default class GameView {
     const scores: number[] = JSON.parse(localStorage.getItem("scores") || "[]");
     scores.forEach((score, index) => {
       const scoreText = new PIXI.Text(`Game ${index + 1}: ${score}`, scoreTextStyle);
-      scoreText.anchor.set(0.5);
-      scoreText.position.set(260, 340 + index * 30);
+      scoreText.position.set(180, 330 + index * 30);
       gameOverContainer.addChild(scoreText);
     });
+
 
     this.gameController.pauseGame();
 
@@ -222,25 +223,25 @@ export default class GameView {
     startScreen.addChild(backgroundSprite);
 
     // Create the player name input
-    const playerNameInput = document.createElement("input");
-    playerNameInput.id = "playerNameInput";
-    playerNameInput.type = "text";
-    playerNameInput.placeholder = "Nhập tên của bạn";
-    playerNameInput.style.position = "absolute";
-    playerNameInput.style.left = "665px";
-    playerNameInput.style.top = "370px";
-    playerNameInput.style.width = "200px";
-    playerNameInput.style.padding = "10px";
+    // const playerNameInput = document.createElement("input");
+    // playerNameInput.id = "playerNameInput";
+    // playerNameInput.type = "text";
+    // playerNameInput.placeholder = "Nhập tên của bạn";
+    // playerNameInput.style.position = "absolute";
+    // playerNameInput.style.left = "665px";
+    // playerNameInput.style.top = "370px";
+    // playerNameInput.style.width = "200px";
+    // playerNameInput.style.padding = "10px";
 
-    playerNameInput.addEventListener("change", (event: Event) => {
-      if (event.target instanceof HTMLInputElement) {
-        const playerName = event.target.value;
-        let playerNames = JSON.parse(localStorage.getItem("playerNames") || "[]");
-        playerNames.push(playerName);
-        localStorage.setItem("playerNames", JSON.stringify(playerNames));
-      }
-    });
-    document.body.appendChild(playerNameInput);
+    // playerNameInput.addEventListener("change", (event: Event) => {
+    //   if (event.target instanceof HTMLInputElement) {
+    //     const playerName = event.target.value;
+    //     let playerNames = JSON.parse(localStorage.getItem("playerNames") || "[]");
+    //     playerNames.push(playerName);
+    //     localStorage.setItem("playerNames", JSON.stringify(playerNames));
+    //   }
+    // });
+    // document.body.appendChild(playerNameInput);
 
     const playButton = PIXI.Sprite.from("../assets/R.png");
     playButton.position.set(190, 400);
@@ -253,7 +254,7 @@ export default class GameView {
 
     playButton.on("click", () => {
       this.app.stage.removeChild(startScreen);
-      document.body.removeChild(playerNameInput);
+      // document.body.removeChild(playerNameInput);
       this.gameController.showApp1();
       this.gameController.resumeGame();
     });

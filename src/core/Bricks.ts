@@ -1,7 +1,7 @@
 import { Board } from './Board';
 import Game from './GameControler';
 import GameView from './GameView';
-import { gameOverSound, rotateSound, } from './sound';
+import { gameOverSound, rotateSound } from './sound';
 
 export class Brick {
     private game: Game;

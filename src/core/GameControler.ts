@@ -2,29 +2,22 @@ import * as PIXI from "pixi.js";
 import { Board } from "./Board";
 import { Brick } from "./Bricks";
 import GameView from "./GameView";
-import {
-    fallBlockSound,
-    fallFastSound,
-    gameOverSound,
-    soundGame,
-} from "./sound";
+import { fallBlockSound, fallFastSound, gameOverSound, soundGame } from "./sound";
+
 export default class GameController {
     private gameView: GameView;
     private board: Board;
     private brick: Brick;
     public app: PIXI.Application;
     public app1: PIXI.Application;
-    public readonly COLS: number = 10;
-    public readonly ROWS: number = 20;
-    public readonly BLOCK_SIZE: number = 30;
-    private audio: HTMLAudioElement;
-
-    // NextBrick
-    public readonly nextCOLS: number = 6;
-    public readonly nextROWS: number = 5;
-    public readonly nextBLOCK_SIZE: number = 25;
-    public isPaused: boolean = false;
-    public readonly COLOR_MAPPING = [
+    public app2: PIXI.Application;
+    public COLS: number = 10;
+    public ROWS: number = 20;
+    public BLOCK_SIZE: number = 30;
+    public nextCOLS: number = 6;
+    public nextROWS: number = 5;
+    public nextBLOCK_SIZE: number = 25;
+    public COLOR_MAPPING = [
         0xff0000, // red
         0xffa500, // orange
         0x00ff00, // green
@@ -34,8 +27,8 @@ export default class GameController {
         0xffff00, // yellow
         0xffffff, // white
     ];
-    public readonly WHITE_COLOR_ID = this.COLOR_MAPPING[7];
-    public readonly BRICK_LAYOUT = [
+    public WHITE_COLOR_ID = this.COLOR_MAPPING[7];
+    public BRICK_LAYOUT = [
         [
             [
                 [1, this.COLOR_MAPPING[7], this.COLOR_MAPPING[7]],
@@ -309,21 +302,25 @@ export default class GameController {
             ],
         ],
     ];
-    public readonly KEY_CODES = {
-        LEFT: "ArrowLeft",
-        UP: "ArrowUp",
-        RIGHT: "ArrowRight",
-        DOWN: "ArrowDown",
-        SPACE: "Space",
-        ENTER: "Enter",
-    };
-
+    // public KEY_CODES = {
+    //     LEFT: "ArrowLeft",
+    //     UP: "ArrowUp",
+    //     RIGHT: "ArrowRight",
+    //     DOWN: "ArrowDown",
+    //     SPACE: "Space",
+    //     ENTER: "Enter",
+    // };
     public level: number = 0;
     public levelThreshold: number = 500;
     public baseDropInterval: number = 1000;
     private brickDropInterval: NodeJS.Timeout | null = null;
     private nextBrick: Brick | null;
-    constructor() {
+    public isPaused: boolean = false;
+    private audio: HTMLAudioElement;
+    keyConfig: KeyConfig;
+
+    constructor(keyConfig: KeyConfig) {
+        this.keyConfig = keyConfig;
         this.app = new PIXI.Application({
             width: this.COLS * this.BLOCK_SIZE,
             height: this.ROWS * this.BLOCK_SIZE,
@@ -337,89 +334,24 @@ export default class GameController {
             backgroundColor: 0xffa500,
         });
         window.document.body.appendChild(this.app1.view);
-
         this.app1.view.classList.add("my-app1");
-        const style = document.createElement("style");
-        style.innerHTML = `
-            .my-app1 {
-                touch-action: none;
-                cursor: inherit;
-                position: absolute;
-                left: 835px;
-                top: 149px;
-                z-index: 0;
-            }
-        `;
-        document.head.appendChild(style);
         this.app.renderer.resize(530, 700);
+
         this.gameView = new GameView(this);
         this.board = new Board(this);
-        this.brick = new Brick(this.random(this.BRICK_LAYOUT.length), this);
         this.board.drawBoard();
         this.board.drawBoardNextApp1();
-        this.level_Update();
+        this.board.drawBoardNextApp1();
+        this.generateNewBrick();
         this.startGame();
-        this.keyboard();
-        this.gameView.showGameStart();
+        this.level_Update();
         this.generateNextBrick();
+        this.keyboard();
         this.audio = soundGame();
         this.audio.play();
+        this.gameView.showGameStart();
     }
 
-    private random(max: number): number {
-        return Math.floor(Math.random() * (max + 1));
-    }
-
-    public handlePlayButtonClick() {
-        this.startGame();
-    }
-    public handlePauseButtonClick() {
-        if (!this.isPaused) {
-            this.pauseGame();
-            this.audio.pause();
-            this.isPaused = true;
-            this.gameView.isSoundOn = false;
-        } else {
-            this.resumeGame();
-            this.audio.play();
-            this.isPaused = false;
-            this.gameView.isSoundOn = true;
-        }
-    }
-    resetGame() {
-        if (this.brickDropInterval) {
-            clearInterval(this.brickDropInterval);
-            this.brickDropInterval = null;
-        }
-        this.clearBoard();
-        this.board.clearBoardNextApp1();
-
-        this.board.score = 0;
-        this.level = 0;
-        this.baseDropInterval = 800;
-
-        const levelText = this.app.stage.getChildByName("LEVEL");
-        if (levelText) {
-            this.app.stage.removeChild(levelText);
-        }
-        this.level_Update();
-        // Đặt lại trạng thái của viên gạch và bắt đầu trò chơi mới
-        this.brick = new Brick(this.random(this.BRICK_LAYOUT.length), this);
-        this.nextBrick = null;
-        this.board.drawBoard();
-        this.board.drawBoardNextApp1();
-        this.updateLevelDisplay();
-        this.startGame();
-        this.showApp1();
-    }
-    clearBoard(): void {
-        for (let row = 0; row < this.ROWS; row++) {
-            for (let col = 0; col < this.COLS; col++) {
-                this.board.grid[row][col] = this.WHITE_COLOR_ID;
-            }
-        }
-        this.board.drawBoard();
-    }
     startGame() {
         this.brickDropInterval = setInterval(() => {
             this.brick.moveDown();
@@ -447,6 +379,46 @@ export default class GameController {
             }, this.baseDropInterval);
         }
     }
+    resetGame() {
+        if (this.brickDropInterval) {
+            clearInterval(this.brickDropInterval);
+            this.brickDropInterval = null;
+        }
+        this.clearBoard();
+        this.board.clearBoardNextApp1();
+        this.board.score = 0;
+        this.level = 0;
+        this.baseDropInterval = 800;
+
+        const levelText = this.app.stage.getChildByName("LEVEL");
+        if (levelText) {
+            this.app.stage.removeChild(levelText);
+        }
+        this.level_Update();
+        this.generateNewBrick();
+        this.nextBrick = null;
+        this.board.drawBoard();
+        this.board.drawBoardNextApp1();
+        this.updateLevelDisplay();
+        this.startGame();
+        this.showApp1();
+    }
+    handleGameOver() {
+        this.brick.gameOver = true;
+        this.board.saveScore();
+        this.gameView.showGameOverScreen();
+        gameOverSound();
+        this.pauseGame();
+
+    }
+    clearBoard(): void {
+        for (let row = 0; row < this.ROWS; row++) {
+            for (let col = 0; col < this.COLS; col++) {
+                this.board.grid[row][col] = this.WHITE_COLOR_ID;
+            }
+        }
+        this.board.drawBoard();
+    }
     public hideApp1(): void {
         if (this.app1 && this.app1.view) {
             this.app1.view.style.visibility = "hidden";
@@ -457,47 +429,60 @@ export default class GameController {
             this.app1.view.style.visibility = "visible";
         }
     }
-    updateLevelAndSpeed() {
-        if (this.board.score >= this.level * this.levelThreshold) {
-            this.level++;
-            this.adjustDropSpeed();
-            this.updateLevelDisplay();
-            if (this.brickDropInterval) {
-                clearInterval(this.brickDropInterval);
-            }
-            this.brickDropInterval = setInterval(() => {
-                this.brick.moveDown();
-                this.updateLevelAndSpeed();
-            }, this.baseDropInterval);
-        }
-    }
-    adjustDropSpeed() {
-        this.baseDropInterval -= 50;
-    }
+
     keyboard() {
         document.addEventListener("keydown", (e: KeyboardEvent) => {
             if (!this.brick.gameOver && !this.isPaused) {
                 switch (e.code) {
-                    case this.KEY_CODES.LEFT:
+                    case this.keyConfig.LEFT:
                         this.brick.moveLeft();
+                        fallBlockSound();
                         break;
-                    case this.KEY_CODES.RIGHT:
+                    case this.keyConfig.RIGHT:
                         this.brick.moveRight();
+                        fallBlockSound();
                         break;
-                    case this.KEY_CODES.UP:
+                    case this.keyConfig.UP:
                         this.brick.rotate();
                         break;
-                    case this.KEY_CODES.DOWN:
+                    case this.keyConfig.DOWN:
                         this.brick.moveDown();
                         fallBlockSound();
                         break;
-                    case this.KEY_CODES.SPACE:
+                    case this.keyConfig.SPACE:
                         this.brickDropInstantly();
                         break;
                 }
             }
         });
     }
+
+    // keyboard() {
+    //     document.addEventListener("keydown", (e: KeyboardEvent) => {
+    //         if (!this.brick.gameOver && !this.isPaused) {
+    //             switch (e.code) {
+    //                 case this.KEY_CODES.LEFT:
+    //                     this.brick.moveLeft();
+    //                     fallBlockSound();
+    //                     break;
+    //                 case this.KEY_CODES.RIGHT:
+    //                     this.brick.moveRight();
+    //                     fallBlockSound();
+    //                     break;
+    //                 case this.KEY_CODES.UP:
+    //                     this.brick.rotate();
+    //                     break;
+    //                 case this.KEY_CODES.DOWN:
+    //                     this.brick.moveDown();
+    //                     fallBlockSound();
+    //                     break;
+    //                 case this.KEY_CODES.SPACE:
+    //                     this.brickDropInstantly();
+    //                     break;
+    //             }
+    //         }
+    //     });
+    // }
 
     brickDropInstantly() {
         while (
@@ -514,6 +499,24 @@ export default class GameController {
         const nextLayout = this.brick.layout[this.brick.activeIndex];
         this.brick.fixPosition(nextRow, nextCol, nextLayout);
         fallFastSound();
+    }
+
+    adjustDropSpeed() {
+        this.baseDropInterval -= 50;
+    }
+    updateLevelAndSpeed() {
+        if (this.board.score >= this.level * this.levelThreshold) {
+            this.level++;
+            this.adjustDropSpeed();
+            this.updateLevelDisplay();
+            if (this.brickDropInterval) {
+                clearInterval(this.brickDropInterval);
+            }
+            this.brickDropInterval = setInterval(() => {
+                this.brick.moveDown();
+                this.updateLevelAndSpeed();
+            }, this.baseDropInterval);
+        }
     }
 
     level_Update() {
@@ -543,26 +546,6 @@ export default class GameController {
             levelText.text = "Level: " + this.level;
         }
     }
-    handleGameOver() {
-        this.brick.gameOver = true;
-        this.board.saveScore();
-        this.gameView.showGameOverScreen();
-        gameOverSound();
-        this.pauseGame();
-
-    }
-    public getApp(): PIXI.Application {
-        return this.app;
-    }
-    public getApp1(): PIXI.Application {
-        return this.app1;
-    }
-    public getBoard() {
-        return this.board;
-    }
-    public getBrickLayout() {
-        return this.BRICK_LAYOUT;
-    }
     generateNewBrick() {
         if (this.nextBrick) {
             this.brick = this.nextBrick;
@@ -582,6 +565,23 @@ export default class GameController {
         this.nextBrick = new Brick(nextBrickId, this);
         this.nextBrick.drawNextBrick();
     }
+
+    public handlePlayButtonClick() {
+        this.startGame();
+    }
+    public handlePauseButtonClick() {
+        if (!this.isPaused) {
+            this.pauseGame();
+            this.audio.pause();
+            this.isPaused = true;
+            this.gameView.isSoundOn = false;
+        } else {
+            this.resumeGame();
+            this.audio.play();
+            this.isPaused = false;
+            this.gameView.isSoundOn = true;
+        }
+    }
     public toggleSound(isSoundOn: boolean) {
         if (isSoundOn) {
             this.audio.play();
@@ -589,4 +589,18 @@ export default class GameController {
             this.audio.pause();
         }
     }
+
+    public getApp(): PIXI.Application {
+        return this.app;
+    }
+    public getApp1(): PIXI.Application {
+        return this.app1;
+    }
+    public getBoard() {
+        return this.board;
+    }
+    public getBrickLayout() {
+        return this.BRICK_LAYOUT;
+    }
+
 }
