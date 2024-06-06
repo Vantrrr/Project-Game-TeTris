@@ -88,30 +88,6 @@ export default class GameView {
         : pauseTexture;
     });
 
-    // Tạo texture sound on và sound off
-    const combinedSoundTexture = PIXI.Texture.from("../assets/soundimage.png");
-    const soundOffRect = new PIXI.Rectangle(0, 0, 1920 / 2, 960);
-    const soundOnRect = new PIXI.Rectangle(1920 / 2, 0, 1920 / 2, 960);
-    const soundOffTexture = new PIXI.Texture(
-      combinedSoundTexture.baseTexture,
-      soundOffRect
-    );
-    const soundOnTexture = new PIXI.Texture(
-      combinedSoundTexture.baseTexture,
-      soundOnRect
-    );
-    const soundButton = new PIXI.Sprite(soundOffTexture);
-    soundButton.position.set(400, 454);
-    soundButton.width = 85;
-    soundButton.height = 85;
-    this.app.stage.addChild(soundButton);
-    soundButton.interactive = true;
-    soundButton.buttonMode = true;
-    soundButton.on("pointerdown", () => {
-      this.isSoundOn = !this.isSoundOn;
-      soundButton.texture = this.isSoundOn ? soundOffTexture : soundOnTexture;
-      this.gameController.toggleSound(this.isSoundOn);
-    });
 
     // Image keyboard 
     const arow = PIXI.Sprite.from("../assets/arowpress.png");
@@ -211,6 +187,7 @@ export default class GameView {
     this.app.stage.addChild(gameOverContainer);
     this.gameController.hideApp1();
   }
+
   showGameStart() {
     this.gameController.hideApp1();
     const startScreen = new PIXI.Container();
@@ -222,29 +199,15 @@ export default class GameView {
     backgroundSprite.height = 700;
     startScreen.addChild(backgroundSprite);
 
-    // Create the player name input
-    // const playerNameInput = document.createElement("input");
-    // playerNameInput.id = "playerNameInput";
-    // playerNameInput.type = "text";
-    // playerNameInput.placeholder = "Nhập tên của bạn";
-    // playerNameInput.style.position = "absolute";
-    // playerNameInput.style.left = "665px";
-    // playerNameInput.style.top = "370px";
-    // playerNameInput.style.width = "200px";
-    // playerNameInput.style.padding = "10px";
-
-    // playerNameInput.addEventListener("change", (event: Event) => {
-    //   if (event.target instanceof HTMLInputElement) {
-    //     const playerName = event.target.value;
-    //     let playerNames = JSON.parse(localStorage.getItem("playerNames") || "[]");
-    //     playerNames.push(playerName);
-    //     localStorage.setItem("playerNames", JSON.stringify(playerNames));
-    //   }
-    // });
-    // document.body.appendChild(playerNameInput);
+    const logoGame = PIXI.Sprite.from("../assets/Tetris_logo.png");
+    logoGame.position.set(200, 80);
+    logoGame.width = 173;
+    logoGame.height = 60;
+    this.app.stage.addChild(logoGame);
+    startScreen.addChild(logoGame);
 
     const playButton = PIXI.Sprite.from("../assets/R.png");
-    playButton.position.set(190, 400);
+    playButton.position.set(200, 370);
     playButton.width = 173;
     playButton.height = 60;
     this.app.stage.addChild(playButton);
@@ -254,13 +217,13 @@ export default class GameView {
 
     playButton.on("click", () => {
       this.app.stage.removeChild(startScreen);
-      // document.body.removeChild(playerNameInput);
       this.gameController.showApp1();
       this.gameController.resumeGame();
     });
     startScreen.addChild(playButton);
-  }
 
+
+  }
 
   public getApp(): PIXI.Application {
     return this.app;

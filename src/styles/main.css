@@ -11,7 +11,7 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
-    background-image: url('../assets/backg.png');
+    background-image: url('../assets/tetris-background.gif');
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;

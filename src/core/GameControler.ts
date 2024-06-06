@@ -302,6 +302,22 @@ export default class GameController {
             ],
         ],
     ];
+
+    game1KeyConfig: KeyConfig = {
+        LEFT: 'KeyA',
+        RIGHT: 'KeyD',
+        UP: 'KeyW',
+        DOWN: 'KeyS',
+        SPACE: 'Space',
+    };
+
+    game2KeyConfig: KeyConfig = {
+        LEFT: 'ArrowLeft',
+        RIGHT: 'ArrowRight',
+        UP: 'ArrowUp',
+        DOWN: 'ArrowDown',
+        SPACE: 'Enter',
+    };
     // public KEY_CODES = {
     //     LEFT: "ArrowLeft",
     //     UP: "ArrowUp",
@@ -361,6 +377,7 @@ export default class GameController {
             this.board.updateScoreDisplay();
         }, this.baseDropInterval);
     }
+
     public pauseGame() {
         this.isPaused = true;
         if (this.brickDropInterval) {
@@ -368,6 +385,7 @@ export default class GameController {
             this.brickDropInterval = null;
         }
     }
+
     public resumeGame() {
         this.isPaused = false;
         if (!this.brickDropInterval) {
@@ -379,6 +397,7 @@ export default class GameController {
             }, this.baseDropInterval);
         }
     }
+
     resetGame() {
         if (this.brickDropInterval) {
             clearInterval(this.brickDropInterval);
@@ -403,6 +422,7 @@ export default class GameController {
         this.startGame();
         this.showApp1();
     }
+
     handleGameOver() {
         this.brick.gameOver = true;
         this.board.saveScore();
@@ -411,6 +431,7 @@ export default class GameController {
         this.pauseGame();
 
     }
+
     clearBoard(): void {
         for (let row = 0; row < this.ROWS; row++) {
             for (let col = 0; col < this.COLS; col++) {
@@ -419,11 +440,13 @@ export default class GameController {
         }
         this.board.drawBoard();
     }
+
     public hideApp1(): void {
         if (this.app1 && this.app1.view) {
             this.app1.view.style.visibility = "hidden";
         }
     }
+
     public showApp1(): void {
         if (this.app1 && this.app1.view) {
             this.app1.view.style.visibility = "visible";
@@ -504,6 +527,7 @@ export default class GameController {
     adjustDropSpeed() {
         this.baseDropInterval -= 50;
     }
+
     updateLevelAndSpeed() {
         if (this.board.score >= this.level * this.levelThreshold) {
             this.level++;
@@ -540,12 +564,14 @@ export default class GameController {
         LevelText.position.set(310, 320);
         this.app.stage.addChild(LevelText);
     }
+
     updateLevelDisplay() {
         const levelText = this.app.stage.getChildByName("LEVEL") as PIXI.Text;
         if (levelText) {
             levelText.text = "Level: " + this.level;
         }
     }
+
     generateNewBrick() {
         if (this.nextBrick) {
             this.brick = this.nextBrick;
@@ -557,6 +583,7 @@ export default class GameController {
         }
         this.generateNextBrick();
     }
+
     generateNextBrick() {
         if (this.nextBrick) {
             this.nextBrick.clearNextBrick();
@@ -582,6 +609,7 @@ export default class GameController {
             this.gameView.isSoundOn = true;
         }
     }
+
     public toggleSound(isSoundOn: boolean) {
         if (isSoundOn) {
             this.audio.play();
@@ -593,12 +621,15 @@ export default class GameController {
     public getApp(): PIXI.Application {
         return this.app;
     }
+
     public getApp1(): PIXI.Application {
         return this.app1;
     }
+
     public getBoard() {
         return this.board;
     }
+
     public getBrickLayout() {
         return this.BRICK_LAYOUT;
     }

@@ -17,5 +17,9 @@ const game2KeyConfig: KeyConfig = {
     SPACE: 'Enter',
 };
 
+
+
+
 new Game(game1KeyConfig);
-new Game1(game2KeyConfig);
+new Game(game2KeyConfig);
+
